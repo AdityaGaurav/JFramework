@@ -1,6 +1,11 @@
 package com.framework.matchers;
 
+import org.cthul.matchers.chain.AndChainMatcher;
+import org.cthul.matchers.object.CIs;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+
+import static org.cthul.matchers.chain.OrChainMatcher.Builder;
 
 
 /**
@@ -122,70 +127,70 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.hamcrest.MatchResultExpected.expectedMessage( messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> acceptsWithMessage( T value, org.hamcrest.Matcher<? super String> messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> acceptsWithMessage( T value, org.hamcrest.Matcher<? super String> messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>acceptsWithMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> acceptsWithMessage( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> acceptsWithMessage( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>acceptsWithMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejectsWithMessage( T value, org.hamcrest.Matcher<? super String> messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> rejectsWithMessage( T value, org.hamcrest.Matcher<? super String> messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejectsWithMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejectsWithMessage( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> rejectsWithMessage( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejectsWithMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejectsWithExpectedMessage( T value, org.hamcrest.Matcher<? super String>
+	public static <T> Matcher<Matcher<? super T>> rejectsWithExpectedMessage( T value, org.hamcrest.Matcher<? super String>
 			messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejectsWithExpectedMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejectsWithExpectedMessage( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> rejectsWithExpectedMessage( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejectsWithExpectedMessage( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> accepts( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> accepts( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>accepts( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> accepts( T value )
+	public static <T> Matcher<Matcher<? super T>> accepts( T value )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>accepts( value );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> accepts( T value, org.hamcrest.Matcher<? super org.cthul.matchers.diagnose.result
+	public static <T> Matcher<Matcher<? super T>> accepts( T value, org.hamcrest.Matcher<? super org.cthul.matchers.diagnose.result
 			.MatchResult<T>> resultMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>accepts( value, resultMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejects( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> rejects( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejects( value, messageMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejects( T value )
+	public static <T> Matcher<Matcher<? super T>> rejects( T value )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejects( value );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> rejects( T value, org.hamcrest.Matcher<? super org.cthul.matchers.diagnose.result
+	public static <T> Matcher<Matcher<? super T>> rejects( T value, org.hamcrest.Matcher<? super org.cthul.matchers.diagnose.result
 			.MatchResult<T>> resultMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>rejects( value, resultMatcher );
 	}
 
-	public static <T> org.hamcrest.Matcher<org.hamcrest.Matcher<? super T>> expects( T value, String messageMatcher )
+	public static <T> Matcher<Matcher<? super T>> expects( T value, String messageMatcher )
 	{
 		return org.cthul.matchers.hamcrest.MatcherAccepts.<T>expects( value, messageMatcher );
 	}
@@ -200,34 +205,34 @@ public class MatcherUtils extends Matchers
 //		return org.cthul.matchers.object.CIs.<T>not( matcher );
 //	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> _is( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> _is( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>_is( matcher );
+		return CIs.<T>_is( matcher );
 	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> has( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> has( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>has( matcher );
+		return CIs.<T>has( matcher );
 	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> _isNot( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> _isNot( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>_isNot( matcher );
+		return CIs.<T>_isNot( matcher );
 	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> _not( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> _not( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>_not( matcher );
+		return CIs.<T>_not( matcher );
 	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> isNot( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> isNot( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>isNot( matcher );
+		return CIs.<T>isNot( matcher );
 	}
 
-	public static <T> org.cthul.matchers.object.CIs<T> _has( org.hamcrest.Matcher<? super T> matcher )
+	public static <T> CIs<T> _has( Matcher<? super T> matcher )
 	{
-		return org.cthul.matchers.object.CIs.<T>_has( matcher );
+		return CIs.<T>_has( matcher );
 	}
 
 	/**
@@ -274,22 +279,22 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.object.ContainsPattern.matchesPattern( regex );
 	}
 
-	public static <T, T2> org.cthul.matchers.chain.AndChainMatcher.Builder<T> isInstanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2> m )
+	public static <T, T2> AndChainMatcher.Builder<T> isInstanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2> m )
 	{
 		return org.cthul.matchers.object.InstanceThat.<T, T2>isInstanceThat( clazz, m );
 	}
 
-	public static <T, T2> org.hamcrest.Matcher<T> isInstanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2>... m )
+	public static <T, T2> Matcher<T> isInstanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2>... m )
 	{
 		return org.cthul.matchers.object.InstanceThat.<T, T2>isInstanceThat( clazz, m );
 	}
 
-	public static <T, T2> org.cthul.matchers.chain.AndChainMatcher.Builder<T> instanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2> m )
+	public static <T, T2> AndChainMatcher.Builder<T> instanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2> m )
 	{
 		return org.cthul.matchers.object.InstanceThat.<T, T2>instanceThat( clazz, m );
 	}
 
-	public static <T, T2> org.cthul.matchers.chain.AndChainMatcher.Builder<T> instanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2>... m )
+	public static <T, T2> AndChainMatcher.Builder<T> instanceThat( Class<T2> clazz, org.hamcrest.Matcher<? super T2>... m )
 	{
 		return org.cthul.matchers.object.InstanceThat.<T, T2>instanceThat( clazz, m );
 	}
@@ -324,29 +329,29 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.object.InstanceOf.<T>isInstanceOf( clazz );
 	}
 
-	public static <T> org.cthul.matchers.chain.AndChainMatcher.Builder<T> all( org.hamcrest.Matcher<? super T> m )
+	public static <T> AndChainMatcher.Builder<T> all( Matcher<? super T> m )
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.<T>all( m );
+		return AndChainMatcher.<T>all( m );
 	}
 
-	public static <T> org.cthul.matchers.chain.AndChainMatcher.Builder<T> all( org.hamcrest.Matcher<? super T>... m )
+	public static <T> AndChainMatcher.Builder<T> all( Matcher<? super T>... m )
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.<T>all( m );
+		return AndChainMatcher.<T>all( m );
 	}
 
 	public static org.cthul.matchers.chain.ChainFactory all()
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.all();
+		return AndChainMatcher.all();
 	}
 
-	public static <T> org.hamcrest.Matcher<T> and( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> and( Matcher<? super T>... matchers )
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.<T>and( matchers );
+		return AndChainMatcher.<T>and( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> and( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> and( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.<T>and( matchers );
+		return AndChainMatcher.<T>and( matchers );
 	}
 
 //	public static <T> org.cthul.matchers.chain.AndChainMatcher.Builder<T> both( org.hamcrest.Matcher<? super T> m )
@@ -354,9 +359,9 @@ public class MatcherUtils extends Matchers
 //		return org.cthul.matchers.chain.AndChainMatcher.<T>both( m );
 //	}
 
-	public static <T> org.cthul.matchers.chain.AndChainMatcher.Builder<T> both( org.hamcrest.Matcher<? super T>... m )
+	public static <T> AndChainMatcher.Builder<T> both( Matcher<? super T>... m )
 	{
-		return org.cthul.matchers.chain.AndChainMatcher.<T>both( m );
+		return AndChainMatcher.<T>both( m );
 	}
 
 	public static org.cthul.matchers.chain.ChainFactory none()
@@ -364,47 +369,47 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.chain.NOrChainMatcher.none();
 	}
 
-	public static <T> org.hamcrest.Matcher<T> none( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> none( Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>none( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> none( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> none( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>none( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> nor( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> nor( Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>nor( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> nor( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> nor( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>nor( matchers );
 	}
 
-	public static <T> org.cthul.matchers.chain.NOrChainMatcher.Builder<T> neither( org.hamcrest.Matcher<? super T>... m )
+	public static <T> org.cthul.matchers.chain.NOrChainMatcher.Builder<T> neither( Matcher<? super T>... m )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>neither( m );
 	}
 
-	public static <T> org.cthul.matchers.chain.NOrChainMatcher.Builder<T> neither( org.hamcrest.Matcher<? super T> m )
+	public static <T> org.cthul.matchers.chain.NOrChainMatcher.Builder<T> neither( Matcher<? super T> m )
 	{
 		return org.cthul.matchers.chain.NOrChainMatcher.<T>neither( m );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> or( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> or( Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.OrChainMatcher.<T>or( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> or( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> or( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
 		return org.cthul.matchers.chain.OrChainMatcher.<T>or( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> any( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> any( Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.OrChainMatcher.<T>any( matchers );
 	}
@@ -414,12 +419,12 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.chain.OrChainMatcher.any();
 	}
 
-	public static <T> org.hamcrest.Matcher<T> any( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> any( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
 		return org.cthul.matchers.chain.OrChainMatcher.<T>any( matchers );
 	}
 
-	public static <T> org.cthul.matchers.chain.OrChainMatcher.Builder<T> either( org.hamcrest.Matcher<? super T>... m )
+	public static <T> Builder<T> either( Matcher<? super T>... m )
 	{
 		return org.cthul.matchers.chain.OrChainMatcher.<T>either( m );
 	}
@@ -439,23 +444,24 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.chain.SomeOfChainMatcher.matches( count );
 	}
 
-	public static <T> org.cthul.matchers.chain.SomeOfChainMatcher.Builder<T> matches( int count, org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> org.cthul.matchers.chain.SomeOfChainMatcher.Builder<T> matches( int count, Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.SomeOfChainMatcher.<T>matches( count, matchers );
 	}
 
+	@SafeVarargs
 	public static <T> org.cthul.matchers.chain.SomeOfChainMatcher.Builder<T> matches( org.hamcrest.Matcher<? super Integer> countMatcher,
-																					  org.hamcrest.Matcher<? super T>... matchers )
+																					  Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.SomeOfChainMatcher.<T>matches( countMatcher, matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> xor( java.util.Collection<? extends org.hamcrest.Matcher<? super T>> matchers )
+	public static <T> Matcher<T> xor( java.util.Collection<? extends Matcher<? super T>> matchers )
 	{
 		return org.cthul.matchers.chain.XOrChainMatcher.<T>xor( matchers );
 	}
 
-	public static <T> org.hamcrest.Matcher<T> xor( org.hamcrest.Matcher<? super T>... matchers )
+	public static <T> Matcher<T> xor( Matcher<? super T>... matchers )
 	{
 		return org.cthul.matchers.chain.XOrChainMatcher.<T>xor( matchers );
 	}
@@ -560,7 +566,7 @@ public class MatcherUtils extends Matchers
 	}
 
 	public static <T extends Exception> org.hamcrest.Matcher<Object> exception( Class<T> clazz, String message,
-																									org.hamcrest.Matcher<? super T> matcher )
+																									Matcher<? super T> matcher )
 	{
 		return org.cthul.matchers.exceptions.IsThrowable.<T>exception( clazz, message, matcher );
 	}
@@ -575,7 +581,7 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.exceptions.IsThrowable.exception( clazz, message );
 	}
 
-	public static <T extends Exception> org.hamcrest.Matcher<Object> exception( Class<T> clazz, org.hamcrest.Matcher<? super T> matcher )
+	public static <T extends Exception> org.hamcrest.Matcher<Object> exception( Class<T> clazz, Matcher<? super T> matcher )
 	{
 		return org.cthul.matchers.exceptions.IsThrowable.<T>exception( clazz, matcher );
 	}
@@ -596,7 +602,7 @@ public class MatcherUtils extends Matchers
 	}
 
 	public static <T extends Throwable> org.hamcrest.Matcher<Object> throwable( Class<T> clazz, String message,
-																									org.hamcrest.Matcher<? super T> matcher )
+																									Matcher<? super T> matcher )
 	{
 		return org.cthul.matchers.exceptions.IsThrowable.<T>throwable( clazz, message, matcher );
 	}
@@ -611,7 +617,7 @@ public class MatcherUtils extends Matchers
 		return org.cthul.matchers.exceptions.IsThrowable.throwable( matcher );
 	}
 
-	public static <T extends Throwable> org.hamcrest.Matcher<Object> throwable( Class<T> clazz, org.hamcrest.Matcher<? super T> matcher )
+	public static <T extends Throwable> org.hamcrest.Matcher<Object> throwable( Class<T> clazz, Matcher<? super T> matcher )
 	{
 		return org.cthul.matchers.exceptions.IsThrowable.<T>throwable( clazz, matcher );
 	}
@@ -624,7 +630,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raisesException( Class<? extends Exception> clazz, String regex )
+	public static Matcher<org.cthul.proc.Proc> raisesException( Class<? extends Exception> clazz, String regex )
 	{
 		return org.cthul.matchers.proc.Raises.raisesException( clazz, regex );
 	}
@@ -634,7 +640,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raisesException()
+	public static Matcher<org.cthul.proc.Proc> raisesException()
 	{
 		return org.cthul.matchers.proc.Raises.raisesException();
 	}
@@ -642,7 +648,7 @@ public class MatcherUtils extends Matchers
 	/**
 	 * Does the proc raise an exception that satisfies the condition?
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raisesException( String regex )
+	public static Matcher<org.cthul.proc.Proc> raisesException( String regex )
 	{
 		return org.cthul.matchers.proc.Raises.raisesException( regex );
 	}
@@ -654,7 +660,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raisesException( Class<? extends Exception> clazz )
+	public static Matcher<org.cthul.proc.Proc> raisesException( Class<? extends Exception> clazz )
 	{
 		return org.cthul.matchers.proc.Raises.raisesException( clazz );
 	}
@@ -662,7 +668,7 @@ public class MatcherUtils extends Matchers
 	/**
 	 * Does the proc raise an exception that satisfies the condition?
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raisesException( org.hamcrest.Matcher<? super Exception> matcher )
+	public static Matcher<org.cthul.proc.Proc> raisesException( org.hamcrest.Matcher<? super Exception> matcher )
 	{
 		return org.cthul.matchers.proc.Raises.raisesException( matcher );
 	}
@@ -672,7 +678,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raises( Class<? extends Throwable> clazz, String regex )
+	public static Matcher<org.cthul.proc.Proc> raises( Class<? extends Throwable> clazz, String regex )
 	{
 		return org.cthul.matchers.proc.Raises.raises( clazz, regex );
 	}
@@ -684,7 +690,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raises( Class<? extends Throwable> clazz )
+	public static Matcher<org.cthul.proc.Proc> raises( Class<? extends Throwable> clazz )
 	{
 		return org.cthul.matchers.proc.Raises.raises( clazz );
 	}
@@ -696,23 +702,11 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raises( String regex )
+	public static Matcher<org.cthul.proc.Proc> raises( String regex )
 	{
 		return org.cthul.matchers.proc.Raises.raises( regex );
 	}
 
-	/**
-	 * Does the proc raise a throwable that satisfies the condition?
-	 *
-	 * @param clazz
-	 * @param matcher
-	 *
-	 * @return Proc-Matcher
-	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raises( Class<? extends Throwable> clazz, org.hamcrest.Matcher<? superThrowable> matcher )
-	{
-		return org.cthul.matchers.proc.Raises.raises( clazz, matcher );
-	}
 
 	/**
 	 * Does the proc raise a throwable that satisfies the condition?
@@ -721,7 +715,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> raises( org.hamcrest.Matcher<? super Throwable> throwableMatcher )
+	public static Matcher<org.cthul.proc.Proc> raises( org.hamcrest.Matcher<? super Throwable> throwableMatcher )
 	{
 		return org.cthul.matchers.proc.Raises.raises( throwableMatcher );
 	}
@@ -733,7 +727,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> result( Object value )
+	public static Matcher<org.cthul.proc.Proc> result( Object value )
 	{
 		return org.cthul.matchers.proc.Returns.result( value );
 	}
@@ -745,7 +739,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> result( org.hamcrest.Matcher<?> resultMatcher )
+	public static Matcher<org.cthul.proc.Proc> result( org.hamcrest.Matcher<?> resultMatcher )
 	{
 		return org.cthul.matchers.proc.Returns.result( resultMatcher );
 	}
@@ -755,7 +749,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> returns()
+	public static Matcher<org.cthul.proc.Proc> returns()
 	{
 		return org.cthul.matchers.proc.Returns.returns();
 	}
@@ -767,7 +761,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> returns( org.hamcrest.Matcher<?> resultMatcher )
+	public static Matcher<org.cthul.proc.Proc> returns( org.hamcrest.Matcher<?> resultMatcher )
 	{
 		return org.cthul.matchers.proc.Returns.returns( resultMatcher );
 	}
@@ -779,7 +773,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> returns( Object value )
+	public static Matcher<org.cthul.proc.Proc> returns( Object value )
 	{
 		return org.cthul.matchers.proc.Returns.returns( value );
 	}
@@ -789,7 +783,7 @@ public class MatcherUtils extends Matchers
 	 *
 	 * @return Proc-Matcher
 	 */
-	public static org.hamcrest.Matcher<org.cthul.proc.Proc> hasResult()
+	public static Matcher<org.cthul.proc.Proc> hasResult()
 	{
 		return org.cthul.matchers.proc.Returns.hasResult();
 	}

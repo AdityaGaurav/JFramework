@@ -5,7 +5,7 @@ import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.matchers.MatcherUtils;
 import com.framework.site.config.InitialPage;
-import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.site.pages.CarnivalPage;
 import com.framework.utils.spring.AppContextProxy;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
@@ -32,7 +32,7 @@ import java.util.Locale;
  * Time   : 01:17
  */
 
-public class FunShopsPage extends BaseCarnivalPage
+public class FunShopsPage extends CarnivalPage
 {
 
 	//region FunShopsPage - Variables Declaration and Initialization Section.

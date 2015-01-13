@@ -393,7 +393,6 @@
     <scm>
         <url>https://github.com/daniv/JFramework.git</url>
         <connection>scm:git:git://github.com/daniv/JFramework.git</connection>
-        <tag>HEAD</tag>
         <developerConnection>scm:git:git@github.com:daniv/JFramework.git</developerConnection>
     </scm>
 

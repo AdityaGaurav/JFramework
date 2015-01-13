@@ -1,8 +1,8 @@
 package com.framework.driver.event;
 
-import com.framework.driver.highlight.HighlightHandler;
-import com.framework.driver.highlight.HighlightStyle;
-import com.framework.driver.highlight.HighlightStyleBackup;
+import com.framework.driver.utils.ui.HighlightHandler;
+import com.framework.driver.utils.ui.HighlightStyle;
+import com.framework.driver.utils.ui.HighlightStyleBackup;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
