@@ -47,7 +47,7 @@
     <modules>
         <module>Utilities</module>
         <module>Core</module>
-        <module>HtmlReporter</module>
+        <module>JReporter</module>
         <module>TestingWebsite</module>
     </modules>
 
