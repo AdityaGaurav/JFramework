@@ -1,0 +1,69 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd" default-lazy-init="true">
+
+    <context:annotation-config/>
+
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="properties">
+            <props>
+                <prop key="firefox.default.key">firefox.default</prop>
+            </props>
+        </property>
+        <property name="locations">
+            <list>
+                <value>site.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="localOverride" value="true"/>
+        <property name="valueSeparator" value=":"/>
+    </bean>
+
+    <bean id="applicationContextProxy" class="com.framework.utils.spring.AppContextProxy" factory-method="getInstance" lazy-init="false"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="locale.messages" />
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="0"/>
+        <property name="commonMessages" value="locale/messages.properties"/>
+    </bean>
+
+    <bean id="initial.page" class="com.framework.site.config.InitialPage" factory-method="getInstance" destroy-method="quitAllDrivers" lazy-init="true">
+        <description>Running configuration</description>
+        <property name="initialLocale">
+            <util:constant static-field="java.util.Locale.US" />
+        </property>
+        <property name="highLightOnClick" value="true"/>
+        <property name="highLightOnHover" value="true"/>
+        <property name="useBrowserStartupPage" value="true"/>
+        <property name="maximizeOnStartup"  value="true"/>
+        <property name="browserType">
+            <util:constant static-field="org.openqa.selenium.remote.BrowserType.FIREFOX" />
+        </property>
+        <property name="domains">
+            <props>
+                <prop key="us.prod">${us.prod.url}</prop>
+                <prop key="us.sys1"></prop>
+                <prop key="us.sys3"></prop>
+                <prop key="us.uat2">${us.uat2.url}</prop>
+                <prop key="us.stg2"></prop>
+                <prop key="gb.prod">${uk.prod.url}</prop>
+                <prop key="gb.uat2">${uk.uat2.url}</prop>
+                <prop key="au.prod">${au.prod.url}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="localeAU" class="java.util.Locale" >
+        <constructor-arg name="language" value="en"/>
+        <constructor-arg name="country" value="AU"/>
+    </bean>
+
+
+</beans>

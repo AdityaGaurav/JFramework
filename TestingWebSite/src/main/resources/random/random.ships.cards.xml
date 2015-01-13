@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ships>
+    <ship id="PR" desc="Carnival Pride">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="FD" desc="Carnival Freedom">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="SH" desc="Carnival Sunshine">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="BR" desc="Carnival Breeze">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="MC" desc="Carnival Magic">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="TI" desc="Carnival Triumph">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="GL" desc="Carnival Glory">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="CQ" desc="Carnival Conquest">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="DR" desc="Carnival Dream">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="EC" desc="Carnival Ecstasy">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="SL" desc="Carnival Splendor">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="VA" desc="Carnival Valor">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="LE" desc="Carnival Legend">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="LI" desc="Carnival Liberty">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="EL" desc="Carnival Elation">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="VI" desc="Carnival Victory">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="MI" desc="Carnival Miracle">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="FS" desc="Carnival Fascination">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="FA" desc="Carnival Fantasy">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="SE" desc="Carnival Sensation">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="IS" desc="Carnival Inspiration">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="IM" desc="Carnival Imagination">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="VS" desc="Carnival Vista">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+    <ship id="PA" desc="Carnival Paradise">
+        <validFor>US</validFor>
+        <selections>0</selections>
+        <lastSelected>null</lastSelected>
+    </ship>
+</ships>
