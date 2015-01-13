@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.framework</groupId>
+    <artifactId>framework-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <description>Parent Module for Automation JFramework Project</description>
+    <inceptionYear>2015</inceptionYear>
+
+
+    <developers>
+        <developer>
+            <id>daniva</id>
+            <name>Dani Vainstein</name>
+            <email>dani.vainstein@globant.com</email>
+            <roles>
+                <role>developer</role>
+                <role>designer</role>
+            </roles>
+            <timezone>America/Bogota</timezone>
+            <organization>Globant</organization>
+            <organizationUrl>http://www.globant.com/</organizationUrl>
+            <properties>
+                <personalEmail>somarkn@gmail.com</personalEmail>
+                <address>Bogota, Colombia</address>
+            </properties>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Globant</name>
+        <url>http://www.globant.com/</url>
+    </organization>
+    <modules>
+        <module>Utilities</module>
+        <module>Core</module>
+        <module>HtmlReporter</module>
+        <module>TestingWebsite</module>
+    </modules>
+
+    <prerequisites>
+        <maven>${maven.version}</maven>
+    </prerequisites>
+
+    <properties>
+        <org.slf4j.version>1.7.9</org.slf4j.version><!-- last updated 3-Jan-2015 -->
+        <org.seleniumhq.selenium.version>2.44.0</org.seleniumhq.selenium.version><!-- last updated 3-Jan-2015 -->
+        <commons-lang3.version>3.3.2</commons-lang3.version><!-- last updated 3-Jan-2015 -->
+        <joda.time.version>2.6</joda.time.version> <!-- last updated 3-Jan-2015 -->
+        <joda-money.version>0.10.0</joda-money.version>
+        <org.hamcrest.version>1.3</org.hamcrest.version><!-- last updated 3-Jan-2015 -->
+        <org.testng.version>6.8.13</org.testng.version><!-- last updated 3-Jan-2015 -->
+        <org.testng.spring.version>4.7</org.testng.spring.version>
+        <org.springframework.version>4.1.4.RELEASE</org.springframework.version><!-- last updated 6-Jan-2015 -->
+        <com.googlecode.lambdaj.version>2.3.3</com.googlecode.lambdaj.version><!-- last updated 7-Jan-2015 -->
+        <com.google.guava.version>18.0</com.google.guava.version><!-- last updated 3-Jan-2015 -->
+        <assertj-guava.version>1.3.0</assertj-guava.version><!-- last updated 5-Jan-2015 -->
+        <assertj-joda-time.version>1.1.0</assertj-joda-time.version><!-- last updated 5-Jan-2015 -->
+        <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
+        <dom4j.version>1.6.1</dom4j.version><!-- last updated 12-Jan-2015 -->
+        <jaxen.version>1.1.6</jaxen.version><!-- last updated 12-Jan-2015 -->
+        <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+        <maven-source-plugin.version>2.4</maven-source-plugin.version>
+        <maven.version>2.0.6</maven.version>
+        <org.cthul-matchers.version>1.1.0</org.cthul-matchers.version>
+        <assertj-assertions-generator-maven-plugin.version>1.5.0</assertj-assertions-generator-maven-plugin.version>
+        <org.apache.velocity.version>1.7</org.apache.velocity.version><!-- last updated 11-Jan-2015 -->
+    </properties>
+
+    <dependencies>
+        <!--
+        Description    : The Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction for various logging frameworks.
+        Official URL   : http://www.slf4j.org/
+        Maven Repo URL : http://mvnrepository.com/artifact/org.slf4j
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+
+
+            <!--
+                Description    : The standard Java libraries fail to provide enough methods for manipulation of its core classes.
+                Official URL   : http://commons.apache.org/proper/commons-lang/
+                Maven Repo URL : http://mvnrepository.com/artifact/org.apache.commons
+            -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <!--
+                Description    :
+                Official URL   : https://code.google.com/p/guava-libraries/
+                Maven Repo URL : http://mvnrepository.com/artifact/com.google.guava
+            -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${com.google.guava.version}</version>
+            </dependency>
+
+            <!--
+                Description    : TestNG is a testing framework inspired from JUnit and NUnit but introducing some new
+                                 functionality that make it more powerful and easier to use
+                Official URL   : http://testng.org/doc/index.html
+                Maven Repo URL : http://mvnrepository.com/artifact/org.testng
+            -->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${org.testng.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.yaml</groupId>
+                        <artifactId>snakeyaml</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit-dep</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.beust</groupId>
+                        <artifactId>jcommander</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--
+                 Description    :
+                 Official URL   :
+                 Maven Repo URL : http://mvnrepository.com/artifact/org.seleniumhq.selenium
+            -->
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-chrome-driver</artifactId>
+                <version>${org.seleniumhq.selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-firefox-driver</artifactId>
+                <version>${org.seleniumhq.selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-ie-driver</artifactId>
+                <version>${org.seleniumhq.selenium.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-support</artifactId>
+                <version>${org.seleniumhq.selenium.version}</version>
+            </dependency>
+
+            <!--
+                Description    : Joda-Time provides a quality replacement for the Java date and time classes. and easier to use
+                Official URL   : http://www.joda.org/joda-time/
+                Maven Repo URL : http://mvnrepository.com/artifact/joda-time
+            -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda.time.version}</version>
+            </dependency>
+
+            <!--
+                Description    : A self-contained hamcrest jar containing all of the sub-modules in a single artifact
+                Official URL   : https://code.google.com/p/hamcrest/
+                Maven Repo URL : http://mvnrepository.com/artifact/org.hamcrest
+            -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${org.hamcrest.version}</version>
+            </dependency>
+
+            <!--
+                Description    : Provides hamcrest.org matchers for strings and exceptions, allows matching code blocks,
+                                 and provides several utilities for combining matchers.
+                Official URL   : https://github.com/derari/cthul/wiki/Matchers
+                Maven Repo URL : http://mvnrepository.com/artifact/org.cthul
+            -->
+            <dependency>
+                <groupId>org.cthul</groupId>
+                <artifactId>cthul-matchers</artifactId>
+                <version>${org.cthul-matchers.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--
+                Description    : Rich and fluent assertions for testing
+                Official URL   : http://joel-costigliola.github.io/assertj/
+                Maven Repo URL : http://mvnrepository.com/artifact/org.assertj
+            -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-guava</artifactId>
+                <version>${assertj-guava.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-joda-time</artifactId>
+                <version>${assertj-joda-time.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>joda-time</groupId>
+                        <artifactId>joda-time</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--
+                Description   : The pseudo-functional collection manipulation library.
+                Official URL  : https://code.google.com/p/lambdaj/
+                Maven Repo URL: http://mvnrepository.com/artifact/com.googlecode.lambdaj
+            -->
+            <dependency>
+                <groupId>com.googlecode.lambdaj</groupId>
+                <artifactId>lambdaj</artifactId>
+                <version>${com.googlecode.lambdaj.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+
+            <!--
+                Description   : VelocityTools is an integrated collection of Velocity sub-projects with the common goal
+                                of creating tools and infrastructure to speed and ease development of
+                                both web and non-web applications using the Velocity template engine.
+                Official URL  : http://velocity.apache.org/tools/devel/
+                Maven Repo URL: http://mvnrepository.com/artifact/velocity
+            -->
+
+            <!--
+                Description   : Apache Velocity is a general purpose template engine.
+                Official URL  : http://velocity.apache.org/
+                Maven Repo URL: http://mvnrepository.com/artifact/velocity
+            -->
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${org.apache.velocity.version}</version>
+            </dependency>
+
+            <!--
+                Description   : the flexible XML framework for Java
+                Official URL  : http://dom4j.sourceforge.net/
+                Maven Repo URL: http://mvnrepository.com/artifact/dom4j
+            -->
+
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>${jaxen.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <encoding>UTF-8</encoding>
+                        <optimize>false</optimize>
+                        <debug>true</debug>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
+                <version>${assertj-assertions-generator-maven-plugin.version}</version>
+                <configuration>
+                    <classes>
+                        <param>org.openqa.selenium.WebDriver.Options</param>
+                    </classes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>jframeworkSnapshots</id>-->
+            <!--<name>JFramefork Repository Snapshots</name>-->
+            <!--<releases>-->
+                <!--<enabled>false</enabled>-->
+                <!--<updatePolicy>always</updatePolicy>-->
+                <!--<checksumPolicy>warn</checksumPolicy>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+                <!--<updatePolicy>never</updatePolicy>-->
+                <!--<checksumPolicy>fail</checksumPolicy>-->
+            <!--</snapshots>-->
+           <!--<layout>default</layout>-->
+            <!--<url>/Users/solmarkn/.m2/repository</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
+
+    <scm>
+        <url>https://github.com/daniv/JFramework.git</url>
+        <connection>scm:git:git://github.com/daniv/JFramework.git</connection>
+        <tag>HEAD</tag>
+        <developerConnection>scm:git:git@github.com:daniv/JFramework.git</developerConnection>
+    </scm>
+
+</project>
