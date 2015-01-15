@@ -43,8 +43,6 @@ public enum MenuItems
 	// menu item Explore -> Destinations ( on UK under Learn )
 	DESTINATIONS ( "Destinations" ),
 
-	DESTINATIONS0 ( "Destinations" ),
-
 	// menu item Explore -> Onboard activities
 	ONBOARD_ACTIVITIES ( "Onboard Activities" ),
 

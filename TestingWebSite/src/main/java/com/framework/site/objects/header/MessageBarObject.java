@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Time   : 23:11
  */
 
-public class MessageBarObject extends AbstractWebObject implements Header.MessageBar
+class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 {
 
 	//region HeaderObject - Variables Declaration and Initialization Section.
@@ -42,7 +42,7 @@ public class MessageBarObject extends AbstractWebObject implements Header.Messag
 
 	//region HeaderObject - Constructor Methods Section
 
-	public MessageBarObject( WebDriver driver,  final WebElement rootElement )
+	MessageBarObject( WebDriver driver,  final WebElement rootElement )
 	{
 		super( LOGICAL_NAME, driver, rootElement );
 	}

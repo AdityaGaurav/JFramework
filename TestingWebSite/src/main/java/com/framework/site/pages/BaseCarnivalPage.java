@@ -7,7 +7,7 @@ import com.framework.driver.objects.AbstractPageObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.objects.footer.FooterObject;
 import com.framework.site.objects.footer.interfaces.Footer;
-import com.framework.site.objects.header.HeaderObject;
+import com.framework.site.objects.header.SectionHeaderObject;
 import com.framework.site.objects.header.interfaces.Header;
 import com.google.common.base.MoreObjects;
 import org.openqa.selenium.WebDriver;
@@ -136,7 +136,7 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	{
 		if ( null == this.header )
 		{
-			this.header = new HeaderObject( pageDriver, pageDriver.findElement( Header.ROOT_BY ) );
+			this.header = new SectionHeaderObject( pageDriver, pageDriver.findElement( Header.ROOT_BY ) );
 		}
 		return header;
 	}

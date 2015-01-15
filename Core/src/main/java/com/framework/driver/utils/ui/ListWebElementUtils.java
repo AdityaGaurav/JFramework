@@ -65,12 +65,26 @@ public class ListWebElementUtils
 	//todo: documentation
 	public static List<Link> convertToLink( final WebDriver driver, List<WebElement> list )
 	{
-		Converter<WebElement,Link> converter = new Converter<WebElement, Link>()
+		Converter<WebElement,Link> converter = new Converter<WebElement,Link>()
 		{
 			@Override
 			public Link convert( final WebElement from )
 			{
 				return new Link( driver, from );
+			}
+		};
+
+		return convert( list, converter );
+	}
+
+	public static List<WebElement> convertToLinkToWebElement( List<Link> list )
+	{
+		Converter<Link,WebElement> converter = new Converter<Link,WebElement>()
+		{
+			@Override
+			public WebElement convert( final Link from )
+			{
+				return from.getWrappedElement();
 			}
 		};
 
@@ -91,6 +105,5 @@ public class ListWebElementUtils
 		return convert( list, converter );
 
 	}
-
 
 }

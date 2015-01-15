@@ -30,7 +30,7 @@ import java.util.List;
  * Time   : 15:43
  */
 
-public class TopDestinationsObject extends HeaderBrandingObject implements Header.HeaderBranding.TopDestinations
+class TopDestinationsObject extends HeaderBrandingObject implements Header.HeaderBranding.TopDestinations
 {
 
 	//region TopDestinationsObject - Variables Declaration and Initialization Section.
@@ -42,7 +42,7 @@ public class TopDestinationsObject extends HeaderBrandingObject implements Heade
 
 	//region TopDestinationsObject - Constructor Methods Section
 
-	public TopDestinationsObject( WebDriver driver, final WebElement rootElement )
+	TopDestinationsObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( TopDestinations.LOGICAL_NAME, driver, rootElement );
 	}

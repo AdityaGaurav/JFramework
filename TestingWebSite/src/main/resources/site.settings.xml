@@ -46,10 +46,11 @@
         <property name="browserType">
             <util:constant static-field="org.openqa.selenium.remote.BrowserType.FIREFOX" />
         </property>
+        <property name="testCasePattern" value="(TC-ID:[0-9]{5})"/>
         <property name="domains">
             <props>
                 <prop key="us.prod">${us.prod.url}</prop>
-                <prop key="us.sys1"></prop>
+                <prop key="us.sys1">${us.sys1.url}</prop>
                 <prop key="us.sys3"></prop>
                 <prop key="us.uat2">${us.uat2.url}</prop>
                 <prop key="us.stg2"></prop>

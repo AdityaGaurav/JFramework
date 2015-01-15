@@ -56,7 +56,7 @@ import static com.framework.matchers.MatcherUtils.equalToIgnoringCase;
  * Time   : 11:28
  */
 
-public class NavigationAdditionalObject extends AbstractWebObject implements Header.NavigationAdditional
+class NavigationAdditionalObject extends AbstractWebObject implements Header.NavigationAdditional
 {
 
 	//region NavigationAdditionalObject - Variables Declaration and Initialization Section.
@@ -70,7 +70,7 @@ public class NavigationAdditionalObject extends AbstractWebObject implements Hea
 
 	//region NavigationAdditionalObject - Constructor Methods Section
 
-	public NavigationAdditionalObject( WebDriver driver,  final WebElement rootElement )
+	NavigationAdditionalObject( WebDriver driver,  final WebElement rootElement )
 	{
 		super( LOGICAL_NAME, driver, rootElement );
 	}
@@ -186,8 +186,12 @@ public class NavigationAdditionalObject extends AbstractWebObject implements Hea
 				case CARIBBEAN			: return new UKCaribbeanPage( objectDriver );
 				case WHATS_INCLUDED 	:
 				case ON_THE_SHIP		:
-				case DESTINATIONS0		: return new BeginnersGuidePage( objectDriver );
-				case DESTINATIONS		: return new CruiseToPage( objectDriver );
+				case DESTINATIONS		:
+				{
+					Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
+					if( locale.equals( Locale.UK ) ) return new BeginnersGuidePage( objectDriver );
+					if( locale.equals( Locale.US ) ) return new CruiseToPage( objectDriver );
+				}
 				case ONBOARD_ACTIVITIES : return new OnboardActivitiesPage( objectDriver );
 				case DINING				: return new DiningPage( objectDriver );
 				case ACCOMMODATIONS 	: return new StateRoomsPage( objectDriver );
@@ -274,6 +278,8 @@ public class NavigationAdditionalObject extends AbstractWebObject implements Hea
 
 		try
 		{
+			// if ( menuItemHaveException( menuItem ) ) return null;  // exception on locale + menu item name
+
 			List<WebElement> elements = ListWebElementUtils.extractWebElement( links );
 			JAssertions.assertWaitThat( wait5 ).matchesCondition( WaitUtil.visibilityOfAll( elements, true ) );
 
@@ -291,6 +297,7 @@ public class NavigationAdditionalObject extends AbstractWebObject implements Hea
 
 			Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
 			String key = menuItem.getBundleKey( menuItem );
+			logger.debug( "key for menu-item <\"{}\"> is <\"{}\">", menuItem.getTitle(), key );
 
 			final String BEFORE_HOVER =
 					( String ) AppContextProxy.getInstance().getMessage( key, new Object[] { StringUtils.EMPTY }, locale );
@@ -370,7 +377,11 @@ public class NavigationAdditionalObject extends AbstractWebObject implements Hea
 
 	//region NavigationAdditionalObject - Private Functions Section
 
-
+//	private boolean menuItemHaveException( MenuItems menuItem )
+//	{
+//		Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
+//		return menuItem.equals( MenuItems.DESTINATIONS0 ) && ( ! locale.equals( Locale.UK ) );
+//	}
 
 	//endregion
 

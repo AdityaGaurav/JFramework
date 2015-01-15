@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Time   : 23:11
  */
 
-public class NotificationBarObject extends AbstractWebObject implements Header.NotificationBar
+class NotificationBarObject extends AbstractWebObject implements Header.NotificationBar
 {
 
 	//region HeaderObject - Variables Declaration and Initialization Section.
@@ -42,7 +42,7 @@ public class NotificationBarObject extends AbstractWebObject implements Header.N
 
 	//region HeaderObject - Constructor Methods Section
 
-	public NotificationBarObject( WebDriver driver, final WebElement rootElement )
+	NotificationBarObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( LOGICAL_NAME, driver, rootElement );
 	}
@@ -117,6 +117,7 @@ public class NotificationBarObject extends AbstractWebObject implements Header.N
 
 
 	//region HeaderObject - Element Finder Methods Section
+
 
 	//endregion
 

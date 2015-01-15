@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
  * Time   : 23:11
  */
 
-public class HeaderObject extends AbstractWebObject implements Header
+public class SectionHeaderObject extends AbstractWebObject implements Header
 {
 
-	//region HeaderObject - Variables Declaration and Initialization Section.
+	//region HeaderSectionObject - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( HeaderObject.class );
+	private static final Logger logger = LoggerFactory.getLogger( SectionHeaderObject.class );
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -55,9 +55,9 @@ public class HeaderObject extends AbstractWebObject implements Header
 	//endregion
 
 
-	//region HeaderObject - Constructor Methods Section
+	//region HeaderSectionObject - Constructor Methods Section
 
-	public HeaderObject( WebDriver driver, final WebElement rootElement )
+	public SectionHeaderObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( Header.LOGICAL_NAME, driver, rootElement );
 	}
@@ -65,7 +65,7 @@ public class HeaderObject extends AbstractWebObject implements Header
 	//endregion
 
 
-	//region HeaderObject - Initialization and Validation Methods Section
+	//region HeaderSectionObject - Initialization and Validation Methods Section
 
 	@Override
 	protected void initWebObject()
@@ -95,7 +95,7 @@ public class HeaderObject extends AbstractWebObject implements Header
 	//endregion
 
 
-	//region HeaderObject - Service Methods Section
+	//region HeaderSectionObject - Service Methods Section
 
 	@Override
 	public String toString()
@@ -186,19 +186,19 @@ public class HeaderObject extends AbstractWebObject implements Header
 		catch ( StaleElementReferenceException ex )
 		{
 			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( HeaderObject.ROOT_BY );
+			return objectDriver.findElement( SectionHeaderObject.ROOT_BY );
 		}
 	}
 
 	//endregion
 
 
-	//region HeaderObject - Business Methods Section
+	//region HeaderSectionObject - Business Methods Section
 
 	//endregion
 
 
-	//region HeaderObject - Element Finder Methods Section
+	//region HeaderSectionObject - Element Finder Methods Section
 
 	private WebElement findMessageBarDiv()
 	{

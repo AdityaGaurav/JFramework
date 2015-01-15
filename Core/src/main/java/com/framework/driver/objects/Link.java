@@ -3,9 +3,9 @@ package com.framework.driver.objects;
 import com.framework.asserts.JAssertions;
 import com.framework.driver.event.EventWebDriver;
 import com.framework.driver.exceptions.PreConditionException;
-import com.framework.driver.utils.CSS2Properties;
 import com.framework.driver.utils.PreConditions;
 import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.utils.web.CSS2Properties;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -115,7 +115,7 @@ public class Link extends AbstractElementObject
 	 *
 	 * @param validateDecoration {@code true} to make a text-decoration validation
 	 *
-	 * @see com.framework.driver.utils.CSS2Properties
+	 * @see com.framework.utils.web.CSS2Properties
 	 */
 	public void hover( boolean validateDecoration )
 	{

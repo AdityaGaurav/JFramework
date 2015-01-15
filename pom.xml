@@ -72,6 +72,7 @@
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <dom4j.version>1.6.1</dom4j.version><!-- last updated 12-Jan-2015 -->
         <jaxen.version>1.1.6</jaxen.version><!-- last updated 12-Jan-2015 -->
+        <ch.qos.logback.classic.version>1.1.2</ch.qos.logback.classic.version><!-- last updated 13-Jan-2015 -->
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven.version>2.0.6</maven.version>
@@ -81,20 +82,32 @@
     </properties>
 
     <dependencies>
-        <!--
-        Description    : The Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction for various logging frameworks.
-        Official URL   : http://www.slf4j.org/
-        Maven Repo URL : http://mvnrepository.com/artifact/org.slf4j
-        -->
+        <!--&lt;!&ndash;-->
+        <!--Description    : The Simple Logging Facade for Java (SLF4J) serves as a simple facade or abstraction for various logging frameworks.-->
+        <!--Official URL   : http://www.slf4j.org/-->
+        <!--Maven Repo URL : http://mvnrepository.com/artifact/org.slf4j-->
+        <!--&ndash;&gt;-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j.version}</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-log4j12</artifactId>-->
+            <!--<version>${org.slf4j.version}</version>-->
+        <!--</dependency>-->
+
+        <!--
+    Description: Logback is intended as a successor to the popular log4j project.
+    Official Web Site: http://logback.qos.ch/
+    Maven Repo: http://mvnrepository.com/artifact/ch.qos.logback
+-->
+
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${org.slf4j.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.classic.version}</version>
         </dependency>
     </dependencies>
 
@@ -308,6 +321,13 @@
                 <artifactId>dom4j</artifactId>
                 <version>${dom4j.version}</version>
             </dependency>
+
+            <!--
+                Description: Jaxen is a universal Java XPath engine
+
+                Maven Repo: http://mvnrepository.com/artifact/jaxen
+            -->
+
             <dependency>
                 <groupId>jaxen</groupId>
                 <artifactId>jaxen</artifactId>

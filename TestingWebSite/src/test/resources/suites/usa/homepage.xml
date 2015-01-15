@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="US Locale Suite" parallel="false">
+
+    <listeners>
+        <listener class-name="com.framework.listeners.CarnivalTestListener" />
+    </listeners>
+
+
+    <parameter name="current-locale" value="US"/>
+    <parameter name="current-environment" value="PROD"/>
+    <parameter name="browser-type" value="firefox"/>
+
+    <test verbose="1" name="home-page" annotations="JDK" enabled="true">
+        <groups>
+            <run>
+                <include name="US"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.framework.test.HomePageTest">
+                <methods>
+                    <exclude name="homePage_InitialState_TitleAndUrl_Test"/>
+                    <exclude name="homePage_InitialState_Header_Test"/>
+                    <include name="homePage_SubMenu_US_Test"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
