@@ -70,7 +70,7 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 
 	//region NavigationAdditionalObject - Constructor Methods Section
 
-	NavigationAdditionalObject( WebDriver driver,  final WebElement rootElement )
+	NavigationAdditionalObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( LOGICAL_NAME, driver, rootElement );
 	}
@@ -134,10 +134,16 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	 */
 	public List<Link> getChildMenuItems( LevelOneMenuItem item )
 	{
+		WebDriverWait wait10 = WaitUtil.wait10( objectDriver );
+
 		try
 		{
 			this.levelOne = item.getTitle().toLowerCase();
 			List<WebElement> anchors = findChildFlyoutAnchors( item );
+
+			/* Waiting for all elements to be visible first */
+
+			wait10.until( WaitUtil.visibilityOfAll( anchors, true ) );
 			return ListWebElementUtils.convertToLink( objectDriver, anchors );
 		}
 		catch ( Throwable ae )
