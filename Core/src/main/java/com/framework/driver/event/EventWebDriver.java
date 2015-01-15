@@ -1,5 +1,7 @@
 package com.framework.driver.event;
 
+import com.framework.driver.exceptions.PreConditionException;
+import com.framework.driver.utils.PreConditions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -105,19 +107,12 @@ public final class EventWebDriver implements WebDriver, WrapsDriver, HasCapabili
 				{
 					public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
 					{
-						String joiner = null;
-						if( null != args )
-						{
-							joiner = Joiner.on( "," ).join( args );
-						}
 						if ( "getWrappedDriver".equals( method.getName() ) )
 						{
 							return delegate;
 						}
 						try
 						{
-							//logger.debug( "invoking method \"{}\" with args [{}]",
-							//		method.getName(), StringUtils.defaultString( joiner, "N/A" ) );
 							return method.invoke( delegate, args );
 						}
 						catch ( InvocationTargetException e )
@@ -495,16 +490,23 @@ public final class EventWebDriver implements WebDriver, WrapsDriver, HasCapabili
 	 * @param url The URL to load. It is best to use a fully qualified URL
 	 *
 	 * @see org.openqa.selenium.WebDriver#get(String)
-	 * @see java.util.EventListener#beforeNavigateTo(String, org.openqa.selenium.WebDriver)
-	 * @see java.util.EventListener#afterNavigateTo(String, org.openqa.selenium.WebDriver)
 	 */
 	@Override
 	public void get( String url )
 	{
-		WebDriver drv = getWrappedDriver();
-		dispatcher.beforeNavigateTo( url, drv );
-		delegate.get( url );
-		dispatcher.afterNavigateTo( url, drv );
+		try
+		{
+			PreConditions.checkNotNullNotBlankOrEmpty( url, "URL is either null blank or empty" );
+			WebDriver drv = getWrappedDriver();
+			dispatcher.beforeNavigateTo( url, drv );
+			delegate.get( url );
+			dispatcher.afterNavigateTo( url, drv );
+		}
+		catch ( NullPointerException | IllegalArgumentException npEx )
+		{
+			logger.error( "throwing a new PreConditionException on {}#get.", getClass().getSimpleName() );
+			throw new PreConditionException( npEx.getMessage(), npEx );
+		}
 	}
 
 	/**
@@ -523,8 +525,6 @@ public final class EventWebDriver implements WebDriver, WrapsDriver, HasCapabili
 	 * @throws org.openqa.selenium.NoSuchElementException If no matching elements are found
 	 * @see org.openqa.selenium.By
 	 * @see org.openqa.selenium.WebDriver.Timeouts
-	 * @see java.util.EventListener#beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-	 * @see java.util.EventListener#afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 	 */
 	@Override
 	public WebElement findElement( By by )
@@ -552,8 +552,6 @@ public final class EventWebDriver implements WebDriver, WrapsDriver, HasCapabili
 	 * @see org.openqa.selenium.By
 	 * @see org.openqa.selenium.WebDriver.Timeouts
 	 * @see org.openqa.selenium.WebDriver#findElements(org.openqa.selenium.By)
-	 * @see java.util.EventListener#beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-	 * @see java.util.EventListener#afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 	 */
 	@Override
 	public List<WebElement> findElements( By by )
@@ -1609,12 +1607,12 @@ public final class EventWebDriver implements WebDriver, WrapsDriver, HasCapabili
 		 * to access the desired values.
 		 * </p>
 		 *
-		 * @param propertyName the css property name. can be helped using {@link com.framework.driver.utils.CSS2Properties}
+		 * @param propertyName the css property name. can be helped using {@link com.framework.utils.web.CSS2Properties}
 		 *
 		 * @return The current, computed value of the property.
 		 *
 		 * @see org.openqa.selenium.WebElement#getCssValue(String)
-		 * @see com.framework.driver.utils.CSS2Properties
+		 * @see com.framework.utils.web.CSS2Properties
 		 */
 		@Override
 		public String getCssValue( String propertyName )

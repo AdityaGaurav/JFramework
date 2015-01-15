@@ -39,7 +39,7 @@ import static com.framework.matchers.MatcherUtils.containsString;
  * Time   : 11:34
  */
 
-public class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
+class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 {
 
 	//region HeaderLinksObject - Variables Declaration and Initialization Section.
@@ -55,7 +55,7 @@ public class HeaderLinksObject extends AbstractWebObject implements Header.Heade
 
 	//region HeaderLinksObject - Constructor Methods Section
 
-	public HeaderLinksObject( WebDriver driver, final WebElement rootElement )
+	HeaderLinksObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( Header.HeaderLinks.LOGICAL_NAME, driver, rootElement );
 	}

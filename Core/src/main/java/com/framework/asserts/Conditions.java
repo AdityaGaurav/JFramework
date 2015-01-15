@@ -21,7 +21,7 @@ import org.openqa.selenium.WebElement;
 
 public class Conditions
 {
-
+	@Deprecated
 	public static final Condition<WebElement> elementIsVisible = new Condition<WebElement>()
 	{
 		@Override
@@ -31,6 +31,7 @@ public class Conditions
 		}
 	};
 
+	@Deprecated
 	public static final Condition<Link> linkIsVisible = new Condition<Link>()
 	{
 		@Override

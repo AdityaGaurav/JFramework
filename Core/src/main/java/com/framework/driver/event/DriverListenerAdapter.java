@@ -423,12 +423,19 @@ public class DriverListenerAdapter extends AbstractEventListener
 	@Override
 	public void onException( final Throwable throwable, final WebDriver driver )
 	{
-		final String cu = driver.getCurrentUrl();
-		String causeMessage = StringUtils.split( throwable.getCause().getMessage(), "\n" )[0];
+		if( ! ( throwable instanceof StaleElementReferenceException ) )
+		{
+			final String cu = driver.getCurrentUrl();
 
-		( ( WebDriverException ) throwable ).addInfo( "Screenshot file", "ffffrkforofoowofoworfoirofowrof" );
-		logger.error( "exception was thrown on \"{}\"\ncausing message -> {}", cu, causeMessage );  //todo: implement screenshot
+			String causeMessage = StringUtils.split( throwable.getCause().getMessage(), "\n" )[0];
 
+			( ( WebDriverException ) throwable ).addInfo( "Screenshot file", "ffffrkforofoowofoworfoirofowrof" );
+			logger.error( "exception was thrown on \"{}\"\ncausing message -> {}", cu, causeMessage );  //todo: implement screenshot
+		}
+		else
+		{
+			logger.warn( "StaleElementReferenceException was ignored." );
+		}
 		//Screenshot screenshot = new Screenshot( driver, "/Users/solmarkn/IdeaProjects/WebDriverTestNg/Screenshots" );
 		//String outputFile = screenshot.takeScreenshot();
 		//logger.error( "screenshot file -> {}", outputFile );

@@ -31,7 +31,7 @@ import java.util.NoSuchElementException;
  * Time   : 15:43
  */
 
-public class CurrencySelectorObject extends HeaderBrandingObject implements Header.HeaderBranding.CurrencySelector
+class CurrencySelectorObject extends HeaderBrandingObject implements Header.HeaderBranding.CurrencySelector
 {
 
 	//region TopDestinationsObject - Variables Declaration and Initialization Section.
@@ -43,7 +43,7 @@ public class CurrencySelectorObject extends HeaderBrandingObject implements Head
 
 	//region TopDestinationsObject - Constructor Methods Section
 
-	public CurrencySelectorObject( WebDriver driver, final WebElement rootElement )
+	CurrencySelectorObject( WebDriver driver, final WebElement rootElement )
 	{
 		super( CurrencySelector.LOGICAL_NAME, driver, rootElement );
 	}

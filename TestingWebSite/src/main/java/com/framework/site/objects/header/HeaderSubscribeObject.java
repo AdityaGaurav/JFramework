@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Time   : 10:08
  */
 
-public class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSubscribe
+class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSubscribe
 {
 
 	//region HeaderSubscribeObject - Variables Declaration and Initialization Section.

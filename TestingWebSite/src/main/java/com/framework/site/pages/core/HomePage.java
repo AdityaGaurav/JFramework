@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 
 /**
@@ -87,9 +86,8 @@ public class HomePage extends CarnivalPage
 			logger.debug( "runtime property value for environment is -> {}", expectedEnvironment.name() );
 
 			String countryCode = expectedLocale.getCountry().equals( "GB" ) ? "UK" :  expectedLocale.getCountry();
-			Map environments = ( Map ) AppContextProxy.getInstance().getBean( "domains" + countryCode );
 
-			final String EXPECTED_ENV_URL = ( String ) environments.get( expectedEnvironment );
+			final String EXPECTED_ENV_URL = InitialPage.getInstance().getInitialUrl();
 			final String EXPECTED_TITLE = ( String ) AppContextProxy.getInstance().getMessage( "home.page.title", null, expectedLocale );
 			expectedCondition = WaitUtil.urlMatches( MatcherUtils.equalToIgnoringCase( EXPECTED_ENV_URL ) );
 

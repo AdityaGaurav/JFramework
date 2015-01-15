@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.framework.driver.utils;
+package com.framework.utils.web;
 
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
@@ -39,13 +39,13 @@ public enum CSS2Properties
 	BACKGROUND( "background" ),
 
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-attachment">propdef-background-attachment</a> */
-	BACKGROUND_ATTACHMENT( "backgroundAttachment" ),
+	BACKGROUND_ATTACHMENT( "background-attachment" ),
 
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-color">propdef-background-color</a> */
-	BACKGROUND_COLOR( "backgroundColor" ),
+	BACKGROUND_COLOR( "background-color" ),
 
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-image">propdef-background-image</a> */
-	BACKGROUND_IMAGE( "backgroundImage" ),
+	BACKGROUND_IMAGE( "background-image" ),
 
 	/**
 	 * <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-position">propdef-background-position</a>
@@ -53,79 +53,79 @@ public enum CSS2Properties
 	 * <p/>
 	 * /** <a href=""></a>
 	 */
-	BACKGROUND_REPEAT( "backgroundRepeat" ),
+	BACKGROUND_REPEAT( "background-repeat" ),
 
 	/** <a href=""></a> */
 	BORDER( "border" ),
 
 	/** <a href=""></a> */
-	BORDER_BOTTOM( "borderBottom" ),
+	BORDER_BOTTOM( "border-bottom" ),
 
 	/** <a href=""></a> */
-	BORDER_BOTTOM_COLOR( "borderBottomColor" ),
+	BORDER_BOTTOM_COLOR( "border-bottom-color" ),
 
 	/** <a href=""></a> */
-	BORDER_BOTTOM_STYLE( "borderBottomStyle" ),
+	BORDER_BOTTOM_STYLE( "border-bottom-style" ),
 
 	/** <a href=""></a> */
-	BORDER_BOTTOM_WIDTH( "borderBottomWidth" ),
+	BORDER_BOTTOM_WIDTH( "border-bottom-width" ),
 
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/tables.html#propdef-border-collapse">propdef-border-collapse</a> */
-	BORDER_COLLAPSE( "borderCollapse" ),
+	BORDER_COLLAPSE( "border-collapse" ),
 
 	/** <a href=""></a> */
-	BORDER_COLOR( "borderColor" ),
+	BORDER_COLOR( "border-color" ),
 
 	/** <a href=""></a> */
-	BORDER_LEFT( "borderLeft" ),
+	BORDER_LEFT( "border-left" ),
 
 	/** <a href=""></a> */
-	BORDER_LEFT_COLOR( "borderLeftColor" ),
+	BORDER_LEFT_COLOR( "border-left-color" ),
 
 	/** <a href=""></a> */
-	BORDER_LEFT_STYLE( "borderLeftStyle" ),
+	BORDER_LEFT_STYLE( "border-left-style" ),
 
 	/** <a href=""></a> */
-	BORDER_LEFT_WIDTH( "borderLeftWidth" ),
+	BORDER_LEFT_WIDTH( "border-left-width" ),
 
 	/** <a href=""></a> */
-	BORDER_RIGHT( "borderRight" ),
+	BORDER_RIGHT( "border-right" ),
 
 	/** <a href=""></a> */
-	BORDER_RIGHT_COLOR( "borderRightColor" ),
+	BORDER_RIGHT_COLOR( "border-right-color" ),
 
 	/** <a href=""></a> */
-	BORDER_RIGHT_STYLE( "borderRightStyle" ),
+	BORDER_RIGHT_STYLE( "border-right-style" ),
 
 	/** <a href=""></a> */
-	BORDER_RIGHT_WIDTH( "borderRightWidth" ),
+	BORDER_RIGHT_WIDTH( "border-right-width" ),
 
 	/** <a href=""></a> */
-	BORDER_SPACING( "borderSpacing" ),
+	BORDER_SPACING( "border-spacing" ),
 
 	/** <a href=""></a> */
-	BORDER_STYLE( "borderStyle" ),
+	BORDER_STYLE( "border-style" ),
 
 	/** <a href=""></a> */
-	BORDER_TOP( "borderTop" ),
+	BORDER_TOP( "border-top" ),
 
 	/** <a href=""></a> */
-	BORDER_TOP_COLOR( "borderTopColor" ),
+	BORDER_TOP_COLOR( "border-top-color" ),
 
 	/** <a href=""></a> */
-	BORDER_TOP_STYLE( "borderTopStyle" ),
+	BORDER_TOP_STYLE( "border-top-style" ),
 
 	/** <a href=""></a> */
-	BORDER_TOP_WIDTH( "borderTopWidth" ),
+	BORDER_TOP_WIDTH( "border-top-width" ),
 
 	/** <a href=""></a> */
-	BORDER_WIDTH( "borderWidth" ),
+	BORDER_WIDTH( "border-width" ),
 
 	/** <a href=""></a> */
 	BOTTOM( "bottom" ),
 
 	/** <a href=""></a> */
-	CAPTION_SIDE( "captionSide" ),
+	CAPTION_SIDE( "caption-side" ),
 
 	/** <a href=""></a> */
 	CLEAR( "clear" ),
@@ -140,22 +140,22 @@ public enum CSS2Properties
 	CONTENT( "content" ),
 
 	/** <a href=""></a> */
-	COUNTER_INCREMENT( "counterIncrement" ),
+	COUNTER_INCREMENT( "counter-increment" ),
 
 	/** <a href=""></a> */
-	COUNTER_RESET( "counterReset" ),
+	COUNTER_RESET( "counter-reset" ),
 
 	/** <a href=""></a> */
 	CUE( "cue" ),
 
 	/** <a href=""></a> */
-	CSS_FLOAT( "cssFloat" ),
+	CSS_FLOAT( "css-float" ),
 
 	/** <a href=""></a> */
-	CUE_AFTER( "cueAfter" ),
+	CUE_AFTER( "cue-after" ),
 
 	/** <a href=""></a> */
-	CUE_BEFORE( "cueBefore" ),
+	CUE_BEFORE( "cue-before" ),
 
 	/** <a href=""></a> */
 	CURSOR( "cursor" ),
@@ -170,31 +170,31 @@ public enum CSS2Properties
 	ELEVATION( "elevation" ),
 
 	/** <a href=""></a> */
-	EMPTY_CELLS( "emptyCells" ),
+	EMPTY_CELLS( "empty-cells" ),
 
 	/** <a href=""></a> */
 	FONT( "font" ),
 
 	/** <a href=""></a> */
-	FONT_FAMILY( "fontFamily" ),
+	FONT_FAMILY( "font-family" ),
 
 	/** <a href=""></a> */
-	FONT_SIZE( "fontSize" ),
+	FONT_SIZE( "font-size" ),
 
 	/** <a href=""></a> */
-	FONT_SIZE_ADJUST( "fontSizeAdjust" ),
+	FONT_SIZE_ADJUST( "font-size-adjust" ),
 
 	/** <a href=""></a> */
-	FONT_STRETCH( "fontStretch" ),
+	FONT_STRETCH( "font-stretch" ),
 
 	/** <a href=""></a> */
-	FONT_STYLE( "fontStyle" ),
+	FONT_STYLE( "font-style" ),
 
 	/** <a href=""></a> */
-	FONT_VARIANT( "fontVariant" ),
+	FONT_VARIANT( "font-variant" ),
 
 	/** <a href=""></a> */
-	FONT_WEIGHT( "fontWeight" ),
+	FONT_WEIGHT( "font-weight" ),
 
 	/** <a href=""></a> */
 	HEIGHT( "height" ),
@@ -203,55 +203,55 @@ public enum CSS2Properties
 	LEFT( "left" ),
 
 	/** <a href=""></a> */
-	LETTER_SPACING( "letterSpacing" ),
+	LETTER_SPACING( "letter-spacing" ),
 
 	/** <a href=""></a> */
-	LINE_HEIGHT( "lineHeight" ),
+	LINE_HEIGHT( "line-height" ),
 
 	/** <a href=""></a> */
-	LIST_STYLE( "listStyle" ),
+	LIST_STYLE( "list-style" ),
 
 	/** <a href=""></a> */
-	LIST_STYLE_IMAGE( "listStyleImage" ),
+	LIST_STYLE_IMAGE( "list-style-image" ),
 
 	/** <a href=""></a> */
-	LIST_STYLE_POSITION( "listStylePosition" ),
+	LIST_STYLE_POSITION( "list-style-position" ),
 
 	/** <a href=""></a> */
-	LIST_STYLE_TYPE( "listStyleType" ),
+	LIST_STYLE_TYPE( "list-style-type" ),
 
 	/** <a href=""></a> */
 	MARGIN( "margin" ),
 
 	/** <a href=""></a> */
-	MARGIN_BOTTOM( "marginBottom" ),
+	MARGIN_BOTTOM( "margin-bottom" ),
 
 	/** <a href=""></a> */
-	MARGIN_LEFT( "marginLeft" ),
+	MARGIN_LEFT( "margin-left" ),
 
 	/** <a href=""></a> */
-	MARGIN_RIGHT( "marginRight" ),
+	MARGIN_RIGHT( "margin-right" ),
 
 	/** <a href=""></a> */
-	MARGIN_TOP( "marginTop" ),
+	MARGIN_TOP( "margin-top" ),
 
 	/** <a href=""></a> */
-	MARKER_OFFSET( "markerOffset" ),
+	MARKER_OFFSET( "marker-offset" ),
 
 	/** <a href=""></a> */
 	MARKS( "marks" ),
 
 	/** <a href=""></a> */
-	MAX_HEIGHT( "maxHeight" ),
+	MAX_HEIGHT( "max-height" ),
 
 	/** <a href=""></a> */
-	MAX_WIDTH( "maxWidth" ),
+	MAX_WIDTH( "max-width" ),
 
 	/** <a href=""></a> */
-	MIN_HEIGHT( "minHeight" ),
+	MIN_HEIGHT( "min-height" ),
 
 	/** <a href=""></a> */
-	MIN_WIDTH( "minWidth" ),
+	MIN_WIDTH( "min-width" ),
 
 	/** <a href=""></a> */
 	ORPHANS( "orphans" ),
@@ -263,10 +263,10 @@ public enum CSS2Properties
 	OUTLINE_COLOR( "outline" ),
 
 	/** <a href=""></a> */
-	OUTLINE_STYLE( "outlineStyle" ),
+	OUTLINE_STYLE( "outline-style" ),
 
 	/** <a href=""></a> */
-	OUTLINE_WIDTH( "outlineWidth" ),
+	OUTLINE_WIDTH( "outline-width" ),
 
 	/** <a href=""></a> */
 	OVERFLOW( "overflow" ),
@@ -275,46 +275,46 @@ public enum CSS2Properties
 	PADDING( "padding" ),
 
 	/** <a href=""></a> */
-	PADDING_BOTTOM( "paddingBottom" ),
+	PADDING_BOTTOM( "padding-bottom" ),
 
 	/** <a href=""></a> */
-	PADDING_LEFT( "paddingLeft" ),
+	PADDING_LEFT( "padding-left" ),
 
 	/** <a href=""></a> */
-	PADDING_RIGHT( "paddingRight" ),
+	PADDING_RIGHT( "padding-right" ),
 
 	/** <a href=""></a> */
-	PADDING_TOP( "paddingTop" ),
+	PADDING_TOP( "padding-top" ),
 
 	/** <a href=""></a> */
 	PAGE( "page" ),
 
 	/** <a href=""></a> */
-	PAGE_BREAK_AFTER( "pageBreakAfter" ),
+	PAGE_BREAK_AFTER( "page-break-after" ),
 
 	/** <a href=""></a> */
-	PAGE_BREAK_BEFORE( "pageBreakBefore" ),
+	PAGE_BREAK_BEFORE( "page-break-before" ),
 
 	/** <a href=""></a> */
-	PAGE_BREAK_INSIDE( "pageBreakInside" ),
+	PAGE_BREAK_INSIDE( "page-break-inside" ),
 
 	/** <a href=""></a> */
 	PAUSE( "pause" ),
 
 	/** <a href=""></a> */
-	PAUSE_AFTER( "pauseAfter" ),
+	PAUSE_AFTER( "pause-after" ),
 
 	/** <a href=""></a> */
-	PAUSE_BEFORE( "pauseBefore" ),
+	PAUSE_BEFORE( "pause-before" ),
 
 	/** <a href=""></a> */
 	PITCH( "pitch" ),
 
 	/** <a href=""></a> */
-	PITCH_RANGE( "pitchRange" ),
+	PITCH_RANGE( "pitch-range" ),
 
 	/** <a href=""></a> */
-	PLAY_DURING( "playDuring" ),
+	PLAY_DURING( "play-during" ),
 
 	/** <a href=""></a> */
 	POSITION( "position" ),
@@ -332,13 +332,13 @@ public enum CSS2Properties
 	SPEAK( "speak" ),
 
 	/** <a href=""></a> */
-	SPEAK_HEADER( "speakHeader" ),
+	SPEAK_HEADER( "speak-header" ),
 
 	/** <a href=""></a> */
-	SPEAK_NUMERAL( "speakNumeral" ),
+	SPEAK_NUMERAL( "speak-numeral" ),
 
 	/** <a href=""></a> */
-	SPEAK_PUNCTUATION( "speakPunctuation" ),
+	SPEAK_PUNCTUATION( "speak-punctuation" ),
 
 	/** <a href=""></a> */
 	SPEECH_RATE( "speechRate" ),
@@ -347,7 +347,7 @@ public enum CSS2Properties
 	STRESS( "stress" ),
 
 	/** <a href=""></a> */
-	TABLE_LAYOUT( "tableLayout" ),
+	TABLE_LAYOUT( "table-layout" ),
 
 	/** <a href=""></a> */
 	TEXT_ALIGN( "text-align" ),
@@ -356,34 +356,34 @@ public enum CSS2Properties
 	TEXT_DECORATION( "text-decoration" ),
 
 	/** <a href=""></a> */
-	textIndent( "textIndent" ),
+	textIndent( "text-indent" ),
 
 	/** <a href=""></a> */
-	TEXT_SHADOW( "textShadow" ),
+	TEXT_SHADOW( "text-shadow" ),
 
 	/** <a href=""></a> */
-	TEXT_TRANSFORM( "textTransform" ),
+	TEXT_TRANSFORM( "text-transform" ),
 
 	/** <a href=""></a> */
 	TOP( "top" ),
 
 	/** <a href=""></a> */
-	UNICODE_BIDI( "unicodeBidi" ),
+	UNICODE_BIDI( "unicode-bidi" ),
 
 	/** <a href=""></a> */
-	VERTICAL_ALIGN( "verticalAlign" ),
+	VERTICAL_ALIGN( "vertical-align" ),
 
 	/** <a href=""></a> */
 	VISIBILITY( "visibility" ),
 
 	/** <a href=""></a> */
-	VOICE_FAMILY( "voiceFamily" ),
+	VOICE_FAMILY( "voice-family" ),
 
 	/** <a href=""></a> */
 	VOLUME( "volume" ),
 
 	/** <a href=""></a> */
-	WHITE_SPACE( "whiteSpace" ),
+	WHITE_SPACE( "white-space" ),
 
 	/** <a href=""></a> */
 	WIDOWS( "widows" ),
@@ -392,13 +392,13 @@ public enum CSS2Properties
 	WIDTH( "width" ),
 
 	/** <a href=""></a> */
-	WORD_SPACING( "wordSpacing" ),
+	WORD_SPACING( "word-spacing" ),
 
 	/** <a href=""></a> */
 	SIZE( "size" ),
 
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/visuren.html#propdef-z-index">propdef-z-index</a> */
-	Z_INDEX( "zIndex" );
+	Z_INDEX( "z-index" );
 
 
 	private final String string;
