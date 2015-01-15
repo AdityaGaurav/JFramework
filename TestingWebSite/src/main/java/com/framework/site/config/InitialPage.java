@@ -3,6 +3,7 @@ package com.framework.site.config;
 import com.framework.driver.event.DriverListenerAdapter;
 import com.framework.driver.event.ElementListenerAdapter;
 import com.framework.driver.event.EventWebDriver;
+import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.data.TestEnvironment;
 import com.framework.site.pages.core.HomePage;
 import com.google.common.collect.Maps;
@@ -12,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +80,8 @@ public class InitialPage
 
 	// a list of domains urls, which the keys are defined as 'country.environment'
 	private Properties domains;
+
+	private String testCasePattern;
 
 	//endregion
 
@@ -231,6 +235,17 @@ public class InitialPage
 		this.domains = domains;
 	}
 
+	public String getTestCasePattern()
+	{
+		return testCasePattern;
+	}
+
+	public void setTestCasePattern( final String testCasePattern )
+	{
+		this.testCasePattern = testCasePattern;
+		System.setProperty( "test.case.id.pattern", testCasePattern );
+	}
+
 	//todo: documentation
 	@SuppressWarnings("unchecked")
 	public HomePage getHomePage()
@@ -249,7 +264,8 @@ public class InitialPage
 
 			/* building the key property key name, to get the value from Properties.domains */
 
-			String propertyKey = String.format( "%s.%s", initialLocale.getCountry(), testEnvironment.name().toLowerCase() );
+			String propertyKey = String.format( "%s.%s",
+					initialLocale.getCountry().toLowerCase(), testEnvironment.name().toLowerCase() );
 			this.initialUrl = ( String ) domains.get( propertyKey );
 			final String MSG_FMT = "Working url defined by environment <{}> and locale <{}> is <\"{}\">";
 			logger.info( MSG_FMT,testEnvironment.name(), initialLocale.getDisplayCountry(), this.initialUrl  );
@@ -329,6 +345,28 @@ public class InitialPage
 		{
 			props.put( key, value );
 		}
+	}
+
+
+	public WebDriverWait wait5()
+	{
+		return WaitUtil.wait5( driver );
+	}
+	public WebDriverWait wait10()
+	{
+		return WaitUtil.wait10( driver );
+	}
+	public WebDriverWait wait20()
+	{
+		return WaitUtil.wait20( driver );
+	}
+	public WebDriverWait wait30()
+	{
+		return WaitUtil.wait30( driver );
+	}
+	public WebDriverWait wait60()
+	{
+		return WaitUtil.wait60( driver );
 	}
 
 
