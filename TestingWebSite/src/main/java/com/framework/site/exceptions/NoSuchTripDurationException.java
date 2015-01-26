@@ -1,6 +1,6 @@
 package com.framework.site.exceptions;
 
-import com.framework.driver.exceptions.ObjectApplicationNotFoundException;
+import com.framework.driver.exceptions.ApplicationItemNotFoundException;
 import org.openqa.selenium.WebDriver;
 
 
@@ -18,7 +18,7 @@ import org.openqa.selenium.WebDriver;
  * Time   : 15:34
  */
 
-public class NoSuchTripDurationException extends ObjectApplicationNotFoundException
+public class NoSuchTripDurationException extends ApplicationItemNotFoundException
 {
 	private static final long serialVersionUID = 7978996500317505389L;
 

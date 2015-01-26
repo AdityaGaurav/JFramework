@@ -1,6 +1,6 @@
 package com.framework.site.exceptions;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.driver.exceptions.ApplicationItemNotFoundException;
 import org.openqa.selenium.WebDriver;
 
 
@@ -18,7 +18,7 @@ import org.openqa.selenium.WebDriver;
  * Time   : 15:34
  */
 
-public class NoSuchShipException extends ApplicationException
+public class NoSuchShipException extends ApplicationItemNotFoundException
 {
 	private static final long serialVersionUID = 7978996500317505389L;
 
