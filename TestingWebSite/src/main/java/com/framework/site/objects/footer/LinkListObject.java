@@ -1,17 +1,18 @@
 package com.framework.site.objects.footer;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.footer.interfaces.Footer;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.StaleElementReferenceException;
+import com.framework.utils.datetime.TimeConstants;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 
 /**
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Time   : 19:07
  */
 
-class LinkListObject extends AbstractWebObject implements FooterObject.LinkList
+class LinkListObject extends AbstractWebObject implements SectionFooterObject.LinkList
 {
 
 	//region LinkListObject - Variables Declaration and Initialization Section.
@@ -46,7 +47,7 @@ class LinkListObject extends AbstractWebObject implements FooterObject.LinkList
 
 	LinkListObject( WebDriver driver, final WebElement rootElement )
 	{
-		super( Footer.LinkList.LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, Footer.LinkList.LOGICAL_NAME );
 	}
 
 	//endregion
@@ -57,20 +58,13 @@ class LinkListObject extends AbstractWebObject implements FooterObject.LinkList
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wew = WaitUtil.wait10( objectDriver );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		ExpectedCondition<List<WebElement>> condition = WaitUtil.visibilityOfAllBy( By.cssSelector( ".link-lists li" ), true );
+		assertion.assertWaitThat(
+				"Validate all \".link-lists li\" elements are displayed", TimeConstants.FIFTY_HUNDRED_MILLIS, condition );
 	}
 
 	//endregion
@@ -80,27 +74,7 @@ class LinkListObject extends AbstractWebObject implements FooterObject.LinkList
 
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			rootElement = objectDriver.findElement( Footer.LinkList.ROOT_BY );
-		}
-
-		return rootElement;
-	}
-
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
+		return getBaseRootElement( Footer.LinkList.ROOT_BY );
 	}
 
 	//endregion
@@ -113,7 +87,6 @@ class LinkListObject extends AbstractWebObject implements FooterObject.LinkList
 	{
 		return getRoot().isDisplayed();
 	}
-
 
 	//endregion
 

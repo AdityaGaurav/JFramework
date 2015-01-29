@@ -1,17 +1,13 @@
 package com.framework.site.objects.footer;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.footer.interfaces.Footer;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
+import com.framework.utils.datetime.TimeConstants;
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +28,12 @@ import java.util.NoSuchElementException;
  * Time   : 16:34
  */
 
-public class FooterObject extends AbstractWebObject implements Footer
+public class SectionFooterObject extends AbstractWebObject implements Footer
 {
 
 	//region FooterObject - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( FooterObject.class );
+	private static final Logger logger = LoggerFactory.getLogger( SectionFooterObject.class );
 
 	private static final By footerBy = By.id( "ccl-refresh-footer" );
 	private WebElement cclFooter = null;
@@ -57,9 +53,9 @@ public class FooterObject extends AbstractWebObject implements Footer
 
 	//region FooterObject - Constructor Methods Section
 
-	public FooterObject( WebDriver driver, final WebElement rootElement )
+	public SectionFooterObject( WebDriver driver, final WebElement rootElement )
 	{
-		super( LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, Footer.LOGICAL_NAME );
 	}
 
 	//endregion
@@ -70,22 +66,20 @@ public class FooterObject extends AbstractWebObject implements Footer
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wew = WaitUtil.wait10( objectDriver );
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
 
-		try
-		{
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), SubFooter.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), ZeroFooter.ROOT_BY ) );
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on FooterObject#initWebObject." );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		assertion.assertWaitThat(
+				"assert that element \".link-list\" exits",
+				TimeConstants.FIFTY_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), LinkList.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \".sub-footer\" exits",
+				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), SubFooter.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \".zero-footer\" exits",
+				TimeConstants.FIFTY_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), ZeroFooter.ROOT_BY ) );
 	}
 
 	//endregion
@@ -94,21 +88,11 @@ public class FooterObject extends AbstractWebObject implements Footer
 	//region FooterObject - Service Methods Section
 
 	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
-	@Override
 	public SubFooter subFooter()
 	{
 		if ( null == this.subFooterDiv )
 		{
-			this.subFooterDiv = new SubFooterObject( objectDriver, getSubFooterDiv()  );
+			this.subFooterDiv = new SubFooterObject( getWrappedDriver(), getSubFooterDiv()  );
 		}
 		return subFooterDiv;
 	}
@@ -118,7 +102,7 @@ public class FooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.zeroFooterDiv )
 		{
-			this.zeroFooterDiv = new ZeroFooterObject( objectDriver, getZeroFooterDiv() );
+			this.zeroFooterDiv = new ZeroFooterObject( getWrappedDriver(), getZeroFooterDiv() );
 		}
 		return zeroFooterDiv;
 	}
@@ -128,24 +112,14 @@ public class FooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.linkList )
 		{
-			this.linkList = new LinkListObject( objectDriver, getZeroFooterDiv() );
+			this.linkList = new LinkListObject( getWrappedDriver(), getZeroFooterDiv() );
 		}
 		return linkList;
 	}
 
-
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-			return rootElement;
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( Footer.ROOT_BY );
-		}
+		return getBaseRootElement( Footer.ROOT_BY );
 	}
 
 	//endregion
