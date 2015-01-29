@@ -1,27 +1,24 @@
 package com.framework.site.objects.header;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
-import com.framework.driver.utils.ui.ExtendedBy;
 import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.header.interfaces.Header;
+import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.site.pages.core.CruiseDealsPage;
 import com.framework.site.pages.core.HomePage;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
+import com.framework.utils.datetime.TimeConstants;
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -45,12 +42,6 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 
 	private static final Logger logger = LoggerFactory.getLogger( HeaderBrandingObject.class );
 
-	/**
-	 * ul.zero-nav object. holds the zero navigation.
-	 */
-	private WebElement zeroNavigationElement = null;
-	private static final By zeroNavBy = ExtendedBy.composite( By.tagName( "ul" ), By.className( "zero-nav" ) );
-
 	//endregion
 
 
@@ -58,12 +49,12 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 
 	HeaderBrandingObject( WebDriver driver, final WebElement rootElement)
 	{
-		super( LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, LOGICAL_NAME );
 	}
 
-	HeaderBrandingObject( final String logicalName ,WebDriver driver, final WebElement rootElement )
+	HeaderBrandingObject(  WebDriver driver, final WebElement rootElement, final String logicalName )
 	{
-		super( logicalName, driver, rootElement );
+		super( driver, rootElement, logicalName );
 	}
 
 	//endregion
@@ -74,22 +65,16 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wew = WaitUtil.wait10( this.objectDriver );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), zeroNavBy ) );
-			this.zeroNavigationElement = findZeroNavigationDiv();
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(),ae );
-			appEx.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw appEx;
-		}
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		ExpectedCondition<WebElement> condition1 =
+				WaitUtil.presenceOfChildBy( getRoot(), By.cssSelector( "div.header-branding a.logo" ) );
+		ExpectedCondition<WebElement> condition2 =
+				WaitUtil.presenceOfChildBy( getRoot(), By.cssSelector( "div.header-branding ul.zero-nav" ) );
+		assertion.assertWaitThat( "Validate \"a.logo\" selector exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition1 );
+		assertion.assertWaitThat( "Validate \"ul.zero-nav\" options exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition2 );
 	}
 
 	//endregion
@@ -97,28 +82,9 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 
 	//region HeaderBrandingObject - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-			return rootElement;
-		}
-		catch ( StaleElementReferenceException sreEx )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( Header.HeaderBranding.ROOT_BY );
-		}
+		return getBaseRootElement( CurrencySelector.ROOT_BY );
 	}
 
 	//endregion
@@ -129,84 +95,57 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	@Override
 	public String getLocalePhoneNumber()
 	{
-		try
-		{
-			return findLocaleNumberSpan().getText();
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#getLocalePhoneNumber.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to read local phone number" );
-			throw appEx;
-		}
+		logger.debug( "Reading the local phone number ..." );
+		return findLocaleNumberSpan().getText();
 	}
 
 	@Override
 	public void clickSubscribeAndSave()
 	{
-		try
-		{
-			Link link = new Link( objectDriver, findSubscribeAndSaveAnchor() );
-			link.hover( true );
-			link.click();
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#clickSubscribeAndSave.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to click on Subscribe and Save link" );
-			throw appEx;
-		}
+		logger.debug( "Clicking on subscribe and save link ..." );
+		Link link = new Link( findSubscribeAndSaveAnchor() );
+		link.hover( true );
+		link.click();
 	}
 
 	@Override
 	public CruiseDealsPage clickYourCruiseDeals()
 	{
-		try
-		{
-			Link link = new Link( objectDriver, findYourCruiseDetailsAnchor() );
-			link.hover( true );
-			link.click();
-			CruiseDealsPage cdp = new CruiseDealsPage( objectDriver );
-			logger.info( "returning a new page instance -> '{}'", cdp );
-			return cdp;
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#clickYourCruiseDeals.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to click Your Cruise Deals" );
-			throw appEx;
-		}
+		logger.debug( "Clicking on your cruise details link ..." );
+		Link link = new Link( findYourCruiseDetailsAnchor() );
+		link.hover( true );
+		link.click();
+		CruiseDealsPage cdp = new CruiseDealsPage( getWrappedDriver() );
+		logger.info( "returning a new page instance -> '{}'", cdp );
+		return cdp;
 	}
 
 	@Override
 	public HomePage clickOnLogo()
 	{
-		try
-		{
-		 	findLogoAnchor().click();
-			HomePage hp = new HomePage( objectDriver );
-			logger.info( "returning a new page instance -> '{}'", hp );
-			return hp;
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#clickOnLogo.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to clickOnLogo" );
-			throw appEx;
-		}
+		logger.debug( "Clicking on logo link ..." );
+		findLogoAnchor().click();
+		HomePage hp = new HomePage( getWrappedDriver() );
+		logger.info( "returning a new page instance -> '{}'", hp );
+		return hp;
 	}
 
 	@Override
 	public Locale getCurrentLocale()
 	{
+		logger.debug( "Parsing displayed current locale ..." );
+		WebElement img = findCclLocaleImage();
+		String alt = img.getAttribute( "alt" );
+		switch ( alt )
+		{
+			case "United States":
+				return Locale.US;
+			case "United Kingdom":
+				return Locale.UK;
+			case "Australia":
+				return BaseCarnivalPage.AU;
+		}
+
 		return null;
 	}
 
@@ -227,31 +166,22 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	{
 		try
 		{
-			By findBy = By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" );
-			objectDriver.manage().timeouts().implicitlyWait( 50, TimeUnit.MILLISECONDS );
+			By findBy = org.openqa.selenium.By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" );
+			SiteSessionManager.getInstance().setImplicitlyWait( 50 );
 			List<WebElement> list = getRoot().findElements( findBy );
 			return list.size() > 0;
 		}
 		finally
 		{
-			objectDriver.manage().timeouts().implicitlyWait( 10000, TimeUnit.MILLISECONDS ); //todo RESTORE TIMEOUT
+			SiteSessionManager.getInstance().restoreImplicitlyWait();
 		}
 	}
 
 	@Override
 	public boolean hasCurrencySelector()
 	{
-		try
-		{
-			By findBy = By.cssSelector( "a.ccl-blue.nav-tooltip-trigger[data-id='currency']" );
-			objectDriver.manage().timeouts().implicitlyWait( 50, TimeUnit.MILLISECONDS );
-			List<WebElement> list = getRoot().findElements( findBy );
-			return list.size() > 0;
-		}
-		finally
-		{
-			objectDriver.manage().timeouts().implicitlyWait( 10000, TimeUnit.MILLISECONDS ); //todo RESTORE TIMEOUT
-		}
+		By findBy = By.cssSelector( "a.ccl-blue.nav-tooltip-trigger[data-id='currency']" );
+		return getWrappedDriver().elementExists( findBy );
 	}
 
 	//endregion
@@ -267,7 +197,7 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	 */
 	private WebElement findLogoAnchor()
 	{
-		By findBy = By.xpath( ".//a[contains(@class,'logo')]" );
+		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( ".//a[contains(@class,'logo')]" );
 		return getRoot().findElement( findBy );
 	}
 
@@ -280,7 +210,7 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	 */
 	private WebElement findLocaleNumberSpan()
 	{
-		By findBy = By.id( "ccl_header_locale-number" );
+		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "ccl_header_locale-number" );
 		return findZeroNavigationDiv().findElement( findBy );
 	}
 
@@ -293,7 +223,7 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	 */
 	private WebElement findSubscribeAndSaveAnchor()
 	{
-		By findBy = By.id( "subscribeLink" );
+		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "subscribeLink" );
 		return findZeroNavigationDiv().findElement( findBy );
 	}
 
@@ -306,18 +236,20 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	 */
 	private WebElement findYourCruiseDetailsAnchor()
 	{
-		By findBy = By.xpath( "./li/a[@class='ccl-red']" );
+		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( "./li/a[@class='ccl-red']" );
 		return findZeroNavigationDiv().findElement( findBy );
 	}
 
 	private WebElement findZeroNavigationDiv()
 	{
-		if( null == zeroNavigationElement )
-		{
-			this.zeroNavigationElement = getRoot().findElement( zeroNavBy );
-		}
+		final By findBy = By.cssSelector( "div.header-branding ul.zero-nav" );
+		return getWrappedDriver().findElement( findBy );
+	}
 
-		return zeroNavigationElement;
+	private WebElement findCclLocaleImage()
+	{
+		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( "//*[@id='ccl_header_locale']/img" );
+		return getWrappedDriver().findElement( findBy );
 	}
 
 	//endregion

@@ -1,22 +1,19 @@
 package com.framework.site.objects.header;
 
+import com.framework.asserts.JAssertion;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
+import com.framework.driver.objects.BaseElementObject;
 import com.framework.driver.objects.Link;
 import com.framework.driver.objects.PageObject;
-import com.framework.driver.utils.ui.ExtendedBy;
-import com.framework.driver.utils.ui.ListWebElementUtils;
 import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.header.interfaces.Header;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.apache.commons.lang3.StringUtils;
+import com.framework.utils.datetime.TimeConstants;
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +45,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	private static final String DATA_HIGHLIGHT_PATTERN = "data-highlightpattern";
 
-	private String dataHighlightPattern;
+	//private String dataHighlightPattern;
 
 	//endregion
 
@@ -57,7 +54,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	HeaderLinksObject( WebDriver driver, final WebElement rootElement )
 	{
-		super( Header.HeaderLinks.LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, Header.HeaderLinks.LOGICAL_NAME );
 	}
 
 	//endregion
@@ -68,7 +65,14 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	protected void initWebObject()
 	{
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		ExpectedCondition<List<WebElement>> condition =
+				WaitUtil.presenceOfAllBy( By.cssSelector( ".header-nav-additional input" ) );
+		assertion.assertWaitThat(
+				"Validate all \".header-nav-additional input\" elements exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition );
 	}
 
 	//endregion
@@ -76,28 +80,9 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	//region HeaderLinksObject - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			rootElement = objectDriver.findElement( Header.HeaderLinks.ROOT_BY );
-		}
-
-		return rootElement;
+		return getBaseRootElement( Header.HeaderLinks.ROOT_BY );
 	}
 
 	//endregion
@@ -114,27 +99,25 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	public void hoverOnMenuItem( final LevelOneMenuItem item )
 	{
+		logger.debug( "hovering over top-menu element item <\"{}\">", item.getTitle() );
+
+		WebElement itemAnchor = findTopLevelMenuItemAnchor( item.getTitle() );
+		String dataHighlightPattern = itemAnchor.getAttribute( DATA_HIGHLIGHT_PATTERN );
+		Link itemLink = new Link( itemAnchor );
+
+		// Waiting for anchor to include class name 'hover'
+
+		ExpectedCondition<Boolean> condition = WaitUtil.elementAttributeToMatch( itemAnchor, "class", containsString( "hover" ) );
+		itemLink.hover();
+
 		try
 		{
-			logger.debug( "hovering over top-menu element item <\"{}\">", item.getTitle() );
-			WebElement itemAnchor =  findTopLevelMenuItemAnchor( item.getTitle() );
-			this.dataHighlightPattern = itemAnchor.getAttribute( DATA_HIGHLIGHT_PATTERN );
-			Link itemLink = new Link( objectDriver, itemAnchor );
-			WebDriverWait wdw = WaitUtil.wait5( objectDriver);
-
-			/* Waiting for anchor to include class name 'hover' */
-
-			ExpectedCondition<Boolean> condition = WaitUtil.elementAttributeToMatch( itemAnchor, "class", containsString( "hover" ) );
-
-			itemLink.hover();
-			wdw.until(  condition );
-
+			WaitUtil.wait5( getWrappedDriver() ).until( condition );
 		}
-		catch ( Throwable ae )
+		catch ( TimeoutException tEx )
 		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
 			logger.error( "throwing a new ApplicationException on {}#hoverOnMenuItem.", getClass().getSimpleName() );
-			ApplicationException aex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
+			ApplicationException aex = new ApplicationException( getWrappedDriver(), tEx.getMessage(), tEx );
 			aex.addInfo( "business process", "hovering over top-level menu item \"" + item.getTitle() + "\"" );
 			throw aex;
 		}
@@ -149,37 +132,15 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	public String[] getLinkNames()
 	{
-		try
-		{
-			List<WebElement> spans = findLinksOrgSpans();
-			String names = ListWebElementUtils.joinElementsText( spans, "," );
-			logger.info( "returning a list of top-level links names [ {} ] ...", names );
-			return StringUtils.split( names, "," );
-		}
-		catch ( Throwable ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#getLinkNames.", getClass().getSimpleName() );
-			ApplicationException aex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			aex.addInfo( "business process", "failed to read top-level link names" );
-			throw aex;
-		}
+		logger.info( "Returning a list ot top-level link names ( span.org[testContent] )" );
+		List<WebElement> spans = findLinksOrgSpans();
+		List<String> names = BaseElementObject.extractAttribute( spans, "textContent" );
+		logger.info( "returning a list of top-level links names [ {} ] ...", names );
+		return names.toArray( new String[ names.size() ] );
 	}
 
 	//endregion
 
-
-	//region HeaderLinksObject - Info Methods Section
-
-	/**
-	 * @return the latest attribute {@code data-highlightpattern} value of the top-level menu item selected or hovered.
-	 */
-	public String getDataHighlightPattern()
-	{
-		return dataHighlightPattern;
-	}
-
-	//endregion
 
 	//region HeaderLinksObject - Element Finder Methods Section
 
@@ -208,7 +169,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	 */
 	private WebElement findPullLeftUl()
 	{
-		ExtendedBy findBy = ExtendedBy.composite( By.tagName( "ul" ), By.className( "pull-left" ) );
+		By findBy = By.className( "pull-left" );
 		return getRoot().findElement( findBy );
 	}
 
@@ -222,8 +183,8 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	 */
 	private WebElement findPullRightUl()
 	{
-		By findBy = By.cssSelector( "#ccl-refresh-header nav > ul.pull-right" );
-		return objectDriver.findElement( findBy );
+		By findBy = By.className( "pull-right" );
+		return getRoot().findElement( findBy );
 	}
 
 	/**
@@ -234,8 +195,8 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	 */
 	private List<WebElement> findLinksOrgSpans()
 	{
-		By findBy = By.cssSelector( "#ccl-refresh-header nav > ul.pull-left a > span.org" );
-		return objectDriver.findElements( findBy );
+		By findBy = By.cssSelector( "ul.pull-left a > span.org" );
+		return getWrappedDriver().findElements( findBy );
 	}
 
 	/**
@@ -245,7 +206,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	 */
 	private WebElement findTopLevelMenuItemAnchor( String name )
 	{
-		final String XPATH_PATTERN = ".//ul[@class='pull-left']//span[@class='org' and text()='%s']/parent::a";
+		final String XPATH_PATTERN = "//span[@class='org' and text()='%s']/..";
 		By findBy = By.xpath( String.format( XPATH_PATTERN, name ) );
 		return getRoot().findElement( findBy );
 	}

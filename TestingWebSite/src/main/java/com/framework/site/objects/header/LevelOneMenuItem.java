@@ -35,6 +35,6 @@ public enum LevelOneMenuItem
 
 	public String getDataCcl()
 	{
-		return getTitle().toLowerCase();
+		return title.toLowerCase();
 	}
 }

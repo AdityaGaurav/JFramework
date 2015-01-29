@@ -2,6 +2,7 @@ package com.framework.site.objects.header.interfaces;
 
 import com.framework.driver.objects.Link;
 import com.framework.driver.objects.PageObject;
+import com.framework.driver.selectors.ExtendedBy;
 import com.framework.site.objects.header.LevelOneMenuItem;
 import com.framework.site.objects.header.MenuItems;
 import com.framework.site.pages.core.CruiseDealsPage;
@@ -31,7 +32,7 @@ public interface Header
 {
 	public static final By ROOT_BY = By.id( "ccl-refresh-header" );
 
-	static final String SITE_REGION_SCRIPT = "return utag_data.site_region;";
+	//static final String SITE_REGION_SCRIPT = "return utag_data.site_region;";
 
 	public static final String LOGICAL_NAME = "CCL Header";
 
@@ -99,7 +100,7 @@ public interface Header
 		{
 			static final String LOGICAL_NAME = "Header Branding Top Destinations";
 
-			static final By ROOT_BY = By.xpath( ".//a[@class='nav-tooltip-trigger' and @data-id='top-destinations']" );
+			static final By ROOT_BY = By.cssSelector( ".nav-tooltip-trigger[data-id='top-destinations']" );
 
 			CruiseToPage clickOnTopDestinationLink( int index );
 
@@ -114,7 +115,7 @@ public interface Header
 		{
 			static final String LOGICAL_NAME = "Header Branding Currency Selector";
 
-			static final By ROOT_BY = By.xpath( "//select[@id= 'currencySelector']/parent::li" );
+			static final By ROOT_BY = ExtendedBy.jQuery( "$('#currencySelector).parent();" );
 
 			boolean isDisplayed();
 		}

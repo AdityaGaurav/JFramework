@@ -1,15 +1,13 @@
 package com.framework.site.objects.header;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.core.cruiseto.CruiseToPage;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +42,7 @@ class TopDestinationsObject extends HeaderBrandingObject implements Header.Heade
 
 	TopDestinationsObject( WebDriver driver, final WebElement rootElement )
 	{
-		super( TopDestinations.LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, TopDestinations.LOGICAL_NAME );
 	}
 
 	//endregion
@@ -55,21 +53,14 @@ class TopDestinationsObject extends HeaderBrandingObject implements Header.Heade
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wait = WaitUtil.wait10( objectDriver );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
-
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		ExpectedCondition<WebElement> condition =
+				WaitUtil.presenceBy( By.cssSelector( "..nav-tooltip li.title" ) );
+		assertion.assertWaitThat(
+				"Validate \".header-links ul.pull-left\" element exists", 5000, condition );
 	}
 
 	//endregion
@@ -77,29 +68,9 @@ class TopDestinationsObject extends HeaderBrandingObject implements Header.Heade
 
 	//region TopDestinationsObject - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			rootElement = objectDriver.findElement( TopDestinations.ROOT_BY );
-		}
-
-		return rootElement;
+		return getBaseRootElement( TopDestinations.ROOT_BY );
 	}
 
 	//endregion

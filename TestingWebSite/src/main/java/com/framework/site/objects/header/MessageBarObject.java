@@ -1,13 +1,13 @@
 package com.framework.site.objects.header;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.objects.AbstractWebObject;
+import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.header.interfaces.Header;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 
 	MessageBarObject( WebDriver driver,  final WebElement rootElement )
 	{
-		super( LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, LOGICAL_NAME );
 	}
 
 	//endregion
@@ -55,20 +55,16 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 	@Override
 	protected void initWebObject()
 	{
-		try
+		if( getRoot().isDisplayed() )
 		{
-			if( getRoot().isDisplayed() )
-			{
-				logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-			}
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
+			logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+					getQualifier(), getLogicalName() );
+
+			JAssertion assertion = new JAssertion( getWrappedDriver() );
+			ExpectedCondition<WebElement> condition =
+					WaitUtil.presenceBy( By.cssSelector( "div.message-bar > div.cookiemandate" ) );
+			assertion.assertWaitThat(
+					"Validate \"div.cookiemandate\" element exists", 5000, condition );
 		}
 	}
 
@@ -77,29 +73,9 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 
 	//region HeaderObject - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			rootElement = objectDriver.findElement( Header.MessageBar.ROOT_BY );
-		}
-
-		return rootElement;
+		return getBaseRootElement( Header.MessageBar.ROOT_BY );
 	}
 
 	//endregion

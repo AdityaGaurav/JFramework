@@ -1,18 +1,18 @@
 package com.framework.site.objects.header;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.header.interfaces.Header;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.StaleElementReferenceException;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.utils.datetime.TimeConstants;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 
 /**
@@ -59,7 +59,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 
 	public SectionHeaderObject( WebDriver driver, final WebElement rootElement )
 	{
-		super( Header.LOGICAL_NAME, driver, rootElement );
+		super( driver, rootElement, Header.LOGICAL_NAME );
 	}
 
 	//endregion
@@ -70,26 +70,32 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wew = WaitUtil.wait10( objectDriver );
+		JAssertion assertion = new JAssertion( getWrappedDriver() );
 
-		try
-		{
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), MessageBar.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), NotificationBar.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), HeaderBranding.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), HeaderSubscribe.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), HeaderLinks.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceOfChildBy( getRoot(), NavigationAdditional.ROOT_BY ) );
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		assertion.assertWaitThat(
+				"assert that element \"div.message-bar\" exits",
+				TimeConstants.FIFTY_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), MessageBar.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \"div.notif-bar\" exits",
+				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), NotificationBar.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \"div.header-branding\" exits",
+				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), HeaderBranding.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \"div.header-subscribe\" exits",
+				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), HeaderSubscribe.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \"div.header-links\" exits",
+				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), HeaderLinks.ROOT_BY ) );
+		assertion.assertWaitThat(
+				"assert that element \"div.header-nav-additional\" exits",
+				TimeConstants.FIFTY_HUNDRED_MILLIS,
+				WaitUtil.presenceOfChildBy( getRoot(), NavigationAdditional.ROOT_BY ) );
 	}
 
 	//endregion
@@ -98,21 +104,11 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	//region HeaderSectionObject - Service Methods Section
 
 	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
-	@Override
 	public MessageBar messageBar()
 	{
 		if ( null == this.messageBar )
 		{
-			this.messageBar = new MessageBarObject( objectDriver, findMessageBarDiv() );
+			this.messageBar = new MessageBarObject( getWrappedDriver(), findMessageBarDiv() );
 		}
 		return messageBar;
 	}
@@ -122,7 +118,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.notificationBar )
 		{
-			this.notificationBar = new NotificationBarObject( objectDriver, findNotificationBarDiv() );
+			this.notificationBar = new NotificationBarObject( getWrappedDriver(), findNotificationBarDiv() );
 		}
 		return notificationBar;
 	}
@@ -130,17 +126,17 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	@Override
 	public HeaderBranding headerBranding()
 	{
-		String region = objectDriver.getJavaScript().getString( Header.SITE_REGION_SCRIPT );
+		Locale locale = SiteSessionManager.getInstance().getCurrentLocale();
 
 		if ( null == this.headerBranding )
 		{
-			if( region.equals( "AU" ) )
+			if( locale.equals( BaseCarnivalPage.AU ))
 			{
-				return new CurrencySelectorObject( objectDriver, getRoot() );
+				return new CurrencySelectorObject( getWrappedDriver(), getRoot() );
 			}
 			else
 			{
-				return new TopDestinationsObject( objectDriver, getRoot() );
+				return new TopDestinationsObject( getWrappedDriver(), getRoot() );
 			}
 		}
 		return headerBranding;
@@ -151,7 +147,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.headerSubscribe )
 		{
-			this.headerSubscribe = new HeaderSubscribeObject( objectDriver, findHeaderSubscribeDiv() );
+			this.headerSubscribe = new HeaderSubscribeObject( getWrappedDriver(), findHeaderSubscribeDiv() );
 		}
 		return headerSubscribe;
 	}
@@ -161,7 +157,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.headerLinks )
 		{
-			this.headerLinks = new HeaderLinksObject( objectDriver, findHeaderLinksDiv() );
+			this.headerLinks = new HeaderLinksObject( getWrappedDriver(), findHeaderLinksDiv() );
 		}
 		return headerLinks;
 	}
@@ -171,29 +167,15 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.navigationAdditional )
 		{
-			this.navigationAdditional = new NavigationAdditionalObject( objectDriver, findNavigationAdditionalDiv() );
+			this.navigationAdditional = new NavigationAdditionalObject( getWrappedDriver(), findNavigationAdditionalDiv() );
 		}
 		return navigationAdditional;
 	}
 
 	private WebElement getRoot()
 	{
-		try
-		{
-			rootElement.getTagName();
-			return rootElement;
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( SectionHeaderObject.ROOT_BY );
-		}
+		return getBaseRootElement( SectionHeaderObject.ROOT_BY );
 	}
-
-	//endregion
-
-
-	//region HeaderSectionObject - Business Methods Section
 
 	//endregion
 
