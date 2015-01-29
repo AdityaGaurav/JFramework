@@ -1,36 +1,24 @@
 package com.framework.driver.objects;
 
+import com.framework.asserts.JAssertion;
 import com.framework.driver.event.EventWebDriver;
-import com.framework.driver.exceptions.PageObjectException;
-import com.framework.driver.exceptions.PreConditionException;
-import com.framework.driver.utils.PreConditions;
-import com.google.common.base.MoreObjects;
+import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.error.PreConditions;
+import com.framework.utils.matchers.JMatchers;
+import com.framework.utils.string.LogStringStyle;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hamcrest.Matcher;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.OutputStreamWriter;
 import java.util.Set;
 
 
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.driver.objects
- *
- * Name   : AbstractPageObject
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-05
- *
- * Time   : 18:40
- */
-
 public abstract class AbstractPageObject implements PageObject
 {
-
 	//region AbstractPageObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( AbstractPageObject.class );
@@ -38,7 +26,7 @@ public abstract class AbstractPageObject implements PageObject
 	/**
 	 * the wrapped web driver. should not be defined final since it might change after switching.
 	 */
-	protected EventWebDriver pageDriver;
+	private EventWebDriver pageDriver;
 
 	/**
 	 * the logical of the extending page;
@@ -46,9 +34,9 @@ public abstract class AbstractPageObject implements PageObject
 	private final String logicalName;
 
 	/**
-	 * the id of the extending page ( includes the index );
+	 * the qualifier name of the extending page ( includes the index );
 	 */
-	private final String id;
+	private final String qualifier;
 
 	/**
 	 * a static counter for indexing page objects.
@@ -74,32 +62,17 @@ public abstract class AbstractPageObject implements PageObject
 	 * @throws IllegalStateException if {@code logicalName} is either {@code null} or empty
 	 * @throws NullPointerException  if {@code wrappedDriver} is {@code null}
 	 */
-	public AbstractPageObject( final String logicalName, final WebDriver driver )
+	protected AbstractPageObject( final WebDriver driver, final String logicalName )
 	{
-		final String ERR_MSG1 = "WebDriver argument is null.";
+		final String ERR_MSG1 = "WebDriver argument cannot be null.";
 		final String ERR_MSG2 =  "logical name is either null, blank or empty.";
-		final String ERR_MSG4 = "The argument driver is not an instance of <{}>";
-		this.id = String.format( "PAGE[%d]", counter++ );
-		try
-		{
-			this.logicalName = PreConditions.checkNotNullNotBlankOrEmpty( logicalName, ERR_MSG2 );
-			WebDriver drv = PreConditions.checkNotNull( driver, ERR_MSG1 );
-			PreConditions.checkInstanceOf( EventWebDriver.class, drv, ERR_MSG4, EventWebDriver.class.getCanonicalName() );
-			this.pageDriver = ( EventWebDriver ) drv;
-			currentURL = pageDriver.getCurrentUrl();
-		}
-		catch ( NullPointerException | IllegalArgumentException e )
-		{
-			logger.error( "throwing a new PreConditionException on {}#constructor.", getClass().getSimpleName() );
-			throw new PreConditionException( e.getMessage(), e );
-		}
-		catch ( Throwable e )
-		{
-			logger.error( "throwing a new PageObjectException on {}#constructor.", getClass().getSimpleName() );
-			PageObjectException poe = new PageObjectException( driver, e.getMessage(), e );
-			poe.addInfo( "causing flow", "trying to create a new PageObject -> " + this.id );
-			throw poe;
-		}
+		final String ERR_MSG3 = "The argument driver is not an instance of <{}>";
+		WebDriver drv = PreConditions.checkNotNull( driver, ERR_MSG1 );
+		PreConditions.checkInstanceOf( EventWebDriver.class, drv, ERR_MSG3, EventWebDriver.class.getCanonicalName() );
+		this.qualifier = String.format( "PAGE[%d]", counter++ );
+		this.logicalName = PreConditions.checkNotNullNotBlankOrEmpty( logicalName, ERR_MSG2 );
+		this.pageDriver = ( EventWebDriver ) drv;
+		this.currentURL = pageDriver.getCurrentUrl();
 	}
 
 	//endregion
@@ -117,56 +90,35 @@ public abstract class AbstractPageObject implements PageObject
 
 	//region PageObject - Service Methods Section
 
+	protected void validatePageUrl()
+	{
+		Optional<DefaultUrl> annotation = Optional.fromNullable( getClass().getAnnotation( DefaultUrl.class ) );
+		if( annotation.isPresent() )
+		{
+			Matcher<String> matcher = null;
+			if( annotation.get().matcher().toLowerCase().contains( "contains" ) )
+			{
+				matcher = JMatchers.containsString( annotation.get().value() );
+			}
+			if( annotation.get().matcher().toLowerCase().contains( "endswith" ) )
+			{
+				matcher = JMatchers.endsWith( annotation.get().value() );
+			}
+			if( annotation.get().matcher().toLowerCase().contains( "startswith" ) )
+			{
+				matcher = JMatchers.startsWith( annotation.get().value() );
+			}
+			if( null != matcher )
+			{
+				new JAssertion( pageDriver ).assertThat( "Validate page url", getCurrentUrl(), matcher );
+			}
+		}
+	}
+
 	@Override
 	public final String getLogicalName()
 	{
 		return logicalName;
-	}
-
-	@Override
-	public boolean equals( final Object o )
-	{
-		if ( this == o )
-		{
-			return true;
-		}
-		if ( ! ( o instanceof AbstractPageObject ) )
-		{
-			return false;
-		}
-
-		final AbstractPageObject that = ( AbstractPageObject ) o;
-
-		if ( ! id.equals( that.id ) )
-		{
-			return false;
-		}
-		if ( ! logicalName.equals( that.logicalName ) )
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int result = logicalName.hashCode();
-		result = 31 * result + id.hashCode();
-		return result;
-	}
-
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "id", getId() )
-				.add( "name", getLogicalName() )
-				.add( "url", currentURL )
-				.add( "title", getTitle() )
-				.omitNullValues()
-				.toString();
 	}
 
 	protected static long getIndex()
@@ -175,21 +127,20 @@ public abstract class AbstractPageObject implements PageObject
 	}
 
 	@Override
-	public final String getId()
+	public final String getQualifier()
 	{
-		return this.id;
+		return this.qualifier;
+	}
+
+	public EventWebDriver getWrappedDriver()
+	{
+		return pageDriver;
 	}
 
 	//endregion
 
 
 	//region AbstractPageObject - Implementation Methods Section
-
-	@Override
-	public final void savePageSource( final OutputStreamWriter wr )
-	{
-
-	}
 
 	@Override
 	public final String getCurrentUrl()
@@ -206,7 +157,19 @@ public abstract class AbstractPageObject implements PageObject
 	@Override
 	public final void scrollToTop()
 	{
+		pageDriver.executeScript( "jQuery('html, body').animate({ scrollTop: 0 }, 'fast');" );
+	}
 
+	@Override
+	public void scrollTo( final long x, final long y )
+	{
+		pageDriver.executeScript( "window.scrollTo( arguments[0],arguments[1] )", x,y );
+	}
+
+	@Override
+	public void setWindowFocus()
+	{
+		pageDriver.executeScript( "window.focus()" );
 	}
 
 	@Override
@@ -243,6 +206,52 @@ public abstract class AbstractPageObject implements PageObject
 	public final WebDriver.Window window()
 	{
 		return pageDriver.manage().window();
+	}
+
+	//endregion
+
+
+	//region AbstractPageObject - Object Override Methods Section
+
+	@SuppressWarnings ( "SimplifiableIfStatement" )
+	@Override
+	public boolean equals( final Object o )
+	{
+		if ( this == o )
+		{
+			return true;
+		}
+		if ( ! ( o instanceof AbstractPageObject ) )
+		{
+			return false;
+		}
+
+		final AbstractPageObject that = ( AbstractPageObject ) o;
+
+		if ( ! qualifier.equals( that.qualifier ) )
+		{
+			return false;
+		}
+		return logicalName.equals( that.logicalName );
+
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = logicalName.hashCode();
+		result = 31 * result + qualifier.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString()
+	{
+		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+				.append( "qualifier", qualifier )
+				.append( "name", logicalName )
+				.append( "current url", currentURL )
+				.toString();
 	}
 
 	//endregion

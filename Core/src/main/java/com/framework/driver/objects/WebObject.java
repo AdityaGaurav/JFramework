@@ -16,7 +16,7 @@ package com.framework.driver.objects;
 
 public interface WebObject
 {
-	String getId();
+	String getQualifier();
 
 	String getLogicalName();
 }

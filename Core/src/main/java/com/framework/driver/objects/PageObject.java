@@ -2,7 +2,6 @@ package com.framework.driver.objects;
 
 import org.openqa.selenium.WebDriver;
 
-import java.io.OutputStreamWriter;
 import java.util.Set;
 
 
@@ -24,13 +23,13 @@ public interface PageObject
 {
 	String getLogicalName();
 
- 	void savePageSource( OutputStreamWriter wr );
-
 	String getCurrentUrl();
 
 	String getTitle();
 
 	void scrollToTop();
+
+	void scrollTo( long x, long y );
 
 	String getWindowHandle();
 
@@ -44,5 +43,7 @@ public interface PageObject
 
 	WebDriver.Window window();
 
-	String getId();
+	String getQualifier();
+
+	void setWindowFocus();
 }
