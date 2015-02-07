@@ -1,13 +1,17 @@
 package com.framework.asserts;
 
 import com.framework.config.ResultStatus;
-import com.framework.testing.reporting.LoggerProvider;
+import com.framework.driver.event.HtmlCondition;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlDriverWait;
+import com.framework.testing.steping.LoggerProvider;
+import com.framework.testing.steping.screenshots.Photographer;
+import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
+import com.framework.utils.error.PreConditions;
+import com.google.common.base.Optional;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,18 +30,24 @@ import org.slf4j.LoggerFactory;
  * Time   : 09:35
  */
 
-public class JAssertion // implements JAssertLifeCycle
+public class JAssertion
 {
 
 	//region JAssertion - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( JAssertion.class );
+	private final Logger logger = LoggerFactory.getLogger( JAssertion.class );
 
-	private final WebDriver driver;
+	private final HtmlDriver driver;
 
 	private static LoggerProvider reporter;
 
-	private ResultStatus status;
+	private ResultStatus status = ResultStatus.UNDEFINED;
+
+	private Optional<ScreenshotAndHtmlSource> snapshot = Optional.absent();
+
+	private AssertionError assertionError = null;
+
+	private JAssert assertCommand;
 
 	//endregion
 
@@ -47,16 +57,12 @@ public class JAssertion // implements JAssertLifeCycle
 	/**
 	 * Default Constructor.
 	 *
-	 * @param driver a {@code WebDriver} to be assigned ( for taking screenshots )
+	// * @param driver a {@code WebDriver} to be assigned ( for taking screenshots )
 	 */
-	public JAssertion( final WebDriver driver )
+	public JAssertion( final HtmlDriver driver )
 	{
+		PreConditions.checkNotNull( driver, "The Web Driver assigned cannot be null." );
 		this.driver = driver;
-	}
-
-	public JAssertion()
-	{
-		this.driver = null;
 	}
 
 	//endregion
@@ -67,6 +73,7 @@ public class JAssertion // implements JAssertLifeCycle
 	//todo: method documentation
 	protected void doAssert( JAssert assertCommand )
 	{
+		this.assertCommand = assertCommand;
 		onBeforeAssert( assertCommand );
 		try
 		{
@@ -114,14 +121,27 @@ public class JAssertion // implements JAssertLifeCycle
 	protected void onAssertFailure( final JAssert assertCommand, final AssertionError ex )
 	{
 		setStatus( ResultStatus.FAILURE );
-
-	 	//todo: error description + screenshot;
+		logger.error( "Assertion failed with message: < '{}' >", ex.getMessage() );
+		Photographer photographer = new Photographer( driver );
+		photographer.setLogger( logger );
+		this.snapshot = photographer.grabScreenshot(); //todo: publish it
+		if( snapshot.isPresent() )
+		{
+			String png = snapshot.get().getScreenshotName();
+			String html = snapshot.get().getHtmlSourceName();
+			logger.info( "Screenshot file captured is < '{}' >", png );
+			logger.info( "Html Source file captured is < '{}' >", html );
+		}
+		else
+		{
+			logger.warn( "No screenshot was captured." );
+		}
 	}
 
 	//@Override
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
-		logger.debug( "Finished to execute assertion: <'{}'>", assertCommand.getReason() );
+		logger.debug( "Finished to execute assertion: <'{}'> with status < {} >", assertCommand.getReason(), status.getStatusName() );
 	}
 
 	//todo: method documentation
@@ -135,10 +155,10 @@ public class JAssertion // implements JAssertLifeCycle
 				if ( ! matcher.matches( actual ) )
 				{
 					Description description = new StringDescription();
-					description.appendText( reason )
+					description.appendText( "\"" + reason + "\"" )
 							.appendText( "\nExpected: " )
 							.appendDescriptionOf( matcher )
-							.appendText( "\nbut: " );
+							.appendText( "\nActual: " );
 					matcher.describeMismatch( actual, description );
 
 					throw new AssertionError( description.toString() );
@@ -154,29 +174,22 @@ public class JAssertion // implements JAssertLifeCycle
 			}
 
 			@Override
-			public String getScreenShotFileName()
+			public Object getActual()
 			{
-				return null;
+				return actual;
 			}
-
-			@Override
-			public <T> T getActual()
-			{
-				return null;
-			}
-		});
+		} );
 	}
 
 	//todo: method documentation
-	public void assertWaitThat( final String reason, final long timeoutMillis, final ExpectedCondition<?> condition )
+	public void assertWaitThat( final String reason, final long timeoutSeconds, final HtmlCondition<?> condition )
 	{
 		doAssert( new SimpleAssert( reason )
 		{
 			@Override
 			public void doAssert()
 			{
-				WebDriverWait wdw = new WebDriverWait( driver, timeoutMillis, timeoutMillis / 5 );
-				Object result = wdw.until( condition );
+				Object result = HtmlDriverWait.wait( driver, timeoutSeconds ).until( condition );
 				boolean response = ( result == null || result == Boolean.FALSE );
 
 				if( response )
@@ -194,18 +207,13 @@ public class JAssertion // implements JAssertLifeCycle
 			}
 
 			@Override
-			public String getScreenShotFileName()
-			{
-				return null;
-			}
-
-			@Override
-			public <T> T getActual()
+			public Object getActual()
 			{
 				return null;
 			}
 		});
 	}
+
 
 //	public static LoggerProvider getReporter()
 //	{
@@ -222,18 +230,32 @@ public class JAssertion // implements JAssertLifeCycle
 		return status;
 	}
 
-	//endregion
+	public Optional<ScreenshotAndHtmlSource> getSnapshot()
+	{
+		return snapshot;
+	}
 
+	protected void setSnapshot( Optional<ScreenshotAndHtmlSource> snapshot )
+	{
+		this.snapshot = snapshot;
+	}
 
-	//region JAssertion - Protected Methods Section
+	public AssertionError getAssertionError()
+	{
+		return assertionError;
+	}
 
-	protected WebDriver getDriver()
+	public JAssert getAssertCommand()
+	{
+		return assertCommand;
+	}
+
+	protected HtmlDriver getDriver()
 	{
 		return driver;
 	}
 
 	//endregion
-
 
 
 	//region JAssertion - Inner Classes Implementation Section

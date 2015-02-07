@@ -1,8 +1,8 @@
 package com.framework.asserts;
 
+import com.framework.driver.event.HtmlDriver;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +40,9 @@ public class JSoftAssertion extends JAssertion
 
 	//region JSoftAssertion - Constructor Methods Section
 
-	public JSoftAssertion( final WebDriver driver )
+	public JSoftAssertion( HtmlDriver driver )
 	{
-		super( driver );
+	 	super( driver );
 	}
 
 	//endregion

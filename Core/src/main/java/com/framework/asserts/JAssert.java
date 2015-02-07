@@ -25,8 +25,5 @@ public interface JAssert
 
 	void doAssert();
 
-	@Deprecated
-	String getScreenShotFileName();
-
-	<T> T getActual();
+	Object getActual();
 }
