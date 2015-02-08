@@ -1,32 +1,28 @@
 package com.framework.driver.exceptions;
 
-import org.openqa.selenium.WebDriver;
-
-
 /**
  * Extends {@linkplain ApplicationException} functionality.
- * this exception should be thrown on {@link com.framework.driver.objects.ElementObject} implementations.
+ * this exception should be thrown on {@link com.framework.driver.objects.ElementObjectw} implementations.
  *
- * @see com.framework.driver.objects.ElementObject
- * @see com.framework.driver.objects.AbstractElementObject
+ * @see com.framework.driver.objects.ElementObjectw
+ * @see com.framework.driver.objects.BaseElementObject
  */
-public class ElementObjectException extends ApplicationException
+public class ElementObjectException extends RuntimeException
 {
-
 	private static final long serialVersionUID = - 5377404343121067334L;
 
-	public ElementObjectException( final WebDriver driver, final String message )
+	public ElementObjectException( final String message )
 	{
-		super( driver, message );
+		super( message );
 	}
 
-	public ElementObjectException( final WebDriver driver, final Throwable cause )
+	public ElementObjectException( final Throwable cause )
 	{
-		super( driver, cause );
+		super( cause );
 	}
 
-	public ElementObjectException( final WebDriver driver, final String message, final Throwable cause )
+	public ElementObjectException( final String message, final Throwable cause )
 	{
-		super( driver, message, cause );
+		super( message, cause );
 	}
 }

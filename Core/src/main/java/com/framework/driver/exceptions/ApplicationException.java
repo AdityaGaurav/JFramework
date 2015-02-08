@@ -1,6 +1,6 @@
 package com.framework.driver.exceptions;
 
-import org.openqa.selenium.WebDriver;
+import com.framework.driver.event.HtmlDriver;
 import org.openqa.selenium.WebDriverException;
 
 
@@ -22,26 +22,45 @@ public class ApplicationException extends WebDriverException
 
 	private static final long serialVersionUID = 1188529006588402959L;
 
-	public ApplicationException( final WebDriver driver, final String message )
+	protected ApplicationException()
+	{
+	}
+
+	protected ApplicationException( final String message )
+	{
+		super( message );
+	}
+
+	public ApplicationException( final HtmlDriver driver, final String message )
 	{
 		super( message );
 		takeScreenshot( driver );
 	}
 
-	public ApplicationException( final WebDriver driver, final Throwable cause )
+	public ApplicationException( final HtmlDriver driver, final Throwable cause )
 	{
 		super( cause );
 		takeScreenshot( driver );
 	}
 
-	public ApplicationException( final WebDriver driver, final String message, final Throwable cause )
+	public ApplicationException( final String message, final Throwable cause )
+	{
+		super( message, cause );
+	}
+
+	public ApplicationException( final Throwable cause )
+	{
+		super( cause );
+	}
+
+	public ApplicationException( final HtmlDriver driver, final String message, final Throwable cause )
 	{
 		super( message, cause );
 		takeScreenshot( driver );
 
 	}
 
-	private void takeScreenshot( WebDriver driver )
+	private void takeScreenshot( HtmlDriver driver )
 	{
 		// System.getProperty( "output.directory" )
 		//Screenshot screenshot = new Screenshot( driver, "/Users/solmarkn/IdeaProjects/WebDriverTestNg/Screenshots" );

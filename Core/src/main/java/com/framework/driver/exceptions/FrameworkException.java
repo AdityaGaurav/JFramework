@@ -19,7 +19,6 @@ import org.openqa.selenium.WebDriverException;
 
 public class FrameworkException extends WebDriverException
 {
-
 	private static final long serialVersionUID = 6853598206454723242L;
 
 	public FrameworkException( final String message )

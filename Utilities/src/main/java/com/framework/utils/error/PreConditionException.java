@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.framework.driver.exceptions;
+package com.framework.utils.error;
 
 /**
  * Any rule that violates while engaging a PreConditionException object.
  */
 
-public class PreConditionException extends FrameworkException
+public class PreConditionException extends RuntimeException
 {
 	/**
 	 * The serial version ID.

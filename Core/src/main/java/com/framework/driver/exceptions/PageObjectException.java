@@ -1,6 +1,6 @@
 package com.framework.driver.exceptions;
 
-import org.openqa.selenium.WebDriver;
+import com.framework.driver.event.HtmlDriver;
 
 
 /**
@@ -20,17 +20,17 @@ import org.openqa.selenium.WebDriver;
 public class PageObjectException extends ApplicationException
 {
 
-	public PageObjectException( final WebDriver driver, final String message )
+	public PageObjectException( final HtmlDriver driver, final String message )
 	{
 		super( driver, message );
 	}
 
-	public PageObjectException( final WebDriver driver, final Throwable cause )
+	public PageObjectException( final HtmlDriver driver, final Throwable cause )
 	{
 		super( driver, cause );
 	}
 
-	public PageObjectException( final WebDriver driver, final String message, final Throwable cause )
+	public PageObjectException( final HtmlDriver driver, final String message, final Throwable cause )
 	{
 		super( driver, message, cause );
 	}
