@@ -7,6 +7,7 @@ import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.LogStringStyle;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class CheckpointAssert extends JAssertion
 
 	private static final Logger logger = LoggerFactory.getLogger( CheckpointAssert.class );
 
+	/** the id of the checkpoint. use the id to identify the checkpoint in results */
 	private final String id;
 
 	private CheckPointCollector collector;
@@ -42,6 +44,13 @@ public class CheckpointAssert extends JAssertion
 
 	//region CheckpointAssert - Constructor Methods Section
 
+	/**
+	 * Creates an instance of a checkpoint.
+	 *
+	 * @param driver     The active {@code HtmlDriver}
+	 * @param id         a string representing the checkpoint identifier.
+	 * @param collector  a {@linkplain CheckPointCollector} that collect the results.
+	 */
 	public CheckpointAssert( final HtmlDriver driver, final String id, CheckPointCollector collector )
 	{
 		super( driver );
@@ -55,6 +64,10 @@ public class CheckpointAssert extends JAssertion
 
 	//region CheckpointAssert - Public Methods Section
 
+	/**
+	 * {@inheritDoc}
+	 * displays a message of the checkpoint id being executed.
+	 */
 	@Override
 	protected void onBeforeAssert( final JAssert assertCommand )
 	{
@@ -62,6 +75,10 @@ public class CheckpointAssert extends JAssertion
 		logger.debug( "Executing checkpoint \"{}\"", getId() );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * displays a message of the checkpoint that was successfully executed.
+	 */
 	@Override
 	protected void onAssertSuccess( final JAssert assertCommand )
 	{
@@ -69,6 +86,11 @@ public class CheckpointAssert extends JAssertion
 		logger.debug( "Executed checkpoint [{}]: {} -> {}", getId(), assertCommand.getReason(), getStatus() );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * change the checkpoint status and takes a screenshot.
+	 * then is collecting all the checkpoint information to be displayed.
+	 */
 	@Override
 	protected void onAssertFailure( final JAssert assertCommand, final AssertionError ex )
 	{
@@ -121,6 +143,11 @@ public class CheckpointAssert extends JAssertion
 		catch ( AssertionError ex )
 		{
 			onAssertFailure( assertCommand, ex );
+		}
+		catch ( TimeoutException ex )
+		{
+			AssertionError aErr = new AssertionError( ex );
+			onAssertFailure( assertCommand, aErr );
 		}
 
 		onAfterAssert( assertCommand );

@@ -17,17 +17,25 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
+ * The class manage and documents all the assertions during the test execution.
+ * this class can be used as independent or extended by other implementations like
+ * {@link com.framework.asserts.JSoftAssertion} and {@link com.framework.asserts.CheckpointAssert}
  *
- * Package: com.framework.utils.asserts
+ * internally manage an assertion lifecycle and a status. the methods can be used by sub-classes
+ * for reporting and/or manipulate the exception thrown.
  *
- * Name   : JAssertion
+ * the lifecycle is managed by the methods
+ * <ol>
+ *     <li>onBeforeAssert</li>
+ *     <li>executeAssert</li>
+ *     <li>onAssertSuccess</li>
+ *     <li>onAssertFailure</li>
+ *     <li>onAfterAssert</li>
+ * </ol>
  *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-16
- *
- * Time   : 09:35
+ * an optional instance of {@link com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource} might be
+ * present when the assertion failed. the html source is another optional error source than can be configured by
+ * {@code jframework.store.html.source} property.
  */
 
 public class JAssertion
@@ -37,16 +45,21 @@ public class JAssertion
 
 	private final Logger logger = LoggerFactory.getLogger( JAssertion.class );
 
+	/** and instance of the current active driver */
 	private final HtmlDriver driver;
 
 	private static LoggerProvider reporter;
 
+	/** the assertion current status UNDEFINED > PENDING > RUNNING > ( SUCCESS | FAILURE ) */
 	private ResultStatus status = ResultStatus.UNDEFINED;
 
+	/** an optional screenshot and html source file instance */
 	private Optional<ScreenshotAndHtmlSource> snapshot = Optional.absent();
 
+	/** the detailed assertion error, if the assertion failed */
 	private AssertionError assertionError = null;
 
+	/** instance of the assert command. the assert command uses as an argument for the assertion lifecycle*/
 	private JAssert assertCommand;
 
 	//endregion
@@ -70,7 +83,24 @@ public class JAssertion
 
 	//region JAssertion - Public Methods Section
 
-	//todo: method documentation
+	/**
+	 * Executes the assert lifecycle.
+	 *
+	 * <ul>
+	 *     <li>fires the event {@linkplain #onBeforeAssert(JAssert)}</li>
+	 *     <li>executes the assert by calling {@linkplain #executeAssert(JAssert)} under try/catch clause</li>
+	 *     <li>if the assert evaluated successfully, no <b>AssertionError</b> is thrown.
+	 *     	   calling to {@linkplain #onAssertSuccess(JAssert)}
+	 *     </li>
+	 *     <li><b>AssertionError</b> is caught. calling to {@linkplain #onAssertFailure(JAssert, AssertionError)}</li>
+	 *     <li>using the clause finally,  fires the event {@linkplain #onAfterAssert(JAssert)}</li>
+	 * </ul>
+	 *
+	 * @param assertCommand  assertCommand the assertion command, with the checkpoint details.
+	 *
+	 * @see java.lang.AssertionError
+	 * @see com.framework.asserts.JAssert
+	 */
 	protected void doAssert( JAssert assertCommand )
 	{
 		this.assertCommand = assertCommand;
@@ -91,13 +121,29 @@ public class JAssertion
 		}
 	}
 
-	//todo: method documentation extension
+	/**
+	 * The event occurs before a checkpoint is executed.
+	 * classes might override this method and display their own messages.
+	 *
+	 * @param assertCommand the assertion command, with the checkpoint details.
+	 *
+	 * @see com.framework.asserts.JAssert
+	 * @see com.framework.config.ResultStatus
+	 */
 	protected void onBeforeAssert( final JAssert assertCommand )
 	{
 		setStatus( ResultStatus.PENDING );
 		logger.debug( "Executing assertion: <'{}'>", assertCommand.getReason() );
 	}
 
+	/**
+	 * Service method to set the status of the checkpoint.
+	 *
+	 * @param status a {@linkplain ResultStatus} value.
+	 *
+	 * @see com.framework.config.ResultStatus#SUCCESS
+	 * @see com.framework.config.ResultStatus#FAILURE
+	 */
 	protected void setStatus( final ResultStatus status )
 	{
 		this.status = status;
@@ -105,6 +151,8 @@ public class JAssertion
 
 	/**
 	 * Run the assert command in parameter. Meant to be overridden by subclasses.
+	 *
+	 * @param assertCommand the assertion command, with the checkpoint details.
 	 */
 	protected void executeAssert( JAssert assertCommand )
 	{
@@ -112,12 +160,27 @@ public class JAssertion
 		assertCommand.doAssert();
 	}
 
-	//todo: method documentation extension
+	/**
+	 * Occurs after the Assertion was successfully evaluated.
+	 *
+	 * @param assertCommand the assertion command, with the checkpoint details.
+	 */
 	protected void onAssertSuccess( final JAssert assertCommand )
 	{
 		setStatus( ResultStatus.SUCCESS );
 	}
 
+	/**
+	 * Occurs after the Assertion evaluation was failed.
+	 * additionally a screenshot and/or html source snapshot will be taken during failure
+	 *
+	 * @param assertCommand the assertion command, with the checkpoint details.
+	 * @param ex			a detailed assertion error instance.
+	 *
+	 * @see com.framework.testing.steping.screenshots.Photographer
+	 * @see com.google.common.base.Optional
+	 * @see com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource
+	 */
 	protected void onAssertFailure( final JAssert assertCommand, final AssertionError ex )
 	{
 		setStatus( ResultStatus.FAILURE );
@@ -138,13 +201,30 @@ public class JAssertion
 		}
 	}
 
-	//@Override
+	/**
+	 * The event occurs immediately after a checkpoint was executed.
+	 * classes might override this method and display their own messages.
+	 *
+	 * @param assertCommand the assertion command, with the checkpoint details.
+	 *
+	 * @see com.framework.asserts.JAssert
+	 * @see com.framework.config.ResultStatus
+	 */
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
 		logger.debug( "Finished to execute assertion: <'{}'> with status < {} >", assertCommand.getReason(), status.getStatusName() );
 	}
 
-	//todo: method documentation
+	/**
+	 * The assertion command implementation.
+	 *
+	 * @param reason   a description of the assertion
+	 * @param actual   an object of type T representing the actual result.
+	 * @param matcher  a matcher of T
+	 * @param <T>      the assertion type.
+	 *
+	 * @see com.framework.utils.matchers.JMatchers
+	 */
 	public  <T> void assertThat( final String reason, final T actual, final Matcher<? super T> matcher )
 	{
 		doAssert( new SimpleAssert( reason )
@@ -181,7 +261,16 @@ public class JAssertion
 		} );
 	}
 
-	//todo: method documentation
+	/**
+	 * The assertion command implementation. however the difference between this implementations
+	 * an {@linkplain #assertThat(String, Object, org.hamcrest.Matcher)} is that this implementation
+	 * waits for the condition evaluation a maximum timeout.
+	 *
+	 * @param reason   			a description of the assertion
+	 * @param timeoutSeconds    an object of type T representing the actual result.
+	 * @param condition			an {@link com.framework.driver.event.HtmlCondition} of any type
+	 *
+	 */
 	public void assertWaitThat( final String reason, final long timeoutSeconds, final HtmlCondition<?> condition )
 	{
 		doAssert( new SimpleAssert( reason )
@@ -214,38 +303,44 @@ public class JAssertion
 		});
 	}
 
-
-//	public static LoggerProvider getReporter()
-//	{
-//		return reporter;
-//	}
-//
-//	public static void setReporter( final LoggerProvider reporter )
-//	{
-//		JAssertion.reporter = reporter;
-//	}
-//
+	/**
+	 * @return the current status of the checkpoint.
+	 */
 	public ResultStatus getStatus()
 	{
 		return status;
 	}
 
+	/**
+	 * @return an {@linkplain com.google.common.base.Optional} instance of a screenshot
+	 */
 	public Optional<ScreenshotAndHtmlSource> getSnapshot()
 	{
 		return snapshot;
 	}
 
+	/**
+	 * Sets an optional snapshot. used by sub-classes.
+	 *
+	 * @param snapshot an {@code Optional} screenshot and/or html resource instance.
+	 */
 	protected void setSnapshot( Optional<ScreenshotAndHtmlSource> snapshot )
 	{
 		this.snapshot = snapshot;
 	}
 
-	public AssertionError getAssertionError()
+	/**
+	 * @return the Assertion error
+	 */
+	protected AssertionError getAssertionError()
 	{
 		return assertionError;
 	}
 
-	public JAssert getAssertCommand()
+	/**
+	 * @return the assertion command
+	 */
+	protected JAssert getAssertCommand()
 	{
 		return assertCommand;
 	}
