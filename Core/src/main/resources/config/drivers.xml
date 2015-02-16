@@ -1,0 +1,101 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:utli="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd"
+       default-lazy-init="true">
+
+    <context:annotation-config/>
+
+    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="properties">
+            <props>
+                <prop key="firebug.extension">extensions/firebug-${browser.firefox.firebug.version}-fx.xpi</prop>
+                <prop key="firepath.extension">extensions/firepath-${browser.firefox.firepath.version}-fx.xpi</prop>
+                <prop key="error.collector.extension">extensions/JSErrorCollector.xpi</prop>
+            </props>
+        </property>
+        <property name="locations">
+            <list>
+                <value>/config/default.jframework.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="localOverride" value="true"/>
+        <property name="valueSeparator" value=":"/>
+    </bean>
+
+    <bean id="applicationContextProxy" class="com.framework.utils.spring.AppContextProxy" factory-method="get" lazy-init="false"/>
+
+    <bean id="firefox.default" class="com.framework.driver.factory.WebDriverMetadata">
+        <constructor-arg name="id" value="firefox.default"/>
+        <constructor-arg name="browserType">
+            <util:constant static-field="org.openqa.selenium.remote.BrowserType.FIREFOX"/>
+        </constructor-arg>
+        <property name="extensions" ref="fire.fox.extensions"/>
+        <property name="firefoxPreferences" ref="firefox.preferences"/>
+        <property name="webdriverPreferences" ref="webdriver.preferences"/>
+        <property name="firefoxProfileFileName"><null/></property>
+        <property name="fireFoxProfileName"><null/></property>
+        <property name="webdriverSystemProperties" ref="web.delegate.system.properties"/>
+        <property name="setEnableNativeEvents" value="true"/>
+        <property name="setAcceptUntrustedCertificates" value="false"/>
+        <property name="setAlwaysLoadNoFocusLib" value="true"/>
+        <property name="setAssumeUntrustedCertificateIssue"  value="false"/>
+    </bean>
+
+    <!--<bean id="proxy.example" class="org.openqa.selenium.Proxy" lazy-init="true">-->
+        <!--<property name="autodetect" value="false"/>-->
+        <!--<property name="ftpProxy" value=""/>-->
+        <!--<property name="httpProxy" value=""/>-->
+        <!--<property name="noProxy" value="" />-->
+        <!--<property name="proxyAutoconfigUrl" value=""/>-->
+        <!--<property name="proxyType" value="SYSTEM"/>-->
+        <!--<property name="socksPassword" value=""/>-->
+        <!--<property name="socksProxy" value=""/>-->
+        <!--<property name="socksUsername" value=""/>-->
+        <!--<property name="sslProxy" value=""/>-->
+    <!--</bean>-->
+
+    <utli:map id="web.delegate.system.properties" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="webdriver.reap_profile" value="true"/>
+        <entry key="webdriver.log.file" value=""/>
+        <entry key="webdriver.firefox.logfile" value=""/>
+        <entry key="webdriver.firefox.useExisting" value=""/>
+    </utli:map>
+
+    <util:map id="fire.fox.extensions" key-type="java.lang.String" value-type="java.lang.Boolean">
+        <description>Different firefox extensions</description>
+        <entry key="${firebug.extension}" value="true"/>
+        <entry key="${firepath.extension}" value="true"/>
+        <entry key="${error.collector.extension}" value="false"/>
+    </util:map>
+
+    <!--<util:map id="firefox.binaries" key-type="java.lang.String" value-type="java.lang.String" scope="request">-->
+        <!--<description>Different firefox binaries versions</description>-->
+        <!--<entry key="version.34" value=""/>-->
+    <!--</util:map>-->
+
+    <util:properties id="firefox.preferences" value-type="java.lang.Object">
+        <prop key="capability.policy.default.Window.Query">allAccess</prop>
+        <prop key="capability.policy.default.Window.frameElement.get">allAccess</prop>
+        <prop key="browser.shell.checkDefaultBrowser">false</prop>
+        <prop key="browser.startup.homepage">about:blank</prop>
+        <prop key="browser.tabs.warnOnOpen">false</prop>
+        <prop key="browser.tabs.warnOnClose">false</prop>
+    </util:properties>
+
+    <util:properties id="webdriver.preferences">
+        <prop key="webdriver.reap_profile">allAccess</prop>
+        <prop key="webdriver.log.file">${jframework.base.logs.directory}firefox</prop>
+    </util:properties>
+
+    <!--<util:properties id="ie.capabilities" scope="request">-->
+        <!--<prop key="InternetExplorerDriver.ENABLE_ELEMENT_CACHE_CLEANUP">true</prop>-->
+        <!--<prop key="InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION">true</prop>-->
+    <!--</util:properties>-->
+
+</beans>
