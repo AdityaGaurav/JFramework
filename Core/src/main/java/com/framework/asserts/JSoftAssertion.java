@@ -11,19 +11,10 @@ import java.util.Map;
 
 
 /**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.utils.asserts
- *
- * Name   : JSoftAssertion
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-16
- *
- * Time   : 10:52
+ * When an assertion fails, don't throw an exception but record the failure.
+ * Calling {@code assertAll()} will cause an exception to be thrown if at
+ * least one assertion failed.
  */
-
 public class JSoftAssertion extends JAssertion
 {
 
@@ -31,8 +22,10 @@ public class JSoftAssertion extends JAssertion
 
 	private static final Logger logger = LoggerFactory.getLogger( JSoftAssertion.class );
 
+	/** a map that stores all the assertion errors before released by {@linkplain #assertAll()} */
 	private Map<AssertionError, JAssert> errors = Maps.newLinkedHashMap();
 
+	/** a list of messages accumulated by the assertions, before released by {@linkplain #assertAll()}*/
 	private List<String> messages = Lists.newArrayList();
 
 	//endregion
@@ -67,23 +60,25 @@ public class JSoftAssertion extends JAssertion
 	@Override
 	protected void onBeforeAssert( final JAssert assertCommand )
 	{
+		// override for having no message
 	}
 
 	@Override
 	protected void onAssertSuccess( final JAssert assertCommand )
 	{
+		logger.error( "Assertion < {} > success.", assertCommand.getReason() );
 	}
 
 	@Override
 	protected void onAssertFailure( final JAssert assertCommand, final AssertionError ex )
 	{
-		//todo: error description + screenshot;
+		logger.error( "Assertion < {} > failed.", assertCommand.getReason() );
 	}
 
 	@Override
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
-
+		// override for having no message
 	}
 
 	public List<String> getMessages()

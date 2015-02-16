@@ -19,11 +19,23 @@ import org.hamcrest.Description;
 
 public interface JAssert
 {
+	/**
+	 * @return  a description of the assert given by the user
+	 */
 	String getReason();
 
+	/**
+	 * @return  a description of the assert expected result
+	 */
 	Description getExpected();
 
+	/**
+	 * executes the assert command. used by subclasses.
+	 */
 	void doAssert();
 
+	/**
+	 * @return the actual result
+	 */
 	Object getActual();
 }

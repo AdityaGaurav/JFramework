@@ -332,7 +332,7 @@ public class JAssertion
 	/**
 	 * @return the Assertion error
 	 */
-	protected AssertionError getAssertionError()
+	public AssertionError getAssertionError()
 	{
 		return assertionError;
 	}
@@ -340,7 +340,7 @@ public class JAssertion
 	/**
 	 * @return the assertion command
 	 */
-	protected JAssert getAssertCommand()
+	public JAssert getAssertCommand()
 	{
 		return assertCommand;
 	}
