@@ -1,6 +1,7 @@
 package com.framework.driver.exceptions;
 
 import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
 
 
 /**
@@ -20,9 +21,29 @@ import com.framework.driver.event.HtmlDriver;
 public class PageObjectException extends ApplicationException
 {
 
+	public PageObjectException( final String message )
+	{
+		super( message );
+	}
+
+	public PageObjectException( final String message, final Throwable cause )
+	{
+		super( message, cause );
+	}
+
+	public PageObjectException( final Throwable cause )
+	{
+		super( cause );
+	}
+
 	public PageObjectException( final HtmlDriver driver, final String message )
 	{
 		super( driver, message );
+	}
+
+	public PageObjectException( final HtmlDriver driver, final String message, final Throwable cause )
+	{
+		super( driver, message, cause );
 	}
 
 	public PageObjectException( final HtmlDriver driver, final Throwable cause )
@@ -30,8 +51,18 @@ public class PageObjectException extends ApplicationException
 		super( driver, cause );
 	}
 
-	public PageObjectException( final HtmlDriver driver, final String message, final Throwable cause )
+	public PageObjectException( final HtmlElement element, final String message )
 	{
-		super( driver, message, cause );
+		super( element, message );
+	}
+
+	public PageObjectException( final HtmlElement element, final Throwable cause )
+	{
+		super( element, cause );
+	}
+
+	public PageObjectException( final HtmlElement element, final String message, final Throwable cause )
+	{
+		super( element, message, cause );
 	}
 }

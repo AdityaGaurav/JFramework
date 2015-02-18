@@ -17,7 +17,6 @@ package com.framework.driver.exceptions;
 
 public class UrlNotAvailableException extends Exception
 {
-
 	public UrlNotAvailableException( final Throwable cause )
 	{
 		super( cause );

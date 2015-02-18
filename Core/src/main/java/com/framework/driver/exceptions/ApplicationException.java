@@ -1,63 +1,216 @@
 package com.framework.driver.exceptions;
 
 import com.framework.driver.event.HtmlDriver;
-import org.openqa.selenium.WebDriverException;
+import com.framework.driver.event.HtmlElement;
+import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import org.openqa.selenium.internal.BuildInfo;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
 
 
 /**
- * Extends WebDriver exception
- * The ApplicationException should be thrown when something in the application UI side went unexpected.
+ * Extends RuntimeException exception
+ * The ApplicationException should be thrown when something in the application UI or non-UI process went unexpected.
  * the class will automatically take a screenshot of the current working page in case that the
- * exception was initialized with a {@code WebDriver}.
+ * exception was initialized with a {@code HtmlDriver} or or the current object if was initialized with {@code HtmlElement.
  * additional info can be added to the exception.
  * use {@link com.google.common.base.Throwables#propagateIfInstanceOf(Throwable, Class)} (  );} to avoid multiple
  * error reports.
  *
  * @see com.google.common.base.Throwables#propagateIfInstanceOf(Throwable, Class)
- * @see org.openqa.selenium.WebDriverException
  */
 
-public class ApplicationException extends WebDriverException
+public class ApplicationException extends RuntimeException
 {
-
 	private static final long serialVersionUID = 1188529006588402959L;
 
-	protected ApplicationException()
+	private Map<String, String> extraInfo = Maps.newHashMap();
+
+	private HtmlDriver driver;
+
+	public ApplicationException()
 	{
 	}
 
+	/**
+	 * Constructs a new runtime exception with the specified detail message.
+	 * The exception will not take screenshots.
+	 * used for rule violation messages or internal application errors that are not UI related.
+	 * the constructor can only be accessed via extending classes.
+	 *
+	 * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
 	protected ApplicationException( final String message )
 	{
 		super( message );
 	}
 
-	public ApplicationException( final HtmlDriver driver, final String message )
+	/**
+	 * {@inheritDoc}
+	 *  the constructor can only be accessed via extending classes.
+	 */
+	protected ApplicationException( final String message, Throwable cause )
+	{
+		super( message, cause );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *  the constructor can only be accessed via extending classes.
+	 */
+	public ApplicationException( Throwable cause )
+	{
+		super( cause );
+	}
+
+	/**
+	 * a public constructor exception that will automatically takes a screenshot from the working window handle.
+	 *
+	 * @param driver	an instance of the current active driver.
+	 * @param message   the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
+	public ApplicationException( HtmlDriver driver, final String message )
 	{
 		super( message );
 		takeScreenshot( driver );
+		this.driver = driver;
 	}
 
-	public ApplicationException( final HtmlDriver driver, final Throwable cause )
-	{
-		super( cause );
-		takeScreenshot( driver );
-	}
-
-	public ApplicationException( final String message, final Throwable cause )
-	{
-		super( message, cause );
-	}
-
-	public ApplicationException( final Throwable cause )
-	{
-		super( cause );
-	}
-
-	public ApplicationException( final HtmlDriver driver, final String message, final Throwable cause )
+	/**
+	 * a public con
+	 * @param driver  an instance of the current active driver.
+	 * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 * @param cause   he cause (which is saved for later retrieval by the {@link #getCause()} method).
+	 */
+	public ApplicationException( HtmlDriver driver, final String message, Throwable cause )
 	{
 		super( message, cause );
 		takeScreenshot( driver );
+		this.driver = driver;
+	}
 
+	/**
+	 * a public constructor exception that will automatically takes a screenshot from the working window handle.
+	 *
+	 * @param driver  an instance of the current active driver.
+	 * @param cause   the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
+	public ApplicationException( HtmlDriver driver, Throwable cause )
+	{
+		super( cause );
+		takeScreenshot( driver );
+		this.driver = driver;
+	}
+
+
+	/**
+	 * a public constructor exception that will automatically takes a screenshot from the current element area.
+	 *
+	 * @param element	an instance of the current active element.
+	 * @param message   the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
+	public ApplicationException( HtmlElement element, final String message )
+	{
+		super( message );
+		try
+		{
+			Optional<ScreenshotAndHtmlSource> screenshot = element.captureBitmap();
+			if( screenshot.isPresent() )
+			{
+				addInfo( "screenshot name", screenshot.get().getScreenshotName() );
+				if( screenshot.get().getHtmlSource().isPresent() )
+				{
+					addInfo( "html source name", screenshot.get().getHtmlSourceName() );
+				}
+			}
+			this.driver = element.getWrappedHtmlDriver();
+		}
+		catch ( IOException e )
+		{
+			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
+		}
+	}
+
+	/**
+	 * a public constructor exception that will automatically takes a screenshot from the current element area.
+	 *
+	 * @param element  an instance of the current active element.
+	 * @param cause    the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
+	public ApplicationException( HtmlElement element, Throwable cause )
+	{
+		super( cause );
+		try
+		{
+			element.captureBitmap();
+			this.driver = element.getWrappedHtmlDriver();
+		}
+		catch ( IOException e )
+		{
+			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
+		}
+	}
+
+	/**
+	 * a public constructor exception that will automatically takes a screenshot from the current element area.
+	 *
+	 * @param element 	an instance of the current active element.
+	 * @param message   the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 * @param cause     the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
+	 */
+	public ApplicationException( HtmlElement element, final String message, Throwable cause )
+	{
+		super( message, cause );
+		try
+		{
+			element.captureBitmap();
+			this.driver = element.getWrappedHtmlDriver();
+		}
+		catch ( IOException e )
+		{
+			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
+		}
+	}
+
+	private String createMessage( String originalMessageString )
+	{
+		return ( originalMessageString == null ? "" : originalMessageString + "\n" )
+				+ getBuildInformation() + "\n"
+				+ getSystemInformation()
+				+ getAdditionalInformation();
+	}
+
+	private BuildInfo getBuildInformation() {
+		return new BuildInfo();
+	}
+
+	public String getSystemInformation()
+	{
+		String host = "N/A";
+		String ip = "N/A";
+
+		try
+		{
+			host = InetAddress.getLocalHost().getHostName();
+			ip = InetAddress.getLocalHost().getHostAddress();
+		}
+		catch ( UnknownHostException throw_away )
+		{
+			//
+		}
+
+		return String.format( "System info: host: '%s', ip: '%s', os.name: '%s', os.arch: '%s', os.version: '%s', java.version: '%s'",
+				host,
+				ip,
+				System.getProperty( "os.name" ),
+				System.getProperty( "os.arch" ),
+				System.getProperty( "os.version" ),
+				System.getProperty( "java.version" ) );
 	}
 
 	private void takeScreenshot( HtmlDriver driver )
@@ -66,6 +219,39 @@ public class ApplicationException extends WebDriverException
 		//Screenshot screenshot = new Screenshot( driver, "/Users/solmarkn/IdeaProjects/WebDriverTestNg/Screenshots" );
 		//String outputFile = screenshot.takeScreenshot();
 		//super.addInfo( "screenshot file", outputFile );
+	}
+
+	public void addInfo( String key, String value )
+	{
+		extraInfo.put( key, value );
+	}
+
+	public String getAdditionalInformation()
+	{
+		if( driver != null )
+		{
+			extraInfo.put( "driver.version", driver.getCapabilities().getVersion() );
+			extraInfo.put( "browser.name", driver.getCapabilities().getBrowserName() );
+		}
+		String result = "";
+		for ( Map.Entry<String, String> entry : extraInfo.entrySet() )
+		{
+			if ( entry.getValue() != null && entry.getValue().startsWith( entry.getKey() ) )
+			{
+				result += "\n" + entry.getValue();
+			}
+			else
+			{
+				result += "\n" + entry.getKey() + ": " + entry.getValue();
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public String getMessage()
+	{
+		return createMessage( super.getMessage() );
 	}
 
 }
