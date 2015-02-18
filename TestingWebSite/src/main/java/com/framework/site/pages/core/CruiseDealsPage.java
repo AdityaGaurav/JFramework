@@ -1,14 +1,19 @@
 package com.framework.site.pages.core;
 
-import com.framework.site.pages.CarnivalPage;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
+import com.framework.site.config.SiteProperty;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
+import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import static org.hamcrest.Matchers.is;
 
 
 /**
@@ -25,7 +30,8 @@ import java.util.List;
  * Time   : 11:48
  */
 
-public class CruiseDealsPage extends CarnivalPage
+@DefaultUrl( matcher = "contains()", value = "/cruise-deals.aspx" )
+public class CruiseDealsPage extends BaseCarnivalPage
 {
 
 	//region CruiseDealsPage - Variables Declaration and Initialization Section.
@@ -34,14 +40,21 @@ public class CruiseDealsPage extends CarnivalPage
 
 	private static final String LOGICAL_NAME = "Cruise Deals Page";
 
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private BreadcrumbsBar breadcrumbsBar = null;
+
 	//endregion
 
 
 	//region CruiseDealsPage - Constructor Methods Section
 
-	public CruiseDealsPage( final WebDriver driver )
+	public CruiseDealsPage()
 	{
-		super( LOGICAL_NAME, driver );
+		super( LOGICAL_NAME );
+		validatePageInitialState();
 	}
 
 	//endregion
@@ -50,15 +63,28 @@ public class CruiseDealsPage extends CarnivalPage
 	//region CruiseDealsPage - Initialization and Validation Methods Section
 
 	@Override
-	protected void validatePageUrl()
+	protected void validatePageInitialState()
 	{
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = new JAssertion( getDriver() );
+
+		Optional<HtmlElement> e = getDriver().elementExists( By.cssSelector( "div.intro" ) );
+		assertion.assertThat( String.format( REASON, "div.intro" ), e.isPresent(), is( true ) );
+
+		e = getDriver().elementExists( By.id( "emailSignupIFrame" ) );
+		assertion.assertThat( String.format( REASON, "#emailSignupIFrame" ), e.isPresent(), is( true ) );
 	}
 
 	@Override
-	protected void initElements()
+	protected void validatePageTitle()
 	{
-		List<WebElement> y = Lists.newArrayList();
+		final String EXPECTED_TITLE = ( String ) SiteProperty.CRUISE_DEALS_TITLE.fromContext();
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
+		JAssertion assertion = new JAssertion( getDriver() );
+		assertion.assertThat( REASON, getTitle(), JMatchers.is( EXPECTED_TITLE ) );
 	}
 
 	//endregion
@@ -66,19 +92,13 @@ public class CruiseDealsPage extends CarnivalPage
 
 	//region CruiseDealsPage - Service Methods Section
 
-	@Override
-	public String toString()
+	public BreadcrumbsBar subscribe()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
-				.toString();
+		if ( null == this.breadcrumbsBar )
+		{
+			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbsBar() );
+		}
+		return breadcrumbsBar;
 	}
 
 	//endregion
@@ -90,6 +110,11 @@ public class CruiseDealsPage extends CarnivalPage
 
 
 	//region CruiseDealsPage - Element Finder Methods Section
+
+	HtmlElement findBreadcrumbsBar()
+	{
+		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+	}
 
 	//endregion
 

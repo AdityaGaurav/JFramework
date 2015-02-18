@@ -1,33 +1,28 @@
 package com.framework.site.pages.core.cruiseto;
 
-import com.framework.driver.exceptions.ApplicationException;
-import com.framework.driver.objects.AssertingURL;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
+import com.framework.driver.event.HtmlElement;
+import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Destinations;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
+import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.WebDriver;
+import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.datetime.TimeConstants;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
+import static org.hamcrest.Matchers.is;
 
 
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.pages.core
- *
- * Name   : CruiseToPage
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-10
- *
- * Time   : 01:17
- */
-
-public class CruiseToDestinationPage extends BaseCarnivalPage implements AssertingURL
+@DefaultUrl( matcher = "containsPattern()", value = "/cruise-to/(alaska|bahamas|bermuda|caribbean|europe|mexico)-cruises.aspx" )
+public class CruiseToDestinationPage extends BaseCarnivalPage
 {
 
 	//region CruiseToDestinationPage - Variables Declaration and Initialization Section.
@@ -36,26 +31,23 @@ public class CruiseToDestinationPage extends BaseCarnivalPage implements Asserti
 
 	private static final String LOGICAL_NAME = "Cruise To Destination Page";
 
-	private static final String PAGE_TITLE_KEY = "cruise.to.destination.title";
-
-	private static final String URL_PATH = "/cruise-to/${destination}-cruises.aspx";
-
-	private final Destinations destination;
+	private static Destinations destination;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
+	private BreadcrumbsBar breadcrumbsBar = null;
 
 	//endregion
 
 
 	//region CruiseToDestinationPage - Constructor Methods Section
 
-	public CruiseToDestinationPage( final WebDriver driver, Destinations destination )
+	public CruiseToDestinationPage()
 	{
-		super( LOGICAL_NAME, driver );
-		this.destination = destination;
+		super( LOGICAL_NAME );
+		validatePageInitialState();
 	}
 
 	//endregion
@@ -64,33 +56,38 @@ public class CruiseToDestinationPage extends BaseCarnivalPage implements Asserti
 	//region CruiseToDestinationPage - Initialization and Validation Methods Section
 
 	@Override
-	protected void initElements()
+	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getId(), getLogicalName() );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = new JAssertion( getDriver() );
 
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initElements.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for page " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		Optional<HtmlElement> e = getDriver().elementExists( By.cssSelector( ".hero-title > h1" ) );
+		assertion.assertThat( String.format( REASON, ".hero-title > h1" ), e.isPresent(), is( true ) );
+
+		e = getDriver().elementExists( By.className( "hero-slide" ) );
+		assertion.assertThat( String.format( REASON, ".hero-slide" ), e.isPresent(), is( true ) );
+
+		String heroTitle = findHeroTitleH1().getText();
+		assertion.assertThat( "Validate page H1 inner title", heroTitle, JMatchers.is( destination.getDestination().toUpperCase() ) );
 	}
 
 	@Override
-	public void assertURL( final URL url ) throws AssertionError
+	protected void validatePageTitle()
 	{
 
-	}
-
-	public Destinations getDestination()
-	{
-		return destination;
+		final String EXPECTED_TITLE_LIST =
+				( String ) SiteProperty.CRUISE_TO_DESTINATION_TITLE.fromContext( new Object[] { destination.getCapitalized() } );
+		String[] expectedTitles = StringUtils.split( EXPECTED_TITLE_LIST, "," );
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
+		HtmlCondition<Boolean> condition = ExpectedConditions.titleMatches( JMatchers.anyOf(
+						JMatchers.startsWith( expectedTitles[ 0 ] ),
+						JMatchers.startsWith( expectedTitles[ 1 ] ),
+						JMatchers.startsWith( expectedTitles[ 2 ] ) )
+																		  );
+		new JAssertion( getDriver() ).assertWaitThat( REASON, TimeConstants.ONE_MINUTE, condition );
 	}
 
 	//endregion
@@ -98,19 +95,23 @@ public class CruiseToDestinationPage extends BaseCarnivalPage implements Asserti
 
 	//region CruiseToDestinationPage - Service Methods Section
 
-	@Override
-	public String toString()
+	public static void forDestination( final Destinations destination )
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
-				.toString();
+		CruiseToDestinationPage.destination = destination;
+	}
+
+	public Destinations getDestination()
+	{
+		return destination;
+	}
+
+	public BreadcrumbsBar subscribe()
+	{
+		if ( null == this.breadcrumbsBar )
+		{
+			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbsBar() );
+		}
+		return breadcrumbsBar;
 	}
 
 	//endregion
@@ -118,10 +119,28 @@ public class CruiseToDestinationPage extends BaseCarnivalPage implements Asserti
 
 	//region CruiseToDestinationPage - Business Methods Section
 
+
 	//endregion
 
 
 	//region CruiseToDestinationPage - Element Finder Methods Section
+
+	private HtmlElement findBreadcrumbsBar()
+	{
+		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+	}
+
+	private HtmlElement findHeroTitleH1()
+	{
+		By findBy = By.cssSelector( ".hero-title > h1" );
+		return getDriver().findElement( findBy );
+	}
+
+	private HtmlElement findHeroTitlePara()
+	{
+		By findBy = By.cssSelector( ".hero-title > p" );
+		return getDriver().findElement( findBy );
+	}
 
 	//endregion
 

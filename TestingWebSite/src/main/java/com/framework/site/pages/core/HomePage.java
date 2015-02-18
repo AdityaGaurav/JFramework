@@ -1,45 +1,29 @@
 package com.framework.site.pages.core;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
-import com.framework.driver.utils.ui.WaitUtil;
-import com.framework.matchers.MatcherUtils;
-import com.framework.site.config.InitialPage;
-import com.framework.site.data.TestEnvironment;
-import com.framework.site.objects.body.interfaces.LinkTout;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
+import com.framework.driver.event.HtmlElement;
+import com.framework.site.config.SiteProperty;
+import com.framework.site.config.SiteSessionManager;
+import com.framework.site.objects.body.LinkToutsContainerObject;
+import com.framework.site.objects.body.interfaces.LinkTouts;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.site.objects.header.interfaces.Header;
-import com.framework.site.pages.CarnivalPage;
-import com.framework.utils.spring.AppContextProxy;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.utils.datetime.TimeConstants;
+import com.framework.utils.matchers.JMatchers;
+import com.framework.utils.string.LogStringStyle;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Locale;
+import static org.hamcrest.Matchers.is;
 
 
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.pages.core
- *
- * Name   : HomePage
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-05
- *
- * Time   : 23:10
- */
-
-public class HomePage extends CarnivalPage
+public class HomePage extends BaseCarnivalPage
 {
 
 	//region HomePage - Variables Declaration and Initialization Section.
@@ -52,18 +36,18 @@ public class HomePage extends CarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private List<LinkTout> linkTouts = null;
+	private LinkTouts linkTouts = null;
 
 	//endregion
 
 
 	//region HomePage - Constructor Methods Section
 
-	public HomePage( final WebDriver driver )
+	public HomePage()
 	{
-		super( LOGICAL_NAME, driver );
+		super( LOGICAL_NAME );
+		validatePageInitialState();
 	}
-
 
 	//endregion
 
@@ -73,48 +57,11 @@ public class HomePage extends CarnivalPage
 	@Override
 	protected void validatePageUrl()
 	{
-		WebDriverWait wait = WaitUtil.wait60( pageDriver );
-		ExpectedCondition<Boolean> expectedCondition;
+		logger.debug( "validating page url and title for: <'{}'>, name: <'{}'> ...", getQualifier(), getLogicalName() );
 
-		try
-		{
-			Object ol = InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
-			Object oe = InitialPage.getRuntimeProperties().getRuntimePropertyValue( "environment" );
-			Locale expectedLocale = ( Locale ) ol;
-			TestEnvironment expectedEnvironment = ( TestEnvironment ) oe;
-			logger.debug( "runtime property value for locale is -> {}", expectedLocale.getDisplayCountry() );
-			logger.debug( "runtime property value for environment is -> {}", expectedEnvironment.name() );
-
-			String countryCode = expectedLocale.getCountry().equals( "GB" ) ? "UK" :  expectedLocale.getCountry();
-
-			final String EXPECTED_ENV_URL = InitialPage.getInstance().getInitialUrl();
-			final String EXPECTED_TITLE = ( String ) AppContextProxy.getInstance().getMessage( "home.page.title", null, expectedLocale );
-			expectedCondition = WaitUtil.urlMatches( MatcherUtils.equalToIgnoringCase( EXPECTED_ENV_URL ) );
-
-			/* asserting that current url matches expected url */
-
-			JAssertions.assertWaitThat( wait ).matchesCondition( expectedCondition );
-			logger.info( "page url successfully asserted -> equalToIgnoringCase( \"{}\" )", EXPECTED_ENV_URL );
-
-			/* asserting that page is matching expected locale */
-
-			String actualLocale = getSiteRegion();
-			logger.debug( "Current site region is <'{}'>", actualLocale );
-			JAssertions.assertThat( actualLocale ).isEqualToIgnoringCase( countryCode );
-
-			/* asserting page title */
-
-			JAssertions.assertThat( pageDriver ).matchesTitle( MatcherUtils.equalTo( EXPECTED_TITLE ) );
-			logger.info( "page title successfully asserted -> equalToIgnoringCase( \"{}\" )", EXPECTED_TITLE  );
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#validatePageUrl.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		final String EXPECTED_ENV_URL = SiteSessionManager.get().getBaseUrl().toString();
+		HtmlCondition<Boolean> condition = ExpectedConditions.urlMatches( JMatchers.equalToIgnoringCase( EXPECTED_ENV_URL ) );
+		getDriver().assertWaitThat( "Asserting Home Page Url", TimeConstants.ONE_MINUTE, condition );
 	}
 
 	/**
@@ -127,27 +74,44 @@ public class HomePage extends CarnivalPage
 	 * </ul>
 	 */
 	@Override
-	protected void initElements()
+	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getId(), getLogicalName() );
-		WebDriverWait wew = WaitUtil.wait10( pageDriver );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceBy( By.id( "ccl_homepage" ) ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceBy( By.id( "form2" ) ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceBy( Header.ROOT_BY ) );
-			JAssertions.assertWaitThat( wew ).matchesCondition( WaitUtil.presenceBy( Footer.ROOT_BY ) );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = new JAssertion( getDriver() );
+		Optional<HtmlElement> e = getDriver().elementExists( By.id( "ccl_homepage" ) );
+		assertion.assertThat( String.format( REASON, "#ccl_homepage" ), e.isPresent(), is( true ) );
 
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initElements.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for page " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		e = getDriver().elementExists( By.id( "form2" ) );
+		assertion.assertThat( String.format( REASON, "#form2" ), e.isPresent(), is( true ) );
+
+		e = getDriver().elementExists( Header.ROOT_BY );
+		assertion.assertThat( String.format( REASON, Header.ROOT_BY.toString() ), e.isPresent(), is( true ) );
+
+		e = getDriver().elementExists( Footer.ROOT_BY );
+		assertion.assertThat( String.format( REASON, Footer.ROOT_BY.toString() ), e.isPresent(), is( true ) );
+	}
+
+	@Override
+	protected void validatePageTitle()
+	{
+		final String EXPECTED_TITLE = ( String ) SiteProperty.HOME_PAGE_TITLE.fromContext();
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
+
+		HtmlCondition<Boolean> condition = ExpectedConditions.titleMatches( JMatchers.equalToIgnoringCase( EXPECTED_TITLE ) );
+		getDriver().assertWaitThat( REASON, TimeConstants.HALF_MINUTE, condition );
+	}
+
+	//endregion
+
+
+	//region HomePage - Business Methods Section
+
+	public String getSecuredUrl()
+	{
+   		return findHiddenSecuredUrlInput().getAttribute( "value" );
 	}
 
 	//endregion
@@ -158,41 +122,42 @@ public class HomePage extends CarnivalPage
 	@Override
 	public String toString()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
+		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+				.appendSuper( super.toString() )
+				.append( "locale", getCurrentLocale().getDisplayCountry() )
 				.toString();
 	}
 
-
-	//endregion
-
-
-	//region HomePage - Business Methods Section
+	public LinkTouts linkToutsContainer()
+	{
+		if ( null == this.linkTouts )
+		{
+			this.linkTouts = new LinkToutsContainerObject( finLinkTouts() );
+		}
+		return linkTouts;
+	}
 
 	//endregion
 
 
 	//region HomePage - Element Finder Methods Section
 
-	private WebElement findForm2()
+	private HtmlElement findForm2()
 	{
 		By findBy = By.id( "form2" );
-		return pageDriver.findElement( findBy );
+		return getDriver().findElement( findBy );
 	}
 
-	private WebElement findCclHomePage()
+	private HtmlElement findHiddenSecuredUrlInput()
 	{
-		By findBy = By.id( "ccl-refresh-homepage" );
-		return findForm2().findElement( findBy );
+		By findBy = By.id( "hSecUrl" );
+		return getDriver().findElement( findBy );
 	}
 
+	private HtmlElement finLinkTouts()
+	{
+		return getDriver().findElement( LinkTouts.ROOT_BY );
+	}
 
 	//endregion
 

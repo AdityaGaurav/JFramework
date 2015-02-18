@@ -1,35 +1,19 @@
 package com.framework.site.pages.core.cruiseships;
 
-import com.framework.driver.exceptions.ApplicationException;
-import com.framework.driver.objects.AssertingURL;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
-import com.framework.site.objects.body.common.BreadcrumbsBarObject;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.WebDriver;
+import com.framework.utils.datetime.TimeConstants;
+import com.framework.utils.matchers.JMatchers;
+import org.hamcrest.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 
-
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.pages.core
- *
- * Name   : CruiseToPage
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-10
- *
- * Time   : 01:17
- */
-
-public class CruiseShipsDetailsPage extends BaseCarnivalPage implements AssertingURL
+public class CruiseShipsDetailsPage extends BaseCarnivalPage
 {
 
 	//region CruiseShipsDetailsPage - Variables Declaration and Initialization Section.
@@ -38,11 +22,9 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage implements Assertin
 
 	private static final String LOGICAL_NAME = "Cruise Ships Details Page";
 
-	private static final String URL_PATH = "/cruise-ships/${ship.name.dash.lower.case}.aspx";
+	private static final String URL_PATTERN = "/cruise-ships/carnival-%s.aspx";
 
-	private static final String PAGE_TITLE_KEY = "ship.details.page.title:";
-
-	private final Ships ship;
+	private static Ships ship;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -55,10 +37,10 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage implements Assertin
 
 	//region CruiseShipsDetailsPage - Constructor Methods Section
 
-	public CruiseShipsDetailsPage( final WebDriver driver, Ships ship )
+	public CruiseShipsDetailsPage()
 	{
-		super( LOGICAL_NAME, driver );
-		this.ship = ship;
+		super( LOGICAL_NAME );
+		validatePageInitialState();
 	}
 
 	//endregion
@@ -66,63 +48,55 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage implements Assertin
 
 	//region CruiseShipsDetailsPage - Initialization and Validation Methods Section
 
-	@Override
-	protected void initElements()
+	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getId(), getLogicalName() );
+		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
 
-		try
-		{
+		/* Validating breadcrumb last value pointing to ship name */
 
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initElements.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for page " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		String lastChild = breadcrumbsBar().breadcrumbs().getLastChildName();
+		getDriver().assertThat( "Validate breadcrumb last position", lastChild, JMatchers.is( ship.getFullName() ) );
+
+
 	}
 
 	@Override
-	public void assertURL( final URL url ) throws AssertionError
+	protected void validatePageTitle()
 	{
+		String title = ( String ) SiteProperty.SHIP_DETAILS_PAGE_TITLE.fromContext( new Object[] { ship.getShipName() } );
+		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
 
+		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
 	}
 
+	/**
+	 * Overrides the generic extended class, since the page url is create dynamically.
+	 */
+	@Override
+	protected void validatePageUrl()
+	{
+		String url = String.format( URL_PATTERN, ship.getShipName().toLowerCase() );
+		Matcher<String> matcher = JMatchers.endsWith( url );
+		getDriver().assertWaitThat( "Validate page url", TimeConstants.ONE_MINUTE, ExpectedConditions.urlMatches( matcher ) );
 
+	}
 
 	//endregion
 
 
 	//region CruiseShipsDetailsPage - Service Methods Section
 
-	@Override
-	public String toString()
+	public static void forShip( final Ships ship )
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
-				.toString();
-	}
-
-	public Ships getShip()
-	{
-		return ship;
+		CruiseShipsDetailsPage.ship = ship;
 	}
 
 	public BreadcrumbsBar breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
-			this.breadcrumbsBar = new BreadcrumbsBarObject( pageDriver, findBreadcrumbBarDiv() );
+			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbBarDiv() );
 		}
 		return breadcrumbsBar;
 	}

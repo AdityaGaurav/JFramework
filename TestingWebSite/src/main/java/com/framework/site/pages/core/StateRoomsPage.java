@@ -1,23 +1,14 @@
 package com.framework.site.pages.core;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
-import com.framework.driver.utils.ui.WaitUtil;
-import com.framework.matchers.MatcherUtils;
-import com.framework.site.config.InitialPage;
-import com.framework.site.objects.body.common.BreadcrumbsBarObject;
+import com.framework.site.config.SiteProperty;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
-import com.framework.site.pages.CarnivalPage;
-import com.framework.utils.spring.AppContextProxy;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.matchers.JMatchers;
+import org.hamcrest.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Locale;
 
 
 /**
@@ -34,7 +25,8 @@ import java.util.Locale;
  * Time   : 01:17
  */
 
-public class StateRoomsPage extends CarnivalPage
+@DefaultUrl( matcher = "endsWith()", value = "/staterooms.aspx" )
+public class StateRoomsPage extends BaseCarnivalPage
 {
 
 	//region StateRoomsPage - Variables Declaration and Initialization Section.
@@ -42,10 +34,6 @@ public class StateRoomsPage extends CarnivalPage
 	private static final Logger logger = LoggerFactory.getLogger( StateRoomsPage.class );
 
 	private static final String LOGICAL_NAME = "State Rooms Page";
-
-	private static final String URL_PATH = "/staterooms.aspx";
-
-	private static final String PAGE_TITLE_KEY = "state.rooms.title";
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -58,9 +46,10 @@ public class StateRoomsPage extends CarnivalPage
 
 	//region StateRoomsPage - Constructor Methods Section
 
-	public StateRoomsPage( final WebDriver driver )
+	public StateRoomsPage()
 	{
-		super( LOGICAL_NAME, driver );
+		super( LOGICAL_NAME );
+		validatePageInitialState();
 	}
 
 	//endregion
@@ -68,55 +57,20 @@ public class StateRoomsPage extends CarnivalPage
 
 	//region StateRoomsPage - Initialization and Validation Methods Section
 
-	@Override
-	protected void validatePageUrl()
+	protected void validatePageTitle()
 	{
-		WebDriverWait wait = WaitUtil.wait60( pageDriver );
-		ExpectedCondition<Boolean> expectedCondition;
+		String title = ( String ) SiteProperty.STATE_ROOMS_TITLE.fromContext();
+		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
 
-		try
-		{
-			expectedCondition = WaitUtil.urlMatches( MatcherUtils.endsWith( URL_PATH ) );
-
-			/* asserting that current url matches expected url */
-
-			JAssertions.assertWaitThat( wait ).matchesCondition( expectedCondition );
-			logger.info( "page url successfully asserted -> endsWith( \"{}\" )", URL_PATH );
-
-			/* asserting page title */
-
-			Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
-			final String EXPECTED_TITLE = ( String ) AppContextProxy.getInstance().getMessage( PAGE_TITLE_KEY, null, locale );
-			JAssertions.assertThat( pageDriver ).matchesTitle( MatcherUtils.equalTo( EXPECTED_TITLE ) );
-			logger.info( "page title successfully asserted -> equalToIgnoringCase( \"{}\" )", EXPECTED_TITLE  );
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#validatePageUrl.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
 	}
 
 	@Override
-	protected void initElements()
+	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getId(), getLogicalName() );
+		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
 
-		try
-		{
-
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initElements.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for page " + getLogicalName() + " was failed." );
-			throw ex;
-		}
 	}
 
 	//endregion
@@ -124,26 +78,13 @@ public class StateRoomsPage extends CarnivalPage
 
 	//region StateRoomsPage - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
-				.toString();
-	}
+
 
 	public BreadcrumbsBar breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
-			this.breadcrumbsBar = new BreadcrumbsBarObject( pageDriver, findBreadcrumbBarDiv() );
+			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbBarDiv() );
 		}
 		return breadcrumbsBar;
 	}
