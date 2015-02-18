@@ -1,11 +1,14 @@
 package com.framework.driver.objects;
 
-import com.framework.driver.event.EventWebDriver;
+import ch.lambdaj.Lambda;
+import ch.lambdaj.function.convert.Converter;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.event.HtmlObject;
 import com.framework.utils.error.PreConditions;
 import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,18 +36,14 @@ public class RadioButtonGroup
 
 	private static final Logger logger = LoggerFactory.getLogger( RadioButtonGroup.class );
 
-	//private final List<WebElement> elements;
-
 	private final List<RadioButton> radioButtons;
-
-	private EventWebDriver driver;
 
 	//endregion
 
 
 	//region RadioButtonGroup - Constructor Methods Section
 
-	public RadioButtonGroup( List<WebElement> radioButtons )
+	public RadioButtonGroup( List<HtmlElement> radioButtons )
 	{
 		String ERR_MSG1 = "The radio buttons list cannot be null.";
 		String ERR_MSG2 = "The provided list should be greater than 1, however is < %d >";
@@ -52,15 +51,15 @@ public class RadioButtonGroup
 		PreConditions.checkNotNull( radioButtons, ERR_MSG1, radioButtons.size() );
 		PreConditions.checkArgument( radioButtons.size() > 1, ERR_MSG2, radioButtons.size() );
 
-		this.radioButtons = BaseElementObject.convertToRadioButton( radioButtons );
+		this.radioButtons = HtmlObject.convertToRadioButton( radioButtons );
 	}
 
-	public RadioButtonGroup( WebDriver driver, By.ByName byName )
+	public RadioButtonGroup( HtmlDriver driver, By.ByName byName )
 	{
-		this.driver = ( EventWebDriver ) PreConditions.checkNotNull( driver, "WebDriver cannot be null!" );
+		PreConditions.checkNotNull( driver, "HtmlDriver cannot be null!" );
 		PreConditions.checkNotNull( byName, "ByName cannot be null!" );
-		List<WebElement> elements = driver.findElements( byName );
-		this.radioButtons = BaseElementObject.convertToRadioButton( elements );
+		List<HtmlElement> elements = driver.findElements( byName );
+		this.radioButtons = HtmlObject.convertToRadioButton( elements );
 	}
 
 	//endregion
@@ -70,16 +69,24 @@ public class RadioButtonGroup
 
 	public List<String> getValues()
 	{
-		return BaseElementObject.extractAttribute( radioButtons, "value" );
+		return Lambda.convert( radioButtons, new Converter<RadioButton, String>()
+		{
+			@Override
+			public String convert( final RadioButton from )
+			{
+				String value = from.getValue();
+				return StringUtils.removePattern( value, "(\t|\n)" );
+			}
+		} );
 	}
 
 	public Optional<String> getSelectedValue()
 	{
 		for ( RadioButton radioButton : radioButtons )
 		{
-			if ( radioButton.isSelected() )
+			if ( radioButton.getHtmlElement().isSelected() )
 			{
-				return Optional.of( radioButton.getAttribute( "value" ) );
+				return Optional.of( radioButton.getValue() );
 			}
 		}
 		return Optional.absent();
@@ -89,9 +96,9 @@ public class RadioButtonGroup
 	{
 		for ( RadioButton radioButton : radioButtons )
 		{
-			if ( value.equals( radioButton.getAttribute( "value" ) ) )
+			if ( value.equals( radioButton.getValue() ) )
 			{
-				radioButton.click();
+				radioButton.getHtmlElement().click();
 				break;
 			}
 		}
@@ -101,9 +108,9 @@ public class RadioButtonGroup
 	{
 		for ( RadioButton radioButton : radioButtons )
 		{
-			if ( label.equalsIgnoreCase( radioButton.getText() ) )
+			if ( label.equalsIgnoreCase( radioButton.getHtmlElement().getText() ) )
 			{
-				radioButton.click();
+				radioButton.getHtmlElement().click();
 				break;
 			}
 		}

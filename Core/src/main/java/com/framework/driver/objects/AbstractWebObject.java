@@ -1,28 +1,26 @@
 package com.framework.driver.objects;
 
-import com.framework.driver.event.EventWebDriver;
-import com.framework.driver.exceptions.WebObjectException;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
 import com.framework.utils.error.PreConditions;
-import com.google.common.base.MoreObjects;
+import com.framework.utils.string.LogStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public abstract class AbstractWebObject implements WebObject
+public abstract class AbstractWebObject // implements WebObject
 {
 
 	//region AbstractWebObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( AbstractWebObject.class );
 
-	private WebElement rootElement;
-
-	private EventWebDriver objectDriver;
+	private HtmlElement rootElement;
 
 	/**
 	 * The web object logical name
@@ -47,30 +45,17 @@ public abstract class AbstractWebObject implements WebObject
 	 * @throws IllegalStateException if {@code logicalName} is either {@code null} or empty
 	 * @throws NullPointerException  if {@code wrappedDriver} is {@code null}
 	 */
-	public AbstractWebObject( WebDriver driver, WebElement rootElement, final String logicalName )
+	public AbstractWebObject( HtmlElement rootElement, final String logicalName )
 	{
-		final String ERR_MSG1 = "WebElement root element is null.";
-		final String ERR_MSG2 = "WebDriver driver is null.";
-		final String ERR_MSG3 =  "logical name should is either null, blank or empty.";
-		final String ERR_MSG4 = "The argument driver is not an instance of <{}>";
-		this.qualifier = String.format( "OBJECT[%d]", ++ counter );
-		try
-		{
-			this.rootElement = PreConditions.checkNotNull( rootElement, ERR_MSG1 );
-			WebDriver drv = PreConditions.checkNotNull( driver, ERR_MSG2 );
-			PreConditions.checkInstanceOf( EventWebDriver.class, drv, ERR_MSG4, EventWebDriver.class.getCanonicalName() );
-			this.objectDriver = ( EventWebDriver ) drv;
-			this.logicalName = PreConditions.checkNotNullNotBlankOrEmpty( logicalName, ERR_MSG3 );
-			initWebObject();
-			logger.debug( "Created new web object -> {}", toString() );
-		}
-		catch ( Throwable t )
-		{
-			logger.error( "throwing a new WebObjectException on {}#constructor.", getClass().getSimpleName() );
-			WebObjectException woe = new WebObjectException( this.objectDriver.getWrappedDriver(), t.getMessage(), t );
-			woe.addInfo( "causing flow", "try to create a new web object -> " + this.qualifier );
-			throw woe;
-		}
+		final String ERR_MSG1 = "HtmlElement root element is null.";
+		final String ERR_MSG2 =  "logical name should is either null, blank or empty.";
+
+		this.qualifier = String.format( "WEB-OBJECT[%d]", ++ counter );
+
+		this.rootElement = PreConditions.checkNotNull( rootElement, ERR_MSG1 );
+		this.logicalName = PreConditions.checkNotNullNotBlankOrEmpty( logicalName, ERR_MSG2 );
+		logger.debug( "Created new web object -> {}", toString() );
+
 	}
 
 	//endregion
@@ -88,12 +73,12 @@ public abstract class AbstractWebObject implements WebObject
 
 	//region AbstractWebObject - Service Methods Section
 
-	public WebElement getBaseRootElement()
+	public HtmlElement getBaseRootElement()
 	{
 		return rootElement;
 	}
 
-	public WebElement getBaseRootElement( By by )
+	public HtmlElement getBaseRootElement( By by )
 	{
 		try
 		{
@@ -102,20 +87,19 @@ public abstract class AbstractWebObject implements WebObject
 		catch ( StaleElementReferenceException ex )
 		{
 			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			rootElement = objectDriver.findElement( by );
+			rootElement = getDriver().findElement( by );
 		}
 		return rootElement;
 	}
 
-	public EventWebDriver getWrappedDriver()
+	public HtmlDriver getDriver()
 	{
-		return objectDriver;
+		return rootElement.getWrappedHtmlDriver();
 	}
 
 	/**
 	 * @return returns the Web Object logical name {@linkplain #logicalName}
 	 */
-	@Override
 	public final String getLogicalName()
 	{
 		return logicalName;
@@ -124,17 +108,15 @@ public abstract class AbstractWebObject implements WebObject
 	@Override
 	public String toString()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "qualifier", qualifier )
-				.omitNullValues()
+		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+				.append( "logical name", logicalName )
+				.append( "qualifier", qualifier )
 				.toString();
 	}
 
 	/**
 	 * @return returns the generated unique identifier for the class instance {@linkplain #qualifier}
 	 */
-	@Override
 	public String getQualifier()
 	{
 		return this.qualifier;

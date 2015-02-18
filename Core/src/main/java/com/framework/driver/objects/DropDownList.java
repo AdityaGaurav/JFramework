@@ -1,9 +1,11 @@
 package com.framework.driver.objects;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.utils.error.PreConditions;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ import java.util.StringTokenizer;
  * Time   : 20:12
  */
 
-public class DropDownList extends BaseElementObject
+public class DropDownList
 {
 
 	//region DropDownList - Variables Declaration and Initialization Section.
@@ -34,15 +36,19 @@ public class DropDownList extends BaseElementObject
 
 	private final boolean isMulti;
 
+	private HtmlElement element;
+
+	private final String qualifier;
+
+	private static long counter = NumberUtils.LONG_ZERO;
+
 	//endregion
 
 
 	//region DropDownList - Constructor Methods Section
 
-	public DropDownList( final WebElement element )
+	public DropDownList( final HtmlElement element )
 	{
-		super( element );
-
 		final String ERR_MSG1 = "Invalid tag name found for drop-down list -> %s";
 		final String ERR_MSG2 = "Invalid multiple attribute found for drop-down list -> %s";
 
@@ -53,9 +59,11 @@ public class DropDownList extends BaseElementObject
 		{
 			PreConditions.checkArgument( value.toLowerCase().equals( "true" ), ERR_MSG2, value );
 		}
-		isMulti = ( value != null && ! "false".equals( value ) );
 
-		logger.debug( "Creating a new Drop-Down List object for ( tag:'{}' )", tagName );
+		isMulti = ( value != null && ! "false".equals( value ) );
+		this.element = element;
+		this.qualifier = String.format( "DROP_DOWN[%d]", ++ counter );
+		logger.debug( "Created a new Drop-Down-List element < {} >", qualifier );
 	}
 
 	//endregion
@@ -63,14 +71,14 @@ public class DropDownList extends BaseElementObject
 
 	//region DropDownList - Public Methods Section
 
-	public List<WebElement> getOptions()
+	public List<HtmlElement> getOptions()
 	{
-		return getWrappedElement().findElements( By.tagName( "option" ) );
+		return element.findElements( By.tagName( "option" ) );
 	}
 
-	public WebElement getFirstSelectedOption()
+	public HtmlElement getFirstSelectedOption()
 	{
-		for ( WebElement option : getOptions() )
+		for ( HtmlElement option : getOptions() )
 		{
 			if ( option.isSelected() )
 			{
@@ -84,11 +92,11 @@ public class DropDownList extends BaseElementObject
 	public void selectByVisibleText( String text )
 	{
 		// try to find the option via XPATH ...
-		List<WebElement> options =
-				getWrappedElement().findElements( By.xpath( ".//option[normalize-space(.) = " + escapeQuotes( text ) + "]" ) );
+		List<HtmlElement> options =
+				element.findElements( By.xpath( ".//option[normalize-space(.) = " + escapeQuotes( text ) + "]" ) );
 
 		boolean matched = false;
-		for ( WebElement option : options )
+		for ( HtmlElement option : options )
 		{
 			setSelected( option );
 			if ( ! isMultiple() )
@@ -101,20 +109,18 @@ public class DropDownList extends BaseElementObject
 		if ( options.isEmpty() && text.contains( " " ) )
 		{
 			String subStringWithoutSpace = getLongestSubstringWithoutSpace( text );
-			List<WebElement> candidates;
+			List<HtmlElement> candidates;
 			if ( "" .equals( subStringWithoutSpace ) )
 			{
-				// hmm, text is either empty or contains only spaces - get all options ...
-				candidates = getWrappedElement().findElements( By.tagName( "option" ) );
+				candidates = element.findElements( By.tagName( "option" ) );
 			}
 			else
 			{
 				// get candidates via XPATH ...
-				candidates =
-						getWrappedElement().findElements( By.xpath( ".//option[contains(., " +
+				candidates = element.findElements( By.xpath( ".//option[contains(., " +
 								escapeQuotes( subStringWithoutSpace ) + ")]" ) );
 			}
-			for ( WebElement option : candidates )
+			for ( HtmlElement option : candidates )
 			{
 				if ( text.equals( option.getText() ) )
 				{
@@ -139,7 +145,7 @@ public class DropDownList extends BaseElementObject
 		String match = String.valueOf( index );
 
 		boolean matched = false;
-		for ( WebElement option : getOptions() )
+		for ( HtmlElement option : getOptions() )
 		{
 			if ( match.equals( option.getAttribute( "index" ) ) )
 			{
@@ -162,10 +168,10 @@ public class DropDownList extends BaseElementObject
 		StringBuilder builder = new StringBuilder( ".//option[@value = " );
 		builder.append( escapeQuotes( value ) );
 		builder.append( "]" );
-		List<WebElement> options = getWrappedElement().findElements( By.xpath( builder.toString() ) );
+		List<HtmlElement> options = element.findElements( By.xpath( builder.toString() ) );
 
 		boolean matched = false;
-		for ( WebElement option : options )
+		for ( HtmlElement option : options )
 		{
 			setSelected( option );
 			if ( ! isMultiple() )
@@ -183,7 +189,27 @@ public class DropDownList extends BaseElementObject
 
 	public void dropList()
 	{
-		getWrappedElement().click();
+		element.click();
+	}
+
+	public String getQualifier()
+	{
+		return qualifier;
+	}
+
+	public HtmlElement getHtmlElement()
+	{
+		return element;
+	}
+
+	@Override
+	public String toString()
+	{
+		return new ToStringBuilder( this )
+				.appendSuper( super.toString() )
+				.append( "qualifier", qualifier )
+				.append( "isMulti", isMulti )
+				.toString();
 	}
 
 	//endregion
@@ -243,7 +269,7 @@ public class DropDownList extends BaseElementObject
 		return String.format( "\"%s\"", toEscape );
 	}
 
-	private void setSelected( WebElement option )
+	private void setSelected( HtmlElement option )
 	{
 		if ( ! option.isSelected() )
 		{

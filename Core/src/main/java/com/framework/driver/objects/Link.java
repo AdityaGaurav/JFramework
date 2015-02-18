@@ -1,16 +1,15 @@
 package com.framework.driver.objects;
 
-import com.framework.driver.exceptions.UrlNotavailableException;
-import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.exceptions.UrlNotAvailableException;
+import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
+import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.web.CSS2Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hamcrest.Matchers;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.net.UrlChecker;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +23,22 @@ import java.util.concurrent.TimeUnit;
  * gives unique functionality for links
  *
  * @see #getReference()
- * @see #hover()
  */
 
-public class Link extends BaseElementObject
+public class Link
 {
 
 	//region Link - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( Link.class );
 
-	private String href, text;
+	private String href;
+
+	private HtmlElement element;
+
+	private final String qualifier;
+
+	private static long counter = NumberUtils.LONG_ZERO;
 
 	//endregion
 
@@ -49,16 +53,15 @@ public class Link extends BaseElementObject
 	 * @throws com.framework.utils.error.PreConditionException if {@code WebElement} is not
 	 * 		   a valid anchor element.
 	 */
-	public Link( final WebElement element )
+	public Link( final HtmlElement element )
 	{
-		super( element );
-
 		String tagName = element.getTagName();
 		PreConditions.checkArgument( tagName.toLowerCase().equals( "a" ), "Invalid tag name found for anchor -> %s", tagName );
-		this.text = element.getText();
-		this.href = element.getAttribute( "href" );
 
-		logger.debug( "Creating a new Link object for ( tag:'{}', text:'{}' )", tagName, text );
+		this.element = element;
+		this.href = element.getAttribute( "href" );
+		this.qualifier = String.format( "LINK[%d]", ++ counter );
+		logger.debug( "Created a new Link element < {} >", qualifier );
 	}
 
 	//endregion
@@ -79,7 +82,7 @@ public class Link extends BaseElementObject
 		{
 			if( getHReference().startsWith( "#" ) )
 			{
-				return new URL( getWrapperDriver().getCurrentUrl() );
+				return new URL( element.getWrappedHtmlDriver().getCurrentUrl() );
 			}
 			else
 			{
@@ -103,46 +106,55 @@ public class Link extends BaseElementObject
 	{
 		if ( validateDecoration )
 		{
-			// reading the css text-decoration property name */
+			/* reading the css text-decoration property name */
+
 			String textDecoration = CSS2Properties.TEXT_DECORATION.getStringValue();
-
-			// creating a 5 seconds wait condition */
-			WebDriverWait wdw = WaitUtil.wait5( getWrapperDriver() );
-			wdw.withMessage( "Waiting for text-decoration value to be underline" );
-			ExpectedCondition<Boolean> ec = WaitUtil.elementCssPropertyToMatch( getWrappedElement(), textDecoration, Matchers.is( "underline" ) );
-
-			super.hover();  // hovering over the link
-
-			assertWaitThat /* asserting text-decoration */ ( "asserting text-decoration", 5000, ec );
-
-			return;
+			element. /* hovering over the link */ hover();
+			element.waitCssPropertyToMatch( textDecoration, JMatchers.is( "underline" ), TimeConstants.FIVE_SECONDS );
 		}
+		else
+		{
+			element. /* hovering without asserting text-decoration */ hover();
+		}
+	}
 
-		// hovering without asserting text-decoration */
-		super.hover();
+	public void click()
+	{
+		element.click();
 	}
 
 	//todo: documentation
-	public void checkReference( long timeoutMillis ) throws UrlNotavailableException
+	public void checkReference( long timeoutMillis ) throws UrlNotAvailableException
 	{
 		UrlChecker checker = new UrlChecker();
 		try
 		{
+			logger.info( "Testing URL availability of reference < {} > ", getReference() );
 			checker.waitUntilAvailable( timeoutMillis, TimeUnit.MILLISECONDS, getReference() );
 		}
 		catch ( UrlChecker.TimeoutException e )
 		{
 			logger.error( e.getMessage() );
-			throw new UrlNotavailableException( e.getMessage(), e );
+			throw new UrlNotAvailableException( e.getMessage(), e );
 		}
 	}
 
 	public String getText()
 	{
 		String text;
-		text = super.getText();
+		text = element.getText();
 		if( StringUtils.isNotEmpty( text ) ) return text;
-		return super.getAttribute( "textContent" ).trim();
+		return StringUtils.remove( StringUtils.remove( element.getAttribute( "textContent" ), "\t" ), "\n" );
+	}
+
+	public String getQualifier()
+	{
+		return qualifier;
+	}
+
+	public HtmlElement getHtmlElement()
+	{
+		return element;
 	}
 
 	@Override
@@ -150,8 +162,8 @@ public class Link extends BaseElementObject
 	{
 		return new ToStringBuilder( this )
 				.appendSuper( super.toString() )
+				.append( "qualifier", qualifier )
 				.append( "href", href )
-				.append( "text", getText() )
 				.toString();
 	}
 

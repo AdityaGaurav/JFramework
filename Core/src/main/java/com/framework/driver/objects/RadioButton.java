@@ -1,8 +1,9 @@
 package com.framework.driver.objects;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.utils.error.PreConditions;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,22 +23,26 @@ import org.slf4j.LoggerFactory;
  *
  */
 
-public class RadioButton extends BaseElementObject
+public class RadioButton
 {
 
 	//region RadioButton - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( RadioButton.class );
 
+	private HtmlElement element;
+
+	private final String qualifier;
+
+	private static long counter = NumberUtils.LONG_ZERO;
+
 	//endregion
 
 
 	//region RadioButton - Constructor Methods Section
 
-	public RadioButton( final WebElement element )
+	public RadioButton( final HtmlElement element )
 	{
-		super( element );
-
 		final String ERR_MSG1 = "Invalid tag name found for radio button -> %s";
 		final String ERR_MSG2 = "Invalid type found for radio button -> %s";
 
@@ -46,7 +51,9 @@ public class RadioButton extends BaseElementObject
 		PreConditions.checkArgument( tagName.toLowerCase().equals( "input" ), ERR_MSG1, tagName );
 		PreConditions.checkArgument( typeName.toLowerCase().equals( "radio" ), ERR_MSG2, typeName );
 
-		logger.debug( "Creating a new Radio-Button object for ( tag:'{}', text:'{}' )", tagName, getText() );
+		this.element = element;
+		this.qualifier = String.format( "LINK[%d]", ++ counter );
+		logger.debug( "Created a new Radio-Button element < {} >", qualifier );
 	}
 
 
@@ -57,7 +64,22 @@ public class RadioButton extends BaseElementObject
 
 	public String getValue()
 	{
-		return super.getAttribute( "value" );
+		return element.getAttribute( "value" );
+	}
+
+	public String getName()
+	{
+		return element.getAttribute( "name" );
+	}
+
+	public String getQualifier()
+	{
+		return qualifier;
+	}
+
+	public HtmlElement getHtmlElement()
+	{
+		return element;
 	}
 
 	@Override
@@ -65,7 +87,8 @@ public class RadioButton extends BaseElementObject
 	{
 		return new ToStringBuilder( this )
 				.appendSuper( super.toString() )
-				.append( "text", super.getText() )
+				.append( "qualifier", qualifier )
+				.append( "name", getName() )
 				.append( "value", getValue() )
 				.toString();
 	}
