@@ -468,7 +468,7 @@ public interface EventListener
 	 * @param element   the {@code WebElement} reference search from.
 	 * @param driver    the reference web-driver
 	 *
-	 * @see com.framework.driver.utils.ui.ExtendedBy
+	 * @see ExtendedBy
 	 * @see org.openqa.selenium.By
 	 * @see #beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebDriver)
 	 * @see #afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
@@ -485,7 +485,7 @@ public interface EventListener
 	 * @param by     	the {@link org.openqa.selenium.By} locator criteria
 	 * @param driver    the reference web-driver
 	 *
-	 * @see com.framework.driver.utils.ui.ExtendedBy
+	 * @see ExtendedBy
 	 * @see org.openqa.selenium.By
 	 * @see #beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 	 * @see #afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebDriver)
@@ -501,7 +501,7 @@ public interface EventListener
 	 * @param by       the {@link org.openqa.selenium.By} locator criteria
 	 * @param driver   the reference web-driver
 	 *
-	 * @see com.framework.driver.utils.ui.ExtendedBy
+	 * @see ExtendedBy
 	 * @see org.openqa.selenium.By
 	 * @see #afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 	 * @see #beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebDriver)
@@ -517,7 +517,7 @@ public interface EventListener
 	 * @param element   the {@code WebElement} reference search from.
 	 * @param driver    the reference web-driver
 	 *
-	 * @see com.framework.driver.utils.ui.ExtendedBy
+	 * @see ExtendedBy
 	 * @see org.openqa.selenium.By
 	 * @see #beforeFindBy(org.openqa.selenium.By, org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 	 * @see #afterFindBy(org.openqa.selenium.By, org.openqa.selenium.WebDriver)

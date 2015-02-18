@@ -1,8 +1,7 @@
 package com.framework.driver.event;
 
-import com.framework.driver.exceptions.ApplicationException;
-import com.google.common.base.Throwables;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasInputDevices;
 import org.openqa.selenium.interactions.Mouse;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -31,9 +30,11 @@ public class EventMouse implements Mouse
 
 	private static final Logger logger = LoggerFactory.getLogger( EventMouse.class );
 
-	private final WebDriver driver;
+	private final HtmlDriver eventDriver;
 
-	private final EventListener dispatcher;
+	private WebDriverListener listener;
+
+	private WebDriverErrorListener errorListener;
 
 	private final Mouse mouse;
 
@@ -42,11 +43,12 @@ public class EventMouse implements Mouse
 
 	//region EventMouse - Constructor Methods Section
 
-	public EventMouse( WebDriver driver, EventListener dispatcher )
+	public EventMouse( HtmlDriver driver, WebDriverListener listener, WebDriverErrorListener errorListener )
 	{
-		this.driver = driver;
-		this.dispatcher = dispatcher;
-		this.mouse = ( ( HasInputDevices ) this.driver ).getMouse();
+		this.eventDriver = driver;
+		this.listener = listener;
+		this.errorListener = errorListener;
+		this.mouse = ( ( HasInputDevices ) this.eventDriver ).getMouse();
 	}
 
 	//endregion
@@ -61,13 +63,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "click", where );
+			listener.onMouseAction( createEvent( true, "click", where ) );
 			mouse.click( where );
-			dispatcher.afterMouseAction( driver, "click", where );
+			listener.onMouseAction( createEvent( true, "click" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"click\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -78,13 +81,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "doubleClick", where );
+			listener.onMouseAction( createEvent( true, "doubleClick", where ) );
 			mouse.doubleClick( where );
-			dispatcher.afterMouseAction( driver, "doubleClick", where );
+			listener.onMouseAction( createEvent( true, "doubleClick" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"doubleClick\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -95,13 +99,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "mouseDown", where );
+			listener.onMouseAction( createEvent( true, "mouseDown", where ) );
 			mouse.mouseDown( where );
-			dispatcher.afterMouseAction( driver, "mouseDown", where );
+			listener.onMouseAction( createEvent( true, "mouseDown" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"mouseDown\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -112,13 +117,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "mouseUp", where );
+			listener.onMouseAction( createEvent( true, "mouseUp", where ) );
 			mouse.mouseUp( where );
-			dispatcher.afterMouseAction( driver, "mouseUp", where );
+			listener.onMouseAction( createEvent( true, "mouseUp" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"mouseUp\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -129,13 +135,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "mouseMove", where );
+			listener.onMouseAction( createEvent( true, "mouseMove", where ) );
 			mouse.mouseMove( where );
-			dispatcher.afterMouseAction( driver, "mouseMove", where );
+			listener.onMouseAction( createEvent( true, "mouseMove" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"mouseMove\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -146,13 +153,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "mouseMove", where );
-			mouse.mouseMove( where, xOffset, yOffset );
-			dispatcher.afterMouseAction( driver, "mouseMove", where );
+			listener.onMouseAction( createEvent( true, "mouseMove", where, xOffset, yOffset ) );
+			mouse.mouseMove( where );
+			listener.onMouseAction( createEvent( true, "mouseMove" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"mouseMove\" on \"" + where + "\" with offset \"" + xOffset + ":" + yOffset + "\"." );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -163,13 +171,14 @@ public class EventMouse implements Mouse
 	{
 		try
 		{
-			dispatcher.beforeMouseAction( driver, "contextClick", where );
+			listener.onMouseAction( createEvent( true, "contextClick", where ) );
 			mouse.contextClick( where );
-			dispatcher.afterMouseAction( driver, "contextClick", where );
+			listener.onMouseAction( createEvent( true, "contextClick" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to execute mouse action \"contextClick\" on \"" + where + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -178,15 +187,16 @@ public class EventMouse implements Mouse
 
 	//region EventMouse - Private Methods Section
 
-	//Todo: Documentation
-	private ApplicationException propagate( Exception ex, String msg )
+	private WebDriverEvent createEvent( boolean isBefore, Object... arguments )
 	{
-		Throwables.propagateIfInstanceOf( ex, ApplicationException.class );
-		logger.error( ex.getMessage() );
-		ApplicationException ae = new ApplicationException( driver, ex.getMessage() );
-		ae.addInfo( "causing action", msg );
-		dispatcher.onException( ae, driver );
-		return ae;
+		WebDriver driver = eventDriver.getWrappedDriver();
+		return new WebDriverEvent( this, HtmlWebDriver.EVENT_MOUSE_ACTION, driver, isBefore, arguments );
+	}
+
+	private WebDriverErrorEvent createErrorEvent( Throwable ex )
+	{
+		WebDriver driver = eventDriver.getWrappedDriver();
+		return new WebDriverErrorEvent( this, HtmlWebDriver.EVENT_MOUSE_ACTION, driver, ex );
 	}
 
 	//endregion

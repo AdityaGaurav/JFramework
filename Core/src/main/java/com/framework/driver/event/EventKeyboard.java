@@ -1,9 +1,8 @@
 package com.framework.driver.event;
 
-import com.framework.driver.exceptions.ApplicationException;
 import com.google.common.base.Joiner;
-import com.google.common.base.Throwables;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.interactions.HasInputDevices;
 import org.openqa.selenium.interactions.Keyboard;
 import org.slf4j.Logger;
@@ -31,9 +30,11 @@ public class EventKeyboard implements Keyboard
 
 	private static final Logger logger = LoggerFactory.getLogger( EventKeyboard.class );
 
-	private final WebDriver driver;
+	private final HtmlDriver eventDriver;
 
-	private final EventListener dispatcher;
+	private WebDriverListener listener;
+
+	private WebDriverErrorListener errorListener;
 
 	private final Keyboard keyboard;
 
@@ -42,11 +43,12 @@ public class EventKeyboard implements Keyboard
 
 	//region EventKeyboard - Constructor Methods Section
 
-	public EventKeyboard( WebDriver driver, EventListener dispatcher )
+	public EventKeyboard( HtmlDriver driver, WebDriverListener listener, WebDriverErrorListener errorListener )
 	{
-		this.driver = driver;
-		this.dispatcher = dispatcher;
-		this.keyboard = ( ( HasInputDevices ) this.driver ).getKeyboard();
+		this.eventDriver = driver;
+		this.listener = listener;
+		this.errorListener = errorListener;
+		this.keyboard = ( ( HasInputDevices ) this.eventDriver ).getKeyboard();
 	}
 
 	//endregion
@@ -73,13 +75,14 @@ public class EventKeyboard implements Keyboard
 
 		try
 		{
-			dispatcher.beforeKeyboardAction( driver, "sendKeys", joiner );
+			listener.onKeyboardAction( createEvent( true, "sendKeys", joiner ) );
 			keyboard.sendKeys( keysToSend );
-			dispatcher.afterKeyboardAction( driver, "sendKeys", joiner );
+			listener.onKeyboardAction( createEvent( false, "sendKeys" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to sendKeys sequence \"" + joiner + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -98,13 +101,14 @@ public class EventKeyboard implements Keyboard
 	{
 		try
 		{
-			dispatcher.beforeKeyboardAction( driver, "pressKey", keyToPress );
+			listener.onKeyboardAction( createEvent( true, "pressKey", keyToPress ) );
 			keyboard.pressKey( keyToPress );
-			dispatcher.afterKeyboardAction( driver, "pressKey", keyToPress );
+			listener.onKeyboardAction( createEvent( true, "pressKey" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to press Key \"" + keyToPress + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 
 	}
@@ -123,13 +127,14 @@ public class EventKeyboard implements Keyboard
 	{
 		try
 		{
-			dispatcher.beforeKeyboardAction( driver, "pressKey", keyToRelease );
+			listener.onKeyboardAction( createEvent( true, "releaseKey", keyToRelease ) );
 			keyboard.releaseKey( keyToRelease );
-			dispatcher.afterKeyboardAction( driver, "pressKey", keyToRelease );
+			listener.onKeyboardAction( createEvent( true, "releaseKey" ) );
 		}
 		catch ( Exception ex )
 		{
-			throw propagate( ex, "failed to release Key \"" + keyToRelease + "\"."  );
+			errorListener.onException( createErrorEvent( ex ) );
+			throw new WebDriverException( ex );
 		}
 	}
 
@@ -138,15 +143,17 @@ public class EventKeyboard implements Keyboard
 
 	//region EventKeyboard - Private Methods Section
 
-	//Todo: Documentation
-	private ApplicationException propagate( Exception ex, String msg )
+
+	private WebDriverEvent createEvent( boolean isBefore, Object... arguments )
 	{
-		Throwables.propagateIfInstanceOf( ex, ApplicationException.class );
-		logger.error( ex.getMessage() );
-		ApplicationException ae = new ApplicationException( driver, ex.getMessage() );
-		ae.addInfo( "causing action", msg );
-		dispatcher.onException( ae, driver );
-		return ae;
+		WebDriver driver = eventDriver.getWrappedDriver();
+		return new WebDriverEvent( this, HtmlWebDriver.EVENT_KEYBOARD_ACTION, driver, isBefore, arguments );
+	}
+
+	private WebDriverErrorEvent createErrorEvent( Throwable ex )
+	{
+		WebDriver driver = eventDriver.getWrappedDriver();
+		return new WebDriverErrorEvent( this, HtmlWebDriver.EVENT_KEYBOARD_ACTION, driver, ex );
 	}
 
 	//endregion
