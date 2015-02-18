@@ -1,5 +1,8 @@
 package com.framework.site.data;
 
+import org.apache.commons.lang3.StringUtils;
+
+
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -16,37 +19,59 @@ package com.framework.site.data;
 
 public enum Destinations
 {
-	ALASKA( "Alaska", "A" ),
+	ALASKA( "A" ),
 
-	BAHAMAS( "Bahamas", "BH" ),
+	BAHAMAS( "BH" ),
 
-	BERMUDA( "Bermuda", "BM" ),
+	BERMUDA( "BM" ),
 
-	NEW_ENGLAND( "Canada/New England", "NN" ),
+	CANADA_NEW_ENGLAND( "Canada/New England", "NN" ),
 
-	CARIBBEAN( "Caribbean", "C" ),
+	CARIBBEAN( "C" ),
 
-	NOWHERE( "Cruise To Nowhere", "CN" ),
+	CRUISE_TO_NOWHERE( "CN" ),
 
-	HAWAII( "Hawaii", "H" ),
+	HAWAII( "H" ),
 
-	MEXICO( "Mexico", "M" );
+	MEXICO( "M" ),
+
+	EUROPE( "E" ),
+
+	TRANSATLANTIC( "?" );
 
 	// ------------------------------------------------------------------------------------------ //
 
-	private final String title;
+	//region Destinations - Members
 
 	private final String id;
 
-	private Destinations( final String title, final String id )
+	private final String destination;
+
+	//endregion
+
+
+	//region Destinations - Enumeration constructors
+
+	private Destinations( final String destination, final String id )
 	{
-		this.title = title;
 		this.id = id;
+		this.destination = destination;
 	}
 
-	public String getTitle()
+	private Destinations( final String id )
 	{
-		return title;
+		this.id = id;
+		this.destination = StringUtils.capitalize( name().replaceAll( "_", " " ).toLowerCase() );
+	}
+
+	//endregion
+
+
+	//region Destinations getters
+
+	public String getDestination()
+	{
+		return destination;
 	}
 
 	public String getId()
@@ -54,11 +79,21 @@ public enum Destinations
 		return id;
 	}
 
+	public String getCapitalized()
+	{
+		return StringUtils.capitalize( name().toLowerCase() );
+	}
+
+	//endregion
+
+
+	//region Destinations - Search
+
 	public static Destinations valueByName( String name )
 	{
 		for ( Destinations e : values() )
 		{
-			if ( e.getTitle().toLowerCase().contains( name.toLowerCase() ) )
+			if ( e.toString().toLowerCase().contains( name.toLowerCase() ) )
 			{
 				return e;
 			}
@@ -77,5 +112,17 @@ public enum Destinations
 		}
 		return null;
 	}
+
+
+
+	//endregion
+
+
+	@Override
+	public String toString()
+	{
+		return destination;
+	}
+
 }
 

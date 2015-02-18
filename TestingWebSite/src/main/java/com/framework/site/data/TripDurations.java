@@ -1,5 +1,8 @@
 package com.framework.site.data;
 
+import com.google.common.base.MoreObjects;
+
+
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -16,11 +19,11 @@ package com.framework.site.data;
 
 public enum TripDurations
 {
-	TwoFiveDays( "3-5 Days", "D1"),
+	TWO_FIVE_DAYS( "2-5 Days", "D1"),
 
-	SixNineDays( "6-9 Days", "D2" ),
+	SIX_NINE_DAYS( "6-9 Days", "D2" ),
 
-	TenPlusDays( "10+ Days", "D3" );
+	TEN_PLUS_DAYS( "10+ Days", "D3" );
 
 
 	private final String title;
@@ -47,7 +50,7 @@ public enum TripDurations
 	{
 		for ( TripDurations e : values() )
 		{
-			if ( e.getTitle().toLowerCase().contains( name.toLowerCase() ) )
+			if ( e.getTitle().toLowerCase().equals( name.toLowerCase() ) )
 			{
 				return e;
 			}
@@ -67,4 +70,12 @@ public enum TripDurations
 		return null;
 	}
 
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper( this )
+				.add( "title", title )
+				.omitNullValues()
+				.toString();
+	}
 }

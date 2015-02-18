@@ -1,5 +1,8 @@
 package com.framework.site.data;
 
+import org.apache.commons.lang3.StringUtils;
+
+
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -17,55 +20,80 @@ package com.framework.site.data;
 public enum DeparturePorts
 {
 
-	BALTIMORE( "Baltimore, MD", "BWI" ),
+	BALTIMORE( "MD", "BWI" ),
 
-	BARBADOS( "Barbados", "BDS" ),
+	BARBADOS( StringUtils.EMPTY, "BDS" ),
 
-	CHARLESTON( "Charleston, SC", "CHS" ),
+	CHARLESTON( "SC", "CHS" ),
 
-	FORT_LAUDERDALE( "Fort Lauderdale, FL", "FLL" ),
+	FORT_LAUDERDALE( "FL", "FLL" ),
 
-	GALVESTON( "Galveston, TX", "GAL" ),
+	GALVESTON( "TX", "GAL" ),
 
-	HONOLULU( "Honolulu, HI", "HNL" ),
+	HONOLULU( "HI", "HNL" ),
 
-	JACKSONVILLE( "Jacksonville, FL", "JAX" ),
+	JACKSONVILLE( "FL", "JAX" ),
 
-	LOS_ANGELES( "Los Angeles, CA", "LAX" ),
+	LOS_ANGELES( "CA", "LAX" ),
 
-	MIAMI( "Miami, FL", "MIA" ),
+	MIAMI( "FL", "MIA" ),
 
-	NEW_ORLEANS( "New Orleans, LA", "MSY" ),
+	NEW_ORLEANS( "LA", "MSY" ),
 
-	NEW_YORK( "New York, NY", "NYC" ),
+	NEW_YORK( "NY", "NYC" ),
 
-	NORFOLK( "Norfolk, VA", "ORF" ),
+	NORFOLK( "VA", "ORF" ),
 
-	PORT_CANAVERAL( "Port Canaveral (Orlando), FL", "PCV" ),
+	PORT_CANAVERAL( "Port Canaveral (Orlando)", "FL", "PCV" ),
 
-	SAN_JUAN( "San Juan, Puerto Rico", "SJU" ),
+	SAN_JUAN( "Puerto Rico", "SJU" ),
 
-	SEATTLE( "Seattle, WA", "SEA" ),
+	SEATTLE( "WA", "SEA" ),
 
-	TAMPA( "Tampa, FL", "TPA" ),
+	TAMPA( "FL", "TPA" ),
 
-	VANCOUVER( "Vancouver, BC, Canada", "YVR" );
+	VANCOUVER( "BC, Canada", "YVR" ),
+
+	TRIESTE( "Italy", "TRS" ),
+
+	ATHENS( "Greece", "" ),
+
+	BARCELONA( "Spain", "" );
 
 	// ------------------------------------------------------------------------------------------ //
 
-	private final String title;
+	//region DeparturePorts - Members
 
 	private final String id;
 
-	private DeparturePorts( final String title, final String id )
+	private final String departurePort;
+
+	//endregion
+
+
+	//region DeparturePorts - Enumeration constructors
+
+	private DeparturePorts( final String stateCountry, final String id )
 	{
-		this.title = title;
 		this.id = id;
+		String city =  StringUtils.capitalize( name().replaceAll( "_", " " ).toLowerCase() );
+		this.departurePort = ( StringUtils.isEmpty( stateCountry ) ) ? city + ", " + stateCountry : city;
 	}
 
-	public String getTitle()
+	private DeparturePorts( final String port, final String stateCountry, final String id )
 	{
-		return title;
+		this.id = id;
+		this.departurePort = ( StringUtils.isEmpty( stateCountry ) ) ? port + ", " + stateCountry : port;
+	}
+
+	//endregion
+
+
+	//region DeparturePorts getters
+
+	public String getDeparturePort()
+	{
+		return departurePort;
 	}
 
 	public String getId()
@@ -73,11 +101,16 @@ public enum DeparturePorts
 		return id;
 	}
 
+	//endregion
+
+
+	//region DeparturePorts - Search
+
 	public static DeparturePorts valueByName( String name )
 	{
 		for ( DeparturePorts e : values() )
 		{
-			if ( e.getTitle().toLowerCase().contains( name.toLowerCase() ) )
+			if ( e.toString().toLowerCase().contains( name.toLowerCase() ) )
 			{
 				return e;
 			}
@@ -95,5 +128,14 @@ public enum DeparturePorts
 			}
 		}
 		return null;
+	}
+
+	//endregion
+
+
+	@Override
+	public String toString()
+	{
+		return departurePort;
 	}
 }

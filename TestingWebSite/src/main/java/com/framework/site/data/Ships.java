@@ -1,5 +1,8 @@
 package com.framework.site.data;
 
+import org.apache.commons.lang3.StringUtils;
+
+
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -16,70 +19,90 @@ package com.framework.site.data;
 
 public enum Ships
 {
+	UNKNOWN( "UNKNOWN" ),
 
-	PRIDE( "Carnival Pride" ,"PR" ),
+	PRIDE( "PR" ),
 
-	FREEDOM( "Carnival Freedom", "FD" ),
+	FREEDOM( "FD" ),
 
-	SUNSHINE( "Carnival Sunshine", "SH" ),
+	SUNSHINE( "SH" ),
 
-	BREEZE( "Carnival Breeze", "BR" ),
+	BREEZE( "BR" ),
 
-	MAGIC( "Carnival Magic", "MC" ),
+	MAGIC( "MC" ),
 
-	TRIUMPH( "Carnival Triumph", "TI" ),
+	TRIUMPH( "TI" ),
 
-	GLORY( "Carnival Glory", "GL" ),
+	GLORY( "GL" ),
 
-	CONQUEST( "Carnival Conquest", "CQ" ),
+	CONQUEST( "CQ" ),
 
-	DREAM( "Carnival Dream", "DR" ),
+	DREAM( "DR" ),
 
-	ECSTASY( "Carnival Ecstasy", "EC" ),
+	ECSTASY( "EC" ),
 
-	SPLENDOR( "Carnival Splendor", "SL" ),
+	SPLENDOR( "SL" ),
 
-	VALOR( "Carnival Valor", "VA" ),
+	VALOR( "VA" ),
 
-	LEGEND( "Carnival Legend", "LE" ),
+	LEGEND( "LE" ),
 
-	LIBERTY( "Carnival Liberty", "LI" ),
+	LIBERTY( "LI" ),
 
-	ELATION( "Carnival Elation", "EL" ),
+	ELATION( "EL" ),
 
-	VICTORY( "Carnival Victory", "VI" ),
+	VICTORY( "VI" ),
 
-	MIRACLE( "Carnival Miracle", "MI" ),
+	MIRACLE( "MI" ),
 
-	FASCINATION( "Carnival Fascination", "FS" ),
+	FASCINATION( "FS" ),
 
-	FANTASY( "Carnival Fantasy", "FA" ),
+	FANTASY( "FA" ),
 
-	SENSATION( "Carnival Sensation", "SE" ),
+	SENSATION( "SE" ),
 
-	INSPIRATION( "Carnival Inspiration", "IS" ),
+	INSPIRATION( "IS" ),
 
-	IMAGINATION( "Carnival Imagination", "IM" ),
+	IMAGINATION( "IM" ),
 
-	VISTA( "Carnival Vista", "VA" ),
+	VISTA( "VS" ),
 
-	PARADISE( "Carnival Paradise", "PA" );
+	PARADISE( "PA" );
 
 	// ------------------------------------------------------------------------------------------ //
 
-	private final String title;
+	// ------------------------------------------------------------------------------------------ //
+
+	//region Ships - Members
 
 	private final String id;
 
-	private Ships( final String title, final String id )
+	private final String shipFullName;
+
+	private final String shipName;
+
+	private final static String CARNIVAL = "Carnival ";
+
+	//endregion
+
+
+	//region Ships - Enumeration constructors
+
+	private Ships( final String id )
 	{
-		this.title = title;
 		this.id = id;
+		this.shipFullName = CARNIVAL + StringUtils.capitalize( name().toLowerCase() );
+		this.shipName = StringUtils.capitalize( name().toLowerCase() );
 	}
 
-	public String getTitle()
+	//endregion
+
+
+	//region Ships getters
+
+	public String getShipName()
 	{
-		return title;
+		return shipName;
 	}
 
 	public String getId()
@@ -87,15 +110,46 @@ public enum Ships
 		return id;
 	}
 
+	public String getFullName()
+	{
+		return shipFullName;
+	}
+
+	//endregion
+
+
+	//region Ships - Search
+
 	public static Ships valueById( String id )
 	{
 		for ( Ships e : values() )
 		{
-			if ( e.getId().toUpperCase().equals( id.toUpperCase() ) )
+			if ( e.getId().equals( id.toUpperCase() ) )
 			{
 				return e;
 			}
 		}
 		return null;
+	}
+
+	public static Ships valueByName( String name )
+	{
+		for ( Ships e : values() )
+		{
+			if ( e.shipFullName.equals( name ) )
+			{
+				return e;
+			}
+		}
+		return null;
+	}
+
+	//endregion
+
+
+	@Override
+	public String toString()
+	{
+		return shipName;
 	}
 }
