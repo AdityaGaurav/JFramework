@@ -1,21 +1,26 @@
 package com.framework.site.pages;
 
-import com.framework.driver.event.EventWebDriver;
-import com.framework.driver.event.JavaScript;
-import com.framework.driver.exceptions.PageObjectException;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.*;
 import com.framework.driver.objects.AbstractPageObject;
+import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
-import com.framework.site.objects.footer.FooterObject;
+import com.framework.site.objects.footer.SectionFooterObject;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.site.objects.header.SectionHeaderObject;
 import com.framework.site.objects.header.interfaces.Header;
+import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.MoreObjects;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -41,15 +46,17 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 
 	public static final Locale AU = new Locale( "en", "AU" );
 
-	public static final String DATA_DOM_REFERRER_JS = "return utag_data.dom.referrer;";
+	protected static final String USER_LAST_NAME_COOKIE = "UserLastName";
 
-	public static final String DATA_PAGE_ID_JS = "return utag_data.page_id;";
+	public static final String USER_FIRST_NAME_COOKIE = "UserFirstName";
 
-	public static final String DATA_PAGE_NAME_JS = "return utag_data.page_name;";
+	protected static final String USER_EMAIL_ADDRESS_COOKIE = "UserEmailAddress";
 
-	public static final String DATA_REGION_NAME_JS = "return utag_data.site_region;";
+	private String pageId, pageName, site_region, referrer;
 
-	private String siteRegion, pageId, pageName;
+	private final String hst;
+
+	private Locale currentLocale = SiteSessionManager.get().getCurrentLocale();
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -64,88 +71,86 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 
 	//region BaseCarnivalPage - Constructor Methods Section
 
-	protected BaseCarnivalPage( final String logicalName, final WebDriver driver )
+	protected BaseCarnivalPage( final String logicalName )
 	{
-		super( logicalName, driver );
+		super( SiteSessionManager.get().getDriver(), logicalName );
 
-		try
+		this.hst = getHstValue();
+		SiteSessionManager.get().setHstValue( hst );
+		logger.info( "Current environment code is < '{}' >", hst );
+		if( parseUtagData() )
 		{
-			JavaScript js = ( ( EventWebDriver ) driver ).getJavaScript();
-
-			/* reading app values using javascript */
-
-			logger.debug( "reading app values using javascript ..." );
-			this.siteRegion = js.getString( DATA_REGION_NAME_JS );
-			this.pageId = js.getString( DATA_PAGE_ID_JS );
-			this.pageName = js.getString( DATA_PAGE_NAME_JS );
-
-			initElements();
-
-			logger.info( "new CarnivalPage was created -> {}", toString() );
-		}
-		catch ( Throwable e )
-		{
-			logger.error( "throwing a new PageObjectException on {}#constructor.", getClass().getSimpleName() );
-			PageObjectException poe = new PageObjectException( driver, e.getMessage(), e );
-			poe.addInfo( "causing flow", "trying to create a new CarnivalPage -> " + logicalName );
-			throw poe;
+			Locale expected = SiteSessionManager.get().getCurrentLocale();
+			new JAssertion( getDriver() )
+					.assertThat( "Asserting locale from configuration and actual", parseRegion(), JMatchers.is( expected ) );
 		}
 
+		validatePageTitle();
 	}
 
 	//endregion
 
 
-	//region BaseCarnivalPage - Initialization and Validation Methods Section
+	//region BaseCarnivalPage - UTAG getters Section
 
+	protected Optional<String> u_tag_data_page_id()
+	{
+		return Optional.fromNullable( pageId );
+	}
+
+	protected Optional<String> u_tag_data_page_name()
+	{
+		return Optional.fromNullable( pageName );
+	}
+
+	protected Optional<String> u_tag_data_site_region()
+	{
+		return Optional.fromNullable( site_region );
+	}
+
+	protected Optional<String> u_tag_data_referrer()
+	{
+		return Optional.fromNullable( referrer );
+	}
+
+	//endregion
+
+
+	//region BaseCarnivalPage - Abstract methods Section
+
+	protected abstract void validatePageTitle();
 
 	//endregion
 
 
 	//region BaseCarnivalPage - Service Methods Section
 
-	protected Locale getApplicationLocale()
+	protected Locale getCurrentLocale()
 	{
-		if( siteRegion.equals( "US" ) ) return Locale.US;
-		if( siteRegion.equals( "UK" ) ) return Locale.UK;
-		if( siteRegion.equals( "AU" ) ) return AU;
-		return null;
+		return currentLocale;
 	}
 
-	protected String getSiteRegion()
-	{
-		return siteRegion;
-	}
-
-	protected String getReferrer()
-	{
-		return pageDriver.getJavaScript().getString( DATA_DOM_REFERRER_JS );
-	}
-
-	protected String pageId()
-	{
-		return pageId;
-	}
-
-	protected String pageName()
-	{
-		return pageName;
-	}
-
+	/**
+	 * @return the {@link Header} instance implemented by {@link com.framework.site.objects.header.SectionHeaderObject}
+	 */
 	public Header header()
 	{
 		if ( null == this.header )
 		{
-			this.header = new SectionHeaderObject( pageDriver, pageDriver.findElement( Header.ROOT_BY ) );
+			this.header = new SectionHeaderObject( getDriver().findElement( Header.ROOT_BY ) );
 		}
 		return header;
 	}
 
+	/**
+	 * @return the {@link com.framework.site.objects.footer.interfaces.Footer} instance
+	 * 			   implemented by {@link com.framework.site.objects.footer.SectionFooterObject}
+	 */
 	public Footer footer()
 	{
 		if ( null == this.footer )
 		{
-			this.footer = new FooterObject( pageDriver, pageDriver.findElement( Footer.ROOT_BY ) );
+			this.footer = new SectionFooterObject( getDriver().findElement( Footer.ROOT_BY ) );
 		}
 		return footer;
 	}
@@ -155,20 +160,105 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	{
 		return MoreObjects.toStringHelper( this )
 				.addValue( super.toString() )
-				.add( "pageId", pageId )
-				.add( "pageName", pageName )
-				.add( "siteRegion", siteRegion )
+				.add( "hst", hst )
+				.add( "utag_data.site_region", u_tag_data_site_region() == null ? "N/A" : site_region )
+				.add( "utag_data.pageId", u_tag_data_page_id() == null ? "N/A" : pageId )
+				.add( "utag_data.pageName", u_tag_data_page_name() == null ? "N/A" : pageName )
+				.add( "utag_data.referrer", referrer )
 				.omitNullValues()
 				.toString();
 	}
 
+	public String getHstValue()
+	{
+		Optional<HtmlElement> optional = findHstInput();
+		if( optional.isPresent() )
+		{
+			return optional.get().getAttribute( "value" );
+		}
+
+		return "N/A";
+	}
+
+	public Set<Cookie> waitForUserCookies()
+	{
+		Set<Cookie> cookies = Sets.newHashSet();
+		HtmlCondition<Cookie> uln = ExpectedConditions.cookieIsPresent( USER_LAST_NAME_COOKIE );
+		HtmlCondition<Cookie> ufn = ExpectedConditions.cookieIsPresent( USER_FIRST_NAME_COOKIE );
+		HtmlCondition<Cookie> uea = ExpectedConditions.cookieIsPresent( USER_EMAIL_ADDRESS_COOKIE );
+		cookies.add( HtmlDriverWait.wait10( getDriver() ).until( uln ) );
+		cookies.add( HtmlDriverWait.wait10( getDriver() ).until( ufn ) );
+		cookies.add( HtmlDriverWait.wait10( getDriver() ).until( uea ) );
+		return cookies;
+	}
+
+	public boolean isUserLoggedIn()
+	{
+		return getDriver().manage().getCookieNamed( USER_LAST_NAME_COOKIE ) != null;
+	}
+
 	//endregion
+
 
 	//region BaseCarnivalPage - Element Finder Methods Section
 
-	protected WebElement findBreadcrumbBarDiv()
+	protected HtmlElement findBreadcrumbBarDiv()
 	{
-		return pageDriver.findElement( BreadcrumbsBar.ROOT_BY );
+		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+	}
+
+	private Optional<HtmlElement> findHstInput()
+	{
+		try
+		{
+			HtmlElement he = getDriver().findElement( ExtendedBy.id( "hst" ) );
+			return Optional.of( he );
+		}
+		catch ( NoSuchElementException e )
+		{
+			return Optional.absent();
+		}
+	}
+
+	//endregion
+
+
+	//region BaseCarnivalPage - Private Functions Section
+
+	private boolean parseUtagData()
+	{
+		final String SCRIPT = "if( typeof utag_data == 'undefined' ) return false; return true;";
+		HtmlDriver.JavaScriptSupport js = getDriver().javascript();
+		logger.debug( "determine if utag_data is defined on page ..." );
+		Optional<Boolean> utag = js.getBoolean( SCRIPT );
+		if( utag.isPresent() && utag.get() )
+		{
+			final String UTAG_SCRIPT = "var utag = {};\n"
+					+ "  utag[\"site_region\"] = utag_data[\"site_region\"];\n"
+					+ "  utag[\"page_id\"] = utag_data[\"page_id\"];\n"
+					+ "  utag[\"page_name\"] = utag_data[\"page_name\"];\n"
+					+ "  utag[\"dom.referrer\"] = utag_data[\"dom.referrer\"];\n"
+					+ "  return utag;";
+
+			Map<String,String> map = js.getMap( UTAG_SCRIPT );
+
+			logger.debug( "reading utag_data values using javascript ..." );
+			this.site_region = map.get( "site_region" );
+			this.pageId = map.get( "page_id" );
+			this.pageName = map.get( "page_name" );
+			this.referrer = map.get( "dom.referrer" );
+			return true;
+		}
+
+		return false;
+	}
+
+	private Locale parseRegion()
+	{
+		if( site_region.equals( "US" ) ) return Locale.US;
+		if( site_region.equals( "UK" ) ) return Locale.UK;
+		if( site_region.equals( "AU" ) ) return AU;
+		return null;
 	}
 
 	//endregion
