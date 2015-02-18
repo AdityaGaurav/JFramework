@@ -1,11 +1,11 @@
 package com.framework.site.pages.bookingengine;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.site.config.SiteProperty;
 import com.framework.site.data.TripDurations;
 import com.framework.site.pages.BaseCarnivalPage;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
-import org.openqa.selenium.WebDriver;
+import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.matchers.JMatchers;
+import org.hamcrest.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * Time   : 01:17
  */
 
+@DefaultUrl( value = "/bookingengine/findacruise", matcher = "endsWith()" )
 public class FindACruisePage extends BaseCarnivalPage
 {
 
@@ -33,11 +34,7 @@ public class FindACruisePage extends BaseCarnivalPage
 
 	private static final String LOGICAL_NAME = "Find a Cruise Page";
 
-	private static final String URL_PATH = "/bookingengine/findacruise";
-
 	private static final String PAGE_TITLE_KEY = "find.a.cruise.title";
-
-	private TripDurations tripDuration;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -48,19 +45,19 @@ public class FindACruisePage extends BaseCarnivalPage
 
 	//region FindACruisePage - Constructor Methods Section
 
-	public FindACruisePage( final WebDriver driver )
+	public FindACruisePage()
 	{
-		super( LOGICAL_NAME, driver );
+		super( LOGICAL_NAME );
 	}
 
-	public FindACruisePage( final WebDriver driver, Object ... args )
+	public FindACruisePage( Object ... args )
 	{
-		super( LOGICAL_NAME, driver );
+		super( LOGICAL_NAME );
 		for( Object arg : args )
 		{
 			if( arg instanceof TripDurations )
 			{
-				this.tripDuration = ( TripDurations ) arg;
+				//this.tripDuration = ( TripDurations ) arg;
 			}
 		}
 	}
@@ -71,22 +68,20 @@ public class FindACruisePage extends BaseCarnivalPage
 	//region FindACruisePage - Initialization and Validation Methods Section
 
 	@Override
-	protected void initElements()
+	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getId(), getLogicalName() );
+		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
+	}
 
-		try
-		{
 
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initElements.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( pageDriver.getWrappedDriver(), ae.getMessage(), ae );
-			ex.addInfo( "cause", "verification and initialization process for page " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+	@Override
+	protected void validatePageTitle()
+	{
+		String title = ( String ) SiteProperty.FIND_A_CRUISE_TITLE.fromContext();
+		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
+		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
+
+		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
 	}
 
 	//endregion
@@ -94,20 +89,6 @@ public class FindACruisePage extends BaseCarnivalPage
 
 	//region StateRoomsPage - Service Methods Section
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper( this )
-				.add( "object id", getId() )
-				.add( "page id", pageId() )
-				.add( "logical name", getLogicalName() )
-				.add( "pageName", pageName() )
-				.add( "site region", getSiteRegion() )
-				.add( "title", getTitle() )
-				.add( "url", getCurrentUrl() )
-				.omitNullValues()
-				.toString();
-	}
 
 	//endregion
 
