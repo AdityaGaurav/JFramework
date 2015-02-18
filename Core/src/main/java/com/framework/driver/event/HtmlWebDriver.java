@@ -824,22 +824,19 @@ public class HtmlWebDriver extends WebDriverEventSource implements HtmlDriver
 			return number.intValue();
 		}
 
+		/**
+		 * Moving to a specific point in history
+		 * <p>history.go(-1) is the equivalent of calling back()</p>
+		 * <p>history.go(1) is the equivalent of calling forward()</p>
+		 *
+		 * @param index determine the number of pages in the history stack by looking at the value of the length property:
+		 *
+		 * @see #length()
+		 */
 		@Override
 		public void go( final int index )
 		{
 			js.executeScript( "window.history.go( arguments[0] );", index );
-		}
-
-		@Override
-		public void pushState()
-		{
-			js.executeScript( "window.history.pushState();" );
-		}
-
-		@Override
-		public void replaceState()
-		{
-			js.executeScript( "window.history.replaceState();" );
 		}
 	}
 
