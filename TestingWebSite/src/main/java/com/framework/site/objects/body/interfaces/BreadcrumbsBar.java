@@ -1,6 +1,5 @@
 package com.framework.site.objects.body.interfaces;
 
-import com.framework.driver.utils.ui.ExtendedBy;
 import com.framework.site.pages.core.HomePage;
 import org.openqa.selenium.By;
 
@@ -8,22 +7,12 @@ import java.util.List;
 
 
 /**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.objects.body.interfaces
- *
- * Name   : Breadcrumbs
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-10
- *
- * Time   : 02:26
+ * Feb-1-2015  breadcrumb-bar changed to div.toolbar.toolbar-cruisedeals-adjustment
  */
 
 public interface BreadcrumbsBar
 {
-	static final String LOGICAL_NAME = "Breadcrumbs Bar";
+	static final String LOGICAL_NAME = "Cruise Deals Adjustment";
 
 	static final By ROOT_BY = By.className( "breadcrumb-bar" );
 
@@ -35,7 +24,7 @@ public interface BreadcrumbsBar
 	{
 		static final String LOGICAL_NAME = "Breadcrumbs";
 
-		static final By ROOT_BY = ExtendedBy.composite( By.tagName( "ul" ), By.className( "breadcrumbs" ) );
+		static final org.openqa.selenium.By ROOT_BY = By.cssSelector( "ul.breadcrumbs" );
 
 		/**
 		 * Clicks on the {@code Home} link.
@@ -44,9 +33,9 @@ public interface BreadcrumbsBar
 		 */
 		HomePage navigateHome();
 
-		HomePage navigateFirstChild();
+		boolean isLastChildEnabled();
 
-		boolean isLastChildClickable();
+		String getLastChildName();
 
 		List<String> getNames();
 
@@ -57,6 +46,6 @@ public interface BreadcrumbsBar
 	{
 		static final String LOGICAL_NAME = "Breadcrumb Bar Share";
 
-		static final By ROOT_BY = By.id( "" );
+		static final By ROOT_BY = By.className( "share" );
 	}
 }

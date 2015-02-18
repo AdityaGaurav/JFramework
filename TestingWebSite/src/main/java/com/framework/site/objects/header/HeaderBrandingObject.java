@@ -1,24 +1,28 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.event.HtmlObject;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
-import com.framework.driver.utils.ui.WaitUtil;
-import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.site.pages.core.CruiseDealsPage;
 import com.framework.site.pages.core.HomePage;
-import com.framework.utils.datetime.TimeConstants;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
+import static com.framework.utils.matchers.JMatchers.endsWith;
+import static com.framework.utils.matchers.JMatchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 
 
 /**
@@ -35,26 +39,39 @@ import java.util.Locale;
  * Time   : 10:56
  */
 
-abstract class HeaderBrandingObject extends AbstractWebObject implements Header.HeaderBranding
+class HeaderBrandingObject extends AbstractWebObject implements Header.HeaderBranding
 {
 
 	//region HeaderBrandingObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( HeaderBrandingObject.class );
 
+	private HtmlElement logo_pull_left, zero_nav;
+
+	private HtmlElement ccl_red, subscribeLink_ccl_blue;
+
+	private HtmlElement ccl_header_locale, ccl_header_locale_options, ccl_header_locale_img, ccl_header_locale_parent;
+
+	private List<HtmlElement> ccl_header_locale_optionsLinks;
+
+	private HtmlElement ccl_header_locale_number;
+
+	//private WebElement nav_tooltip_trigger_top_destinations;
+
 	//endregion
 
 
 	//region HeaderBrandingObject - Constructor Methods Section
 
-	HeaderBrandingObject( WebDriver driver, final WebElement rootElement)
+	protected HeaderBrandingObject( final HtmlElement rootElement)
 	{
-		super( driver, rootElement, LOGICAL_NAME );
+		this( rootElement, LOGICAL_NAME );
 	}
 
-	HeaderBrandingObject(  WebDriver driver, final WebElement rootElement, final String logicalName )
+	protected HeaderBrandingObject( final HtmlElement rootElement, final String logicalName )
 	{
-		super( driver, rootElement, logicalName );
+		super( rootElement, logicalName );
+		initWebObject();
 	}
 
 	//endregion
@@ -68,13 +85,15 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
-		ExpectedCondition<WebElement> condition1 =
-				WaitUtil.presenceOfChildBy( getRoot(), By.cssSelector( "div.header-branding a.logo" ) );
-		ExpectedCondition<WebElement> condition2 =
-				WaitUtil.presenceOfChildBy( getRoot(), By.cssSelector( "div.header-branding ul.zero-nav" ) );
-		assertion.assertWaitThat( "Validate \"a.logo\" selector exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition1 );
-		assertion.assertWaitThat( "Validate \"ul.zero-nav\" options exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition2 );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( By.cssSelector( "div.header-branding a.logo" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "div.header-branding a.logo" ), e.isPresent(), is( true ) );
+
+		e = getRoot().childExists( By.cssSelector( "div.header-branding a.logo" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "div.header-branding a.logo" ), e.isPresent(), is( true ) );
+		this.zero_nav = e.get();
 	}
 
 	//endregion
@@ -82,9 +101,9 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 
 	//region HeaderBrandingObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( CurrencySelector.ROOT_BY );
+		return getBaseRootElement( Header.HeaderBranding.ROOT_BY );
 	}
 
 	//endregion
@@ -96,14 +115,14 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	public String getLocalePhoneNumber()
 	{
 		logger.debug( "Reading the local phone number ..." );
-		return findLocaleNumberSpan().getText();
+		return findCclHeaderLocaleNumberSpan().getText();
 	}
 
 	@Override
 	public void clickSubscribeAndSave()
 	{
 		logger.debug( "Clicking on subscribe and save link ..." );
-		Link link = new Link( findSubscribeAndSaveAnchor() );
+		Link link = new Link( findSubscribeLink() );
 		link.hover( true );
 		link.click();
 	}
@@ -112,10 +131,10 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	public CruiseDealsPage clickYourCruiseDeals()
 	{
 		logger.debug( "Clicking on your cruise details link ..." );
-		Link link = new Link( findYourCruiseDetailsAnchor() );
+		Link link = new Link( findCclRedAnchor() );
 		link.hover( true );
 		link.click();
-		CruiseDealsPage cdp = new CruiseDealsPage( getWrappedDriver() );
+		CruiseDealsPage cdp = new CruiseDealsPage();
 		logger.info( "returning a new page instance -> '{}'", cdp );
 		return cdp;
 	}
@@ -123,19 +142,18 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	@Override
 	public HomePage clickOnLogo()
 	{
-		logger.debug( "Clicking on logo link ..." );
-		findLogoAnchor().click();
-		HomePage hp = new HomePage( getWrappedDriver() );
+		logger.info( "Clicking on logo link ..." );
+		findLogoPullLeftAnchor().click();
+		HomePage hp = new HomePage();
 		logger.info( "returning a new page instance -> '{}'", hp );
 		return hp;
 	}
 
 	@Override
-	public Locale getCurrentLocale()
+	public Locale getDisplayedLocale()
 	{
 		logger.debug( "Parsing displayed current locale ..." );
-		WebElement img = findCclLocaleImage();
-		String alt = img.getAttribute( "alt" );
+		String alt = findCclHeaderLocaleImage().getAttribute( "alt" );
 		switch ( alt )
 		{
 			case "United States":
@@ -150,9 +168,9 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	}
 
 	@Override
-	public HomePage changeLocale( final Locale locale )
+	public boolean isLocalesListOpened()
 	{
-		return null;
+		return findCclHeaderLocaleOptionsDiv().isDisplayed();
 	}
 
 	@Override
@@ -164,24 +182,47 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 	@Override
 	public boolean hasTopDestinations()
 	{
-		try
-		{
-			By findBy = org.openqa.selenium.By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" );
-			SiteSessionManager.getInstance().setImplicitlyWait( 50 );
-			List<WebElement> list = getRoot().findElements( findBy );
-			return list.size() > 0;
-		}
-		finally
-		{
-			SiteSessionManager.getInstance().restoreImplicitlyWait();
-		}
+		By findBy = By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" );
+		return getDriver().elementExists( findBy ).isPresent() ;
 	}
 
 	@Override
 	public boolean hasCurrencySelector()
 	{
 		By findBy = By.cssSelector( "a.ccl-blue.nav-tooltip-trigger[data-id='currency']" );
-		return getWrappedDriver().elementExists( findBy );
+		return getDriver().elementExists( findBy ).isPresent() ;
+	}
+
+	@Override
+	public List<String> openLocalesList()
+	{
+		logger.debug( "opening the country list, by clicking on the current locale flag icon" );
+
+		findCclHeaderLocaleAnchor().click();
+		getRoot().waitAttributeToMatch( "class", endsWith( "increaseZ" ), THREE_SECONDS );
+		findHeaderLocaleParentLi().waitAttributeToMatch( "class", is( "hover" ), THREE_SECONDS );
+		findCclHeaderLocaleOptionsDiv().waitToBeDisplayed( true, THREE_SECONDS );
+		List<HtmlElement> spans = findLocaleOptionsAnchors();
+
+		return HtmlObject.extractText( spans );
+	}
+
+
+	@Override
+	public HomePage changeLocale( final Locale locale )
+	{
+		return null;
+	}
+
+	@Override
+	public void closeLocalesList()
+	{
+		logger.debug( "closing the country list, by clicking on the current locale flag icon" );
+
+		findCclHeaderLocaleAnchor().click();
+		getRoot().waitAttributeToMatch( "class", not( endsWith( "increaseZ" ) ), THREE_SECONDS );
+		findHeaderLocaleParentLi().waitAttributeToMatch( "class", isEmptyString(), THREE_SECONDS );
+		findCclHeaderLocaleOptionsDiv().waitToBeDisplayed( false, THREE_SECONDS );
 	}
 
 	//endregion
@@ -189,68 +230,191 @@ abstract class HeaderBrandingObject extends AbstractWebObject implements Header.
 
 	//region HeaderBrandingObject - Element Finder Methods Section
 
-	/**
-	 * Full xpath  : {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/a}
-	 * Css selector: {@code #ccl-refresh-header .pull-left}
-	 *
-	 * @return The {@linkplain org.openqa.selenium.WebElement} for the logo.
-	 */
-	private WebElement findLogoAnchor()
+	private HtmlElement findLogoPullLeftAnchor()
 	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( ".//a[contains(@class,'logo')]" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "a.logo.pull-left" );
+		if( null == logo_pull_left )
+		{
+			logo_pull_left = getRoot().findElement( findBy );
+		}
+		return logo_pull_left;
 	}
 
-	/**
-	 * Full xpath  :  {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/ul/li[5]/span}
-	 * Short xpath :  {@code .//*[@id='ccl_header_locale-number']}
-	 * Css selector:  {@code ##ccl-refresh-header .header-branding .zero-nav #ccl_header_locale-number}
-	 *
-	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
-	 */
-	private WebElement findLocaleNumberSpan()
+	protected HtmlElement findZeroNavUl()
 	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "ccl_header_locale-number" );
-		return findZeroNavigationDiv().findElement( findBy );
+		final By findBy = By.cssSelector( "ul.zero-nav" );
+		if( null == zero_nav )
+		{
+			zero_nav = getRoot().findElement( findBy );
+		}
+		return zero_nav;
 	}
 
-	/**
-	 * Full xpath  :  {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/ul/li[2]/a}
-	 * Short xpath :  {@code .//*[@id='subscribeLink']}
-	 * Css selector:  {@code #ccl-refresh-header .ccl-blue}
-	 *
-	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
-	 */
-	private WebElement findSubscribeAndSaveAnchor()
+	private HtmlElement findCclRedAnchor()
 	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "subscribeLink" );
-		return findZeroNavigationDiv().findElement( findBy );
+		final By findBy = By.className( "ccl-red" );
+		if( null == ccl_red )
+		{
+			ccl_red = findZeroNavUl().findElement( findBy );
+		}
+		return ccl_red;
 	}
 
-	/**
-	 * Full xpath  :  {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/ul/li[1]/a}
-	 * Short xpath :  {@code .//*[@id='ccl-refresh-header']/div[1]/div[3]/div/ul/li[1]/a}
-	 * Css selector:  {@code #ccl-refresh-header .ccl-red}
-	 *
-	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
-	 */
-	private WebElement findYourCruiseDetailsAnchor()
+	private HtmlElement findSubscribeLink()
 	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( "./li/a[@class='ccl-red']" );
-		return findZeroNavigationDiv().findElement( findBy );
+		final By findBy = By.id( "subscribeLink" );
+		if( null == subscribeLink_ccl_blue )
+		{
+			subscribeLink_ccl_blue = findZeroNavUl().findElement( findBy );
+		}
+		return subscribeLink_ccl_blue;
 	}
 
-	private WebElement findZeroNavigationDiv()
+	private HtmlElement findCclHeaderLocaleAnchor()
 	{
-		final By findBy = By.cssSelector( "div.header-branding ul.zero-nav" );
-		return getWrappedDriver().findElement( findBy );
+		final By findBy = By.id( "ccl_header_locale" );
+		if( null == ccl_header_locale )
+		{
+			ccl_header_locale = findZeroNavUl().findElement( findBy );
+		}
+		return ccl_header_locale;
 	}
 
-	private WebElement findCclLocaleImage()
+	private HtmlElement findCclHeaderLocaleImage()
 	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( "//*[@id='ccl_header_locale']/img" );
-		return getWrappedDriver().findElement( findBy );
+		final By findBy = By.tagName( "img" );
+		if( null == ccl_header_locale_img )
+		{
+			ccl_header_locale_img = findCclHeaderLocaleAnchor().findElement( findBy );
+		}
+		return ccl_header_locale_img;
 	}
+
+	private HtmlElement findCclHeaderLocaleOptionsDiv()
+	{
+		final By findBy = By.id( "ccl_header_locale_options" );
+		if( null == ccl_header_locale_options )
+		{
+			ccl_header_locale_options = findZeroNavUl().findElement( findBy );
+		}
+		return ccl_header_locale_options;
+	}
+
+	private HtmlElement findCclHeaderLocaleNumberSpan()
+	{
+		final By findBy = By.id( "ccl_header_locale_number" );
+		if( null == ccl_header_locale_number )
+		{
+			ccl_header_locale_number = findZeroNavUl().findElement( findBy );
+		}
+		return ccl_header_locale_number;
+	}
+
+	private List<HtmlElement> findLocaleOptionsAnchors()
+	{
+		final By findBy = By.tagName( "a" );
+		if( null == ccl_header_locale_optionsLinks )
+		{
+			ccl_header_locale_optionsLinks = findCclHeaderLocaleOptionsDiv().findElements( findBy );
+		}
+		return ccl_header_locale_optionsLinks;
+	}
+
+	private HtmlElement findHeaderLocaleParentLi()
+	{
+		if( null == this.ccl_header_locale_parent )
+		{
+			this.ccl_header_locale_number = findCclHeaderLocaleAnchor().parent();
+		}
+		return ccl_header_locale_number;
+	}
+
+
+
+
+
+//	/**
+//	 * Full xpath  : {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/a}
+//	 * Css selector: {@code #ccl-refresh-header .pull-left}
+//	 *
+//	 * @return The {@linkplain org.openqa.selenium.WebElement} for the logo.
+//	 */
+//	private WebElement findLogoAnchor()
+//	{
+//		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( ".//a[contains(@class,'logo')]" );
+//		return getRoot().findElement( findBy );
+//	}
+//
+//	/**
+//	 * Css selector:  {@code #ccl_header_locale-number}
+//	 *
+//	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
+//	 */
+//	private WebElement findLocaleNumberSpan()
+//	{
+//		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "ccl_header_locale-number" );
+//		return findZeroNavigationDiv().findElement( findBy );
+//	}
+//
+//	private List<WebElement> findLocaleSpans()
+//	{
+//		By findBy = By.xpath( "//*[@id='ccl_header_locale_options']//span" );
+//		return getDriver().findElements( findBy );
+//	}
+//
+//	/**
+//	 * @return a reference to a#ccl_header_locale.nav-tooltip-trigger[data-id='locale']
+//	 */
+//	private WebElement findLocaleTooltipTriggerAnchor()
+//	{
+//		By findBy = By.id( "ccl_header_locale" );
+//		return getDriver().findElement( findBy );
+//	}
+//
+//
+//	private WebElement findLocaleParentLi()
+//	{
+//		By findBy = By.xpath( "//*[@id='ccl_header_locale']/.." );
+//		return getDriver().findElement( findBy );
+//	}
+//
+//	/**
+//	 * Full xpath  :  {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/ul/li[2]/a}
+//	 * Short xpath :  {@code .//*[@id='subscribeLink']}
+//	 * Css selector:  {@code #ccl-refresh-header .ccl-blue}
+//	 *
+//	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
+//	 */
+//	private WebElement findSubscribeAndSaveAnchor()
+//	{
+//		org.openqa.selenium.By findBy = org.openqa.selenium.By.id( "subscribeLink" );
+//		return findZeroNavigationDiv().findElement( findBy );
+//	}
+//
+//	/**
+//	 * Full xpath  :  {@code /html/body/div[5]/div[1]/div[1]/div[1]/div[3]/div/ul/li[1]/a}
+//	 * Short xpath :  {@code .//*[@id='ccl-refresh-header']/div[1]/div[3]/div/ul/li[1]/a}
+//	 * Css selector:  {@code #ccl-refresh-header .ccl-red}
+//	 *
+//	 * @return The {@linkplain org.openqa.selenium.WebElement} for the 'Your Cruise Details' link.
+//	 */
+//	private WebElement findYourCruiseDetailsAnchor()
+//	{
+//		By findBy = By.xpath( "./li/a[@class='ccl-red']" );
+//		return findZeroNavigationDiv().findElement( findBy );
+//	}
+//
+//	private WebElement findZeroNavigationDiv()
+//	{
+//		final By findBy = By.cssSelector( "div.header-branding ul.zero-nav" );
+//		return getDriver().findElement( findBy );
+//	}
+//
+//	private WebElement findCclLocaleImage()
+//	{
+//		By findBy = By.xpath( "//*[@id='ccl_header_locale']/img" );
+//		return getDriver().findElement( findBy );
+//	}
 
 	//endregion
 

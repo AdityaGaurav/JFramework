@@ -1,9 +1,8 @@
 package com.framework.site.objects.header;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.objects.header.interfaces.Header;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +37,10 @@ class NotificationBarObject extends AbstractWebObject implements Header.Notifica
 
 	//region HeaderObject - Constructor Methods Section
 
-	NotificationBarObject( WebDriver driver, final WebElement rootElement )
+	NotificationBarObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, Header.NotificationBar.LOGICAL_NAME );
+		super( rootElement, Header.NotificationBar.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -51,11 +51,10 @@ class NotificationBarObject extends AbstractWebObject implements Header.Notifica
 	@Override
 	protected void initWebObject()
 	{
-		if( getRoot().isDisplayed() )
+		if( getRoot().isDisplayed() )    //todo: find out what notif-bar contains
 		{
 			logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 					getQualifier(), getLogicalName() );
-			//todo: find out what notif-bar contains
 		}
 	}
 
@@ -64,7 +63,7 @@ class NotificationBarObject extends AbstractWebObject implements Header.Notifica
 
 	//region HeaderObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Header.NotificationBar.ROOT_BY );
 	}

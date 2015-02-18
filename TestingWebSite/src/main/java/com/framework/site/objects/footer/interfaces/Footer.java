@@ -1,6 +1,11 @@
 package com.framework.site.objects.footer.interfaces;
 
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.objects.Link;
+import com.framework.site.objects.footer.enums.FooterItem;
 import org.openqa.selenium.By;
+
+import java.net.URL;
 
 
 /**
@@ -39,11 +44,20 @@ public interface Footer
 
 	interface SubFooter
 	{
+
 		static final By ROOT_BY = By.className( "sub-footer" );
 
 		static final String LOGICAL_NAME = "Sub-Footer";
 
 		boolean isDisplayed();
+
+		boolean itemExists( FooterItem item );
+
+		Link getFooterLinkItem( FooterItem item );
+
+		HtmlElement getTradeMark();
+
+		URL getFacebookLikeRef();
 	}
 
 	interface ZeroFooter

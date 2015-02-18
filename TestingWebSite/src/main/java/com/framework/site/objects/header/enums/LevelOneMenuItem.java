@@ -1,4 +1,4 @@
-package com.framework.site.objects.header;
+package com.framework.site.objects.header.enums;
 
 //todo: documentation
 
@@ -19,7 +19,9 @@ public enum LevelOneMenuItem
 
 	PLAN( "Plan" ),
 
-	MANAGE( "Manage" );
+	MANAGE( "Manage" ),
+
+	SEARCH( "Search" );
 
 	private final String title;
 

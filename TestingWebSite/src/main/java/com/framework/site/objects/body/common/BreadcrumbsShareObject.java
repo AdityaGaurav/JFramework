@@ -1,19 +1,19 @@
 package com.framework.site.objects.body.common;
 
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
-import com.framework.site.objects.body.interfaces.ShipSortBar;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static com.framework.utils.datetime.TimeConstants.TWO_SECONDS;
+import static org.hamcrest.Matchers.is;
 
 
 /**
@@ -42,9 +42,10 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Constructor Methods Section
 
-	public BreadcrumbsShareObject( WebDriver driver, final WebElement rootElement )
+	public BreadcrumbsShareObject( final HtmlElement rootElement )
 	{
-		super( BreadcrumbsBar.Share.LOGICAL_NAME, driver, rootElement );
+		super( rootElement, BreadcrumbsBar.Share.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -55,18 +56,17 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 	@Override
 	protected void initWebObject()
 	{
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(),ae );
-			appEx.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw appEx;
-		}
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( By.id( "HeaderFBLike" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "#HeaderFBLike" ), e.isPresent(), is( true ) );
+
+		e = getRoot().childExists( By.className( "options" ), TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, "#options" ), e.isPresent(), is( true ) );
 	}
 
 
@@ -75,28 +75,9 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Service Methods Section
 
-	@Override
-	public String toString()
+	private HtmlElement getRoot()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
-	private WebElement getRoot()
-	{
-		try
-		{
-			rootElement.getTagName();
-			return rootElement;
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( ShipSortBar.ROOT_BY );
-		}
+		return getBaseRootElement( BreadcrumbsBar.Share.ROOT_BY );
 	}
 
 	//endregion
@@ -109,19 +90,19 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Element Finder Methods Section
 
-	private List<WebElement> getTopChickletsLis()
+	private List<HtmlElement> getTopChickletsLis()
 	{
 		By findBy = By.id( "top_chicklets" );
 		return getRoot().findElement( findBy ).findElements( By.tagName( "li" ) );
 	}
 
-	private WebElement getChicletsSearchDiv()
+	private HtmlElement getChicletsSearchDiv()
 	{
 		By findBy = By.id( "chicklet_search" );
 		return getRoot().findElement( findBy );
 	}
 
-	private WebElement getAllChickletsDiv()
+	private HtmlElement getAllChickletsDiv()
 	{
 		By findBy = By.id( "all_chicklets" );
 		return getRoot().findElement( findBy );

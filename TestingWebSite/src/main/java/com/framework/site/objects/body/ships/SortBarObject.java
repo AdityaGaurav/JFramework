@@ -1,24 +1,22 @@
 package com.framework.site.objects.body.ships;
 
-import com.framework.asserts.JAssertions;
-import com.framework.driver.exceptions.ApplicationException;
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.ExtendedBy;
-import com.framework.driver.utils.ui.WaitUtil;
-import com.framework.matchers.MatcherUtils;
 import com.framework.site.objects.body.interfaces.ShipSortBar;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Throwables;
+import com.framework.utils.datetime.TimeConstants;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
+import static com.framework.utils.datetime.TimeConstants.TWO_SECONDS;
+import static org.hamcrest.Matchers.is;
 
 //todo: class documentation
 
@@ -33,14 +31,21 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 
 	private static final int SORT_INDEX = 0;
 
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	HtmlElement options;
+
 	//endregion
 
 
 	//region SortBarObject - Constructor Methods Section
 
-	public SortBarObject( WebDriver driver, final WebElement rootElement )
+	public SortBarObject( final HtmlElement rootElement )
 	{
-		super( ShipSortBar.LOGICAL_NAME, driver, rootElement );
+		super( rootElement, ShipSortBar.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -51,21 +56,18 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...", getId(), getLogicalName() );
-		logger.info( "Parsing ship card..." );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		try
-		{
+		final String REASON = "assert that element \"%s\" exits";
 
-		}
-		catch ( AssertionError ae )
-		{
-			Throwables.propagateIfInstanceOf( ae, ApplicationException.class );
-			logger.error( "throwing a new WebObjectException on {}#initWebObject.", getClass().getSimpleName() );
-			ApplicationException ex = new ApplicationException( objectDriver.getWrappedDriver(), ae.getMessage(),ae );
-			ex.addInfo( "cause", "verification and initialization process for object " + getLogicalName() + " was failed." );
-			throw ex;
-		}
+		JAssertion assertion = getRoot().createAssertion();
+		Optional<HtmlElement> e = getRoot().childExists( By.tagName( "h3" ), THREE_SECONDS );
+		assertion.assertThat( String.format( REASON, "h3" ), e.isPresent(), is( true ) );
+
+		e = getRoot().childExists( By.cssSelector( "ul.options" ), TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, "ul.options" ), e.isPresent(), is( true ) );
+		options = e.get();
 	}
 
 	//endregion
@@ -73,264 +75,236 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 
 	//region SortBarObject - Service Methods Section
 
-	@Override
-	public String toString()
+	private HtmlElement getRoot()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "logical name", getLogicalName() )
-				.add( "id", getId() )
-				.omitNullValues()
-				.toString();
-	}
-
-	private WebElement getRoot()
-	{
-		try
-		{
-			rootElement.getTagName();
-			return rootElement;
-		}
-		catch ( StaleElementReferenceException ex )
-		{
-			logger.warn( "auto recovering from StaleElementReferenceException ..." );
-			return objectDriver.findElement( ShipSortBar.ROOT_BY );
-		}
+		return getBaseRootElement( ShipSortBar.ROOT_BY );
 	}
 
 	//endregion
 
 
-	//region SortBarObject - Business Methods Section
+	//region SortBarObject - Implementation Methods Section
 
-	//todo : documentation
+	/**
+	 * @return the number displayed in div.sort-bar > ul.options > h3 > span
+	 */
 	@Override
 	public int getResults()
 	{
-		try
+		logger.info( "Reading the number of ships results ..." );
+
+		HtmlElement he = findSortBarH3Span();
+		String text = he.getText();
+		if( NumberUtils.isNumber( text ) )
 		{
-		 	String value = findSortBarH3().getText();
-			return NumberUtils.createInteger( value );
+			return NumberUtils.createInteger( text );
 		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#getShipNames.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to get ship names." );
-			throw appEx;
-		}
+
+		return 0;
 	}
 
-	//todo : documentation
+	/**
+	 * {@inheritDoc}
+	 * first is determined the current value of the layout.
+	 * if the requested value equals to the actual value, the procedure is aborted.
+	 * <ul>
+	 *     <li>clicks on the layout toggle anchor</li>
+	 *     <li>validates sub-list is displayed and anchor class ends with active</li>
+	 *     <li>clicks on the requested layout option</li>
+	 *     <li>waits to list to be not visible</li>
+	 *     <li>asserts that new value matches the requested value</li>
+	 * </ul>
+	 */
 	@Override
 	public void setLayoutType( final LayoutType layout )
 	{
 		logger.info( "Changing layout type to <\"{}\">", layout.name() );
-		WebDriverWait wdw = WaitUtil.wait5( objectDriver );
-		WebDriverWait wdw20 = WaitUtil.wait20( objectDriver );
-		String layoutText = layout.equals( LayoutType.BY_GRID ) ? "Grid" : "List";
-		final String SELECTED_PATTERN = ".//a[@data-param='layout' and @data-label='%s' and @class='active-filter']";
-		final String SELECTED_XPATH = String.format( SELECTED_PATTERN, layoutText );
 
-		try
+		// Determine the current value, if are equals, procedure will be aborted
+		LayoutType current = getLayoutType();
+		if( current.equals( layout ) )
 		{
-			LayoutType current = getLayoutType();
-			if( ! current.equals( layout ) )
-			{
-				logger.info( "Changing ships layout to <\"{}\">", layout.name() );
-
-				/* finding all required web-elements */
-
-				WebElement notActiveLayout = findLayoutNotActiveFilter();
-				WebElement subList = findSubListUl( notActiveLayout );
-				WebElement arrow = findArrows().get( LAYOUT_INDEX );
-				WebElement toggle = findToggles().get( LAYOUT_INDEX );
-
-				arrow.click();
-
-				/* waiting for web-element classes */
-
-				wdw.until( WaitUtil.visibilityOf( subList, true ) );
-				wdw.until( WaitUtil.elementAttributeToMatch( toggle, "class", MatcherUtils.containsString( "active" ) ) );
-				notActiveLayout.click();
-				JAssertions.assertWaitThat( wdw20 )
-						.matchesCondition( WaitUtil.presenceBy( By.xpath( SELECTED_XPATH ) ) );
-			}
+			logger.info( "Layout type < {} > is already selected.", layout.name() );
+			return;
 		}
-		catch ( Throwable t )
+
+		/* clicking on toggle and select requested value */
+		HtmlElement toggle = findLayoutToggleAnchor();
+		HtmlElement subList = getLayoutSubList();
+		toggle.click();
+
+		Boolean response = toggle.waitAttributeToMatch( "class", JMatchers.endsWith( "active" ), TimeConstants.THREE_SECONDS );
+		logger.debug( "Layout toggle class is \"active\" -> < {} >", response );
+		response = subList.waitToBeDisplayed( true, TimeConstants.THREE_SECONDS );
+		logger.debug( "Layout subList class is displayed -> < {} >", response );
+
+		// selecting BY_GRID ?
+		HtmlElement optionItem; String expectedValue;
+		if( layout.equals( LayoutType.BY_GRID ) )
 		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#setLayoutType.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to set ships layout type <\"" + layout.name() + "\">" );
-			throw appEx;
+			expectedValue = "Grid";
+			optionItem = findDataLabelListItem( subList, expectedValue );
 		}
+		else
+		{
+			expectedValue = "List";
+			optionItem = findDataLabelListItem( subList, expectedValue );
+		}
+		optionItem.click();
+		response = subList.waitToBeDisplayed( false, TimeConstants.THREE_SECONDS );
+		logger.debug( "Layout subList class is not displayed  -> < {} >", response );
+
+		// validating value was selected
+		HtmlElement he = findCurrentLayoutType();
+		String REASON = "Validates that new value matches requested value < " + expectedValue + " >";
+		HtmlCondition<Boolean> condition =
+				ExpectedConditions.elementTextToMatch( he, JMatchers.equalToIgnoringWhiteSpace( expectedValue ) );
+		he.createAssertion().assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * first is determined the current value of the SortType.
+	 * if the requested value equals to the actual value, the procedure is aborted.
+	 * <ul>
+	 *     <li>clicks on the layout toggle anchor</li>
+	 *     <li>validates sub-list is displayed and anchor class ends with active</li>
+	 *     <li>clicks on the requested layout option</li>
+	 *     <li>waits to list to be not visible</li>
+	 *     <li>asserts that new value matches the requested value</li>
+	 * </ul>
+	 */
 	@Override
-	public void setSortType( final SortType sortType )
+	public void setSortType( final SortType sort )
 	{
-		logger.info( "Changing sort type to <\"{}\">", sortType.name() );
-		WebDriverWait wdw = WaitUtil.wait5( objectDriver );
-		WebDriverWait wdw20 = WaitUtil.wait20( objectDriver );
-		String sortText = sortType.equals( SortType.DISPLAY_FEATURED ) ? "Featured" : "A-Z";
-		final String SELECTED_PATTERN = ".//a[@data-param='sort' and @data-label='%s' and @class='active-filter']";
-		final String SELECTED_XPATH = String.format( SELECTED_PATTERN, sortText );
+		logger.info( "Changing sort type to <\"{}\">", sort.name() );
 
-		try
+		// Determine the current value, if are equals, procedure will be aborted
+		SortType current = getSortType();
+		if( current.equals( sort ) )
 		{
-			SortType current = getSortType();
-			if( ! current.equals( sortType ) )
-			{
-				logger.info( "Changing ships sort to <\"{}\">", sortType.name() );
-
-				/* finding all required web-elements */
-
-				WebElement notActiveSort = findSortNotActiveFilter();
-				WebElement subList = findSubListUl( notActiveSort );
-				WebElement arrow = findArrows().get( SORT_INDEX );
-				WebElement toggle =  findToggles().get( SORT_INDEX );
-
-				arrow.click();
-
-				/* waiting for web-element classes */
-
-				wdw.until( WaitUtil.visibilityOf( subList, true ) );
-				wdw.until( WaitUtil.elementAttributeToMatch( toggle, "class", MatcherUtils.containsString( "active" ) ) );
-				notActiveSort.click();
-				JAssertions.assertWaitThat( wdw20 )
-						.matchesCondition( WaitUtil.presenceBy( By.xpath( SELECTED_XPATH ) ) );
-			}
+			logger.info( "Sort type < {} > is already selected.", sort.name() );
+			return;
 		}
-		catch ( Throwable t )
+
+		/* clicking on toggle and select requested value */
+		HtmlElement toggle = findSortToggleAnchor();
+		HtmlElement subList = getSortSubList();
+		toggle.click();
+
+		Boolean response = toggle.waitAttributeToMatch( "class", JMatchers.endsWith( "active" ), TimeConstants.THREE_SECONDS );
+		logger.debug( "Sort toggle class is \"active\" -> < {} >", response );
+		response = subList.waitToBeDisplayed( true, TimeConstants.THREE_SECONDS );
+		logger.debug( "Sort subList class is displayed -> < {} >", response );
+
+		// selecting FEATURED ?
+		HtmlElement optionItem; String expectedValue;
+		if( sort.equals( SortType.DISPLAY_FEATURED ) )
 		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#setSortType.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to set ships sort type <\"" + sortType.name() + "\">" );
-			throw appEx;
+			expectedValue = "Featured";
+			optionItem = findDataLabelListItem( subList, expectedValue );
 		}
+		else
+		{
+			expectedValue = "A-Z";
+			optionItem = findDataLabelListItem( subList, expectedValue );
+		}
+		optionItem.click();
+		response = subList.waitToBeDisplayed( false, TimeConstants.THREE_SECONDS );
+		logger.debug( "Sort subList class is not displayed  -> < {} >", response );
+
+		// validating value was selected
+		HtmlElement he = findCurrentLayoutType();
+		String REASON = "Validates that new value matches requested value < " + expectedValue + " >";
+		HtmlCondition<Boolean> condition =
+				ExpectedConditions.elementTextToMatch( he, JMatchers.equalToIgnoringWhiteSpace( expectedValue ) );
+		he.createAssertion().assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 	}
 
-	//todo : documentation
+	/**
+	 * determine the current display layout type
+	 *
+	 * @return a {@linkplain ShipSortBar.SortType} enumeration value.
+	 */
 	@Override
 	public LayoutType getLayoutType()
 	{
-		try
-		{
-			WebElement anchor = findLayoutActiveFilterAnchor();
-			String dataLabel = anchor.getAttribute( "data-label" );
-			if( dataLabel.equals( "Grid" ) ) return LayoutType.BY_GRID;
-			return LayoutType.BY_LIST;
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#getLayoutType.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to get the ships layout type." );
-			throw appEx;
-		}
+		logger.info( "Reading the ships default Layout Type ( Grid | List ) ..." );
+		HtmlElement he = findCurrentLayoutType();
+
+		if( he.getText().equalsIgnoreCase( "Grid" ) ) return LayoutType.BY_GRID;
+		if( he.getText().equalsIgnoreCase( "List" ) ) return LayoutType.BY_LIST;
+		return null;
 	}
 
-	//todo : documentation
+	/**
+	 * determine the current display sort type
+	 *
+	 * @return a {@linkplain ShipSortBar.SortType} enumeration value.
+	 */
 	@Override
 	public SortType getSortType()
 	{
-		try
-		{
-		 	WebElement anchor = findSortActiveFilterAnchor();
-			String dataLabel = anchor.getAttribute( "data-label" );
-			if( dataLabel.equals( "Featured" ) ) return SortType.DISPLAY_FEATURED;
-			return SortType.DISPLAY_AZ;
-		}
-		catch ( Throwable t )
-		{
-			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-			logger.error( "throwing a new ApplicationException on {}#getSortBy.", getClass().getSimpleName() );
-			ApplicationException appEx = new ApplicationException( objectDriver.getWrappedDriver(), t.getMessage(), t );
-			appEx.addInfo( "business process", "failed to get the ships sort type." );
-			throw appEx;
-		}
-	}
+		logger.info( "Reading the ships default sort Type ( FEATURED | A-Z ) ..." );
+		HtmlElement he = findCurrentSortType();
 
+		if( he.getText().equalsIgnoreCase( "A-Z" ) ) return SortType.DISPLAY_AZ;
+		if( he.getText().equalsIgnoreCase( "Featured" ) ) return SortType.DISPLAY_FEATURED;
+		return null;
+	}
 
 	//endregion
 
 
 	//region SortBarObject - Element Finder Methods Section
 
-	private WebElement findSortBarH3()
+	private HtmlElement findSortBarH3Span()
 	{
-		By findBy = By.tagName( "h3" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "h3 > span" );
+		return getDriver().findElement( findBy );
 	}
 
-	private WebElement findSortActiveFilterAnchor()
+	private HtmlElement findCurrentSortType()
 	{
-		By findBy = By.cssSelector( "a.active-filter[data-param='sort']" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "li:first-child a.toggle > span" );
+		return options.findElement( findBy );
 	}
 
-	private WebElement findSortNotActiveFilter()
+	private HtmlElement findCurrentLayoutType()
 	{
-		By findBy = By.xpath( ".//a[@data-param='sort' and not(@class='active-filter')]" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "li:last-child a.toggle > span" );
+		return options.findElement( findBy );
 	}
 
-	private WebElement findLayoutNotActiveFilter()
+	private HtmlElement findLayoutToggleAnchor()
 	{
-		By findBy = By.xpath( ".//a[@data-param='layout' and not(@class='active-filter')]" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "li:last-child .toggle" );
+		return options.findElement( findBy );
 	}
 
-	private WebElement findLayoutActiveFilterAnchor()
+	private HtmlElement findSortToggleAnchor()
 	{
-		By findBy = By.cssSelector( "a.active-filter[data-param='layout']" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "li:first-child .toggle" );
+		return options.findElement( findBy );
 	}
 
-	private WebElement findSubListUl( WebElement type )
+	private HtmlElement getLayoutSubList()
 	{
-		By findBy = By.xpath( "/parent::li/parent::ul" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( "li:last-child > ul.sub-list" );
+		return options.findElement( findBy );
 	}
 
-	private List<WebElement> findArrows()
+	private HtmlElement getSortSubList()
 	{
-		By findBy = ExtendedBy.composite( By.tagName( "i" ), By.className( "arrow" ) );
-		return getRoot().findElements( findBy );
+		final By findBy = By.cssSelector( "li:first-child > ul.sub-list" );
+		return options.findElement( findBy );
 	}
 
-	private List<WebElement> findToggles()
+	private HtmlElement findDataLabelListItem( HtmlElement subList, String type )
 	{
-		By findBy = ExtendedBy.composite( By.tagName( "a" ), By.className( "toggle" ) );
-		return getRoot().findElements( findBy );
+		final By findBy = By.xpath( String.format( "//a[@data-label=\"%s\"]", type ) );
+		return subList.findElement( findBy );
 	}
-
-
-
-//	private WebElement findArrow( String current )
-//	{
-//		final String XPATH_FMT = "//ul[@class='options']//a[@class='toggle']/span[text()='%s']/../i";
-//		String xpath = String.format( XPATH_FMT, current );
-//		By findBy = By.xpath( xpath );
-//		return getRoot().findElement( findBy );
-//	}
-//
-//	private WebElement findArrowParent( WebElement arrow )
-//	{
-//		By findBy = By.xpath( "/parent::a" );
-//		return arrow.findElement( findBy );
-//	}
-//
-//	private WebElement findSubListUl( String current )
-//	{
-//		final String XPATH_FMT = "//a[@data-label='%s']/parent::li/parent::ul" ;
-//		String xpath = String.format( XPATH_FMT, current );
-//		By findBy = By.xpath( xpath );
-//		return getRoot().findElement( findBy );
-//	}
 
 	//endregion
 

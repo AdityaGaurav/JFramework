@@ -1,32 +1,23 @@
 package com.framework.site.objects.header.interfaces;
 
+import com.framework.driver.event.ExtendedBy;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.exceptions.UrlNotAvailableException;
 import com.framework.driver.objects.Link;
 import com.framework.driver.objects.PageObject;
-import com.framework.driver.selectors.ExtendedBy;
-import com.framework.site.objects.header.LevelOneMenuItem;
-import com.framework.site.objects.header.MenuItems;
+import com.framework.site.data.Destinations;
+import com.framework.site.objects.header.enums.LevelOneMenuItem;
+import com.framework.site.objects.header.enums.MenuItems;
+import com.framework.site.pages.bookedguest.BookedGuestLogonPage;
 import com.framework.site.pages.core.CruiseDealsPage;
 import com.framework.site.pages.core.HomePage;
-import com.framework.site.pages.core.cruiseto.CruiseToPage;
+import com.framework.site.pages.core.cruiseto.CruiseToDestinationPage;
 import org.openqa.selenium.By;
 
 import java.util.List;
 import java.util.Locale;
 
 
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.objects.header.interfaces
- *
- * Name   : Header
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-05
- *
- * Time   : 23:11
- */
 
 public interface Header
 {
@@ -48,11 +39,7 @@ public interface Header
 
 	NavigationAdditional navigationAdditional();
 
-	// ------------------------------------------------------------------------|
-	// --- HEADER-CHILD INTERFACES --------------------------------------------|
-	// ------------------------------------------------------------------------|
-
-	//region Header - Child Interfaces
+	//region Header - Child Interfaces under div.ccl-refresh-header > div.header-nav
 
 	interface MessageBar
 	{
@@ -74,7 +61,7 @@ public interface Header
 
 	interface HeaderBranding
 	{
-		static final By ROOT_BY = By.className( "header-branding" );
+		static final By ROOT_BY = By.cssSelector( "div.header-branding" );
 
 		static final String LOGICAL_NAME = "Header Branding";
 
@@ -86,8 +73,6 @@ public interface Header
 
 		HomePage clickOnLogo();
 
-		Locale getCurrentLocale();
-
 		HomePage changeLocale( final Locale locale );
 
 		boolean hasTopDestinations();
@@ -96,19 +81,31 @@ public interface Header
 
 		boolean isDisplayed();
 
+		List<String> openLocalesList();
+
+		void closeLocalesList();
+
+		boolean isLocalesListOpened();
+
+		Locale getDisplayedLocale();
+
 		interface TopDestinations
 		{
 			static final String LOGICAL_NAME = "Header Branding Top Destinations";
 
-			static final By ROOT_BY = By.cssSelector( ".nav-tooltip-trigger[data-id='top-destinations']" );
-
-			CruiseToPage clickOnTopDestinationLink( int index );
-
-			List<String> getTopDestinationsNames();
+			static final By ROOT_BY = By.xpath( "//a[@class='nav-tooltip-trigger' and @data-id='top-destinations']/.." );
 
 			boolean isDisplayed();
 
-			void clickTopDestinations();
+			List<String> openTopDestinationsList();
+
+			void closeTopDestinationsList();
+
+			boolean isTopDestinationsListOpened();
+
+			CruiseToDestinationPage clickLink( final Destinations destination ) throws UrlNotAvailableException;
+
+			String getListTitle();
 		}
 
 		interface CurrencySelector
@@ -160,17 +157,9 @@ public interface Header
 
 		static final String LOGICAL_NAME = "Header Links";
 
-		public static final String LEARN = "Learn";
-
-		public static final String EXPLORE = "Explore";
-
-		public static final String PLAN = "Plan";
-
-		public static final String MANAGE = "Manage";
-
-		boolean isDisplayed();
-
 		String[] getLinkNames();
+
+		Link getLink( LevelOneMenuItem item );
 
 		/**
 		 * Select ( clicks ) a top level menu item
@@ -182,11 +171,11 @@ public interface Header
 		 * @throws org.apache.commons.lang3.NotImplementedException when {@code menuItem} is not a top level menu item.
 		 *
 		 * @see com.framework.site.objects.header.HeaderLinksObject
-		 * @see com.framework.site.objects.header.LevelOneMenuItem
+		 * @see com.framework.site.objects.header.enums.LevelOneMenuItem
 		 * @see com.framework.driver.event.EventListener#beforeClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 		 * @see com.framework.driver.event.EventListener#afterClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 		 */
-		PageObject selectMenuItem( LevelOneMenuItem item );
+		PageObject clickItem( LevelOneMenuItem item );
 
 		/**
 		 * Hovers on a top level menu item
@@ -196,12 +185,22 @@ public interface Header
 		 * @throws org.apache.commons.lang3.NotImplementedException when {@code menuItem} is not a top level menu item.
 		 *
 		 * @see com.framework.site.objects.header.HeaderLinksObject
-		 * @see com.framework.site.objects.header.LevelOneMenuItem
+		 * @see com.framework.site.objects.header.enums.LevelOneMenuItem
 		 * @see com.framework.driver.event.EventListener#beforeHoverOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 		 * @see com.framework.driver.event.EventListener#afterHoverOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
 		 */
-		void hoverOnMenuItem( LevelOneMenuItem item );
+		void hoverOnItem( LevelOneMenuItem item );
+
+		BookedGuestLogonPage clickLogin();
+
+		String getGreeting();
+
+		Link getGreetingLink();
+
+		Link getLoginLink();
 	}
+
+	//endregion
 
 	interface NavigationAdditional
 	{
@@ -211,13 +210,23 @@ public interface Header
 
 		boolean isDisplayed();
 
-		public List<Link> getChildMenuItems( LevelOneMenuItem item );
+		PageObject clickOnMenuItem( LevelOneMenuItem level1, MenuItems level2 );
 
-		PageObject selectMenuItem( List<Link> links, final MenuItems menuItem );
+		PageObject clickOnMenuItem( Link link, final MenuItems level2 );
 
-		List<String> getChildMenuItemsNames( List<Link> links );
+		Link hoverOnMenuItem( LevelOneMenuItem level1, MenuItems level2 );
 
-		Link hoverMenuItem( List<Link> links, final MenuItems menuItem );
+		void hoverOnMenuItem( Link link );
+
+		HtmlElement getImage( Link link );
+
+		String getDataDefaultImg( Link link );
+
+		String getDataHoverImg( Link link );
+
+		Link getLink( LevelOneMenuItem level1, MenuItems level2 );
+
+		List<String> getChildMenuItemsNames( LevelOneMenuItem level1 );
 
 //		PageObject selectMenuItem( final String menuItem );
 //
@@ -231,6 +240,4 @@ public interface Header
 
 
 	}
-
-	//endregion
 }

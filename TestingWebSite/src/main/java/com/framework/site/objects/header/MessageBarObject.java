@@ -1,15 +1,16 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.header.interfaces.Header;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
 
 
 /**
@@ -42,9 +43,10 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 
 	//region HeaderObject - Constructor Methods Section
 
-	MessageBarObject( WebDriver driver,  final WebElement rootElement )
+	MessageBarObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -60,11 +62,11 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 			logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 					getQualifier(), getLogicalName() );
 
-			JAssertion assertion = new JAssertion( getWrappedDriver() );
-			ExpectedCondition<WebElement> condition =
-					WaitUtil.presenceBy( By.cssSelector( "div.message-bar > div.cookiemandate" ) );
-			assertion.assertWaitThat(
-					"Validate \"div.cookiemandate\" element exists", 5000, condition );
+			final String REASON = "assert that element \"%s\" exits";
+			JAssertion assertion = getRoot().createAssertion();
+
+			Optional<HtmlElement> e = getRoot().childExists( By.className( "cookiemandate" ), FIVE_SECONDS );
+			assertion.assertThat( String.format( REASON, "div.cookiemandate" ), e.isPresent(), JMatchers.is( true ) );
 		}
 	}
 
@@ -73,7 +75,7 @@ class MessageBarObject extends AbstractWebObject implements Header.MessageBar
 
 	//region HeaderObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Header.MessageBar.ROOT_BY );
 	}

@@ -1,16 +1,16 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.header.interfaces.Header;
-import com.framework.utils.datetime.TimeConstants;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static org.hamcrest.Matchers.is;
 
 
 /**
@@ -39,9 +39,10 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 
 	//region HeaderSubscribeObject - Constructor Methods Section
 
-	HeaderSubscribeObject( WebDriver driver, final WebElement rootElement )
+	HeaderSubscribeObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, LOGICAL_NAME );
+		super( rootElement, Header.HeaderSubscribe.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -55,10 +56,11 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
-		ExpectedCondition<WebElement> condition = WaitUtil.presenceBy( By.id( "emailOnlyForm" ) );
-		assertion.assertWaitThat(
-				"Validate \"form#emailOnlyForm\" element exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( By.id( "emailOnlyForm" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "#emailOnlyForm" ), e.isPresent(), is( true ) );
 	}
 
 	//endregion
@@ -66,7 +68,7 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 
 	//region HeaderSubscribeObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Header.HeaderSubscribe.ROOT_BY );
 	}
@@ -100,7 +102,7 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 	 *
 	 * @return The {@linkplain org.openqa.selenium.WebElement}
 	 */
-	private WebElement getSubscribeForm()
+	private HtmlElement getSubscribeForm()
 	{
 		return getRoot().findElement( By.id( "emailOnlyForm" ) );
 	}
@@ -112,7 +114,7 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 	 *
 	 * @return The {@linkplain org.openqa.selenium.WebElement}
 	 */
-	private WebElement getEmailInput()
+	private HtmlElement getEmailInput()
 	{
 		return getSubscribeForm().findElement( By.cssSelector( "input#email.email.white" ) );
 	}
@@ -123,7 +125,7 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 	 *
 	 * @return The {@linkplain org.openqa.selenium.WebElement}
 	 */
-	private WebElement getEmailSubmitAnchor()
+	private HtmlElement getEmailSubmitAnchor()
 	{
 		return getSubscribeForm().findElement( By.id( "submit" ) );
 	}
@@ -134,7 +136,7 @@ class HeaderSubscribeObject extends AbstractWebObject implements Header.HeaderSu
 	 *
 	 * @return The {@linkplain org.openqa.selenium.WebElement}
 	 */
-	private WebElement getCloseAnchor()
+	private HtmlElement getCloseAnchor()
 	{
 		return getRoot().findElement( By.className( "close" ) );
 	}

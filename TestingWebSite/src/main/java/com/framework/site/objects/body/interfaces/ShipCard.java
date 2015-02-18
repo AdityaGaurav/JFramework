@@ -1,5 +1,6 @@
 package com.framework.site.objects.body.interfaces;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
 import com.framework.site.data.Ships;
@@ -51,6 +52,8 @@ public interface ShipCard
 	 */
 	List<TripDurations> getTripDurations();
 
+	String getExpectedImagePath();
+
 	/**
 	 * clicks on compare/added by {@code check} argument.
 	 *
@@ -65,13 +68,9 @@ public interface ShipCard
 	 */
 	boolean isComparing();
 
-	/**
-	 * Select a port from the list
-	 *
-	 * @param port the requested port.
-	 *
-	 * @throws com.framework.site.exceptions.NoSuchDeparturePortException in case that the port was not assigned to ship card.
-	 */
+	boolean isComparable();
+
+	HtmlElement getImage();
 
 	/**
 	 * Select ( clicks )  a port from the 'Departure Port' assigned list

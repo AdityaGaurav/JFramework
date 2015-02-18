@@ -1,18 +1,19 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
-import com.framework.utils.datetime.TimeConstants;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+
+import static com.framework.utils.datetime.TimeConstants.*;
 
 
 /**
@@ -52,14 +53,17 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 
 	private NavigationAdditional navigationAdditional = null;
 
+	private HtmlElement header_nav_additional, header_links, header_subscribe, header_branding, notif_bar, message_bar = null;
+
 	//endregion
 
 
 	//region HeaderSectionObject - Constructor Methods Section
 
-	public SectionHeaderObject( WebDriver driver, final WebElement rootElement )
+	public SectionHeaderObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, Header.LOGICAL_NAME );
+		super( rootElement, Header.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -70,32 +74,35 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	@Override
 	protected void initWebObject()
 	{
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		assertion.assertWaitThat(
-				"assert that element \"div.message-bar\" exits",
-				TimeConstants.FIFTY_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), MessageBar.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \"div.notif-bar\" exits",
-				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), NotificationBar.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \"div.header-branding\" exits",
-				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), HeaderBranding.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \"div.header-subscribe\" exits",
-				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), HeaderSubscribe.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \"div.header-links\" exits",
-				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), HeaderLinks.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \"div.header-nav-additional\" exits",
-				TimeConstants.FIFTY_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), NavigationAdditional.ROOT_BY ) );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( MessageBar.ROOT_BY, FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "div.message-bar" ), e.isPresent(), JMatchers.is( true ) );
+		this.message_bar = e.get();
+
+		e = getRoot().childExists( NotificationBar.ROOT_BY, TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, "div.notif-bar" ), e.isPresent(), JMatchers.is( true ) );
+		this.notif_bar = e.get();
+
+		e = getRoot().childExists( HeaderBranding.ROOT_BY, TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, "div.header-branding" ), e.isPresent(), JMatchers.is( true ) );
+		this.header_branding = e.get();
+
+		e = getRoot().childExists( HeaderSubscribe.ROOT_BY, ONE_SECOND );
+		assertion.assertThat( String.format( REASON, "div.header-subscribe" ), e.isPresent(), JMatchers.is( true ) );
+		this.header_subscribe = e.get();
+
+		e = getRoot().childExists( HeaderLinks.ROOT_BY, ONE_SECOND );
+		assertion.assertThat( String.format( REASON, "div.header-links" ), e.isPresent(), JMatchers.is( true ) );
+		this.header_links = e.get();
+
+		e = getRoot().childExists( NavigationAdditional.ROOT_BY, ONE_SECOND );
+		assertion.assertThat( String.format( REASON, "div.header-nav-additional" ), e.isPresent(), JMatchers.is( true ) );
+		this.header_nav_additional = e.get();
 	}
 
 	//endregion
@@ -108,7 +115,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.messageBar )
 		{
-			this.messageBar = new MessageBarObject( getWrappedDriver(), findMessageBarDiv() );
+			this.messageBar = new MessageBarObject( findMessageBarDiv() );
 		}
 		return messageBar;
 	}
@@ -118,7 +125,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.notificationBar )
 		{
-			this.notificationBar = new NotificationBarObject( getWrappedDriver(), findNotificationBarDiv() );
+			this.notificationBar = new NotificationBarObject( findNotificationBarDiv() );
 		}
 		return notificationBar;
 	}
@@ -126,17 +133,17 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	@Override
 	public HeaderBranding headerBranding()
 	{
-		Locale locale = SiteSessionManager.getInstance().getCurrentLocale();
+		Locale locale = SiteSessionManager.get().getCurrentLocale();
 
 		if ( null == this.headerBranding )
 		{
 			if( locale.equals( BaseCarnivalPage.AU ))
 			{
-				return new CurrencySelectorObject( getWrappedDriver(), getRoot() );
+				return new CurrencySelectorObject( findHeaderBrandingDiv() );
 			}
 			else
 			{
-				return new TopDestinationsObject( getWrappedDriver(), getRoot() );
+				return new TopDestinationsObject( findHeaderBrandingDiv() );
 			}
 		}
 		return headerBranding;
@@ -147,7 +154,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.headerSubscribe )
 		{
-			this.headerSubscribe = new HeaderSubscribeObject( getWrappedDriver(), findHeaderSubscribeDiv() );
+			this.headerSubscribe = new HeaderSubscribeObject( findHeaderSubscribeDiv() );
 		}
 		return headerSubscribe;
 	}
@@ -157,7 +164,7 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.headerLinks )
 		{
-			this.headerLinks = new HeaderLinksObject( getWrappedDriver(), findHeaderLinksDiv() );
+			this.headerLinks = new HeaderLinksObject( findHeaderLinksDiv() );
 		}
 		return headerLinks;
 	}
@@ -167,12 +174,12 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 	{
 		if ( null == this.navigationAdditional )
 		{
-			this.navigationAdditional = new NavigationAdditionalObject( getWrappedDriver(), findNavigationAdditionalDiv() );
+			this.navigationAdditional = new NavigationAdditionalObject( findNavigationAdditionalDiv() );
 		}
 		return navigationAdditional;
 	}
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( SectionHeaderObject.ROOT_BY );
 	}
@@ -182,42 +189,62 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 
 	//region HeaderSectionObject - Element Finder Methods Section
 
-	private WebElement findMessageBarDiv()
+	private HtmlElement findMessageBarDiv()
 	{
-		return getRoot().findElement( MessageBar.ROOT_BY );
+		if( null == message_bar )
+		{
+			this.message_bar = getDriver().findElement( MessageBar.ROOT_BY );
+		}
+		return this.message_bar;
 	}
 
-	private WebElement findNotificationBarDiv()
+	private HtmlElement findNotificationBarDiv()
 	{
 		return getRoot().findElement( NotificationBar.ROOT_BY );
 	}
 
-	private WebElement findHeaderBrandingDiv()
+	private HtmlElement findHeaderBrandingDiv()
 	{
-		return getRoot().findElement( HeaderBranding.ROOT_BY );
+		if( null == header_branding )
+		{
+			this.header_branding = getDriver().findElement( HeaderBranding.ROOT_BY );
+		}
+		return this.header_branding;
 	}
 
-	private WebElement findHeaderSubscribeDiv()
+	private HtmlElement findHeaderSubscribeDiv()
 	{
-		return getRoot().findElement( HeaderSubscribe.ROOT_BY );
+		if( null == header_subscribe )
+		{
+			this.header_subscribe = getDriver().findElement( HeaderSubscribe.ROOT_BY );
+		}
+		return this.header_subscribe;
 	}
 
-	private WebElement findHeaderLinksDiv()
+	private HtmlElement findHeaderLinksDiv()
 	{
-		return getRoot().findElement( HeaderLinks.ROOT_BY );
+		if( null == header_links )
+		{
+			this.header_links =  getDriver().findElement( HeaderLinks.ROOT_BY );
+		}
+		return this.header_links;
 	}
 
-	private WebElement findNavigationAdditionalDiv()
+	private HtmlElement findNavigationAdditionalDiv()
 	{
-		return getRoot().findElement( NavigationAdditional.ROOT_BY );
+		if( null == header_nav_additional )
+		{
+			this.header_nav_additional =  getDriver().findElement( NavigationAdditional.ROOT_BY );
+		}
+		return this.header_nav_additional;
 	}
 
-	private WebElement findCurrencySelectorLi()
+	private HtmlElement findCurrencySelectorLi()
 	{
 		return findHeaderBrandingDiv().findElement( HeaderBranding.CurrencySelector.ROOT_BY );
 	}
 
-	private WebElement findTopDestinations()
+	private HtmlElement findTopDestinations()
 	{
 		return findHeaderBrandingDiv().findElement( HeaderBranding.TopDestinations.ROOT_BY );
 	}

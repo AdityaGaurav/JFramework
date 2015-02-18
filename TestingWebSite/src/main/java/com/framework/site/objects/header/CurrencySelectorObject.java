@@ -1,14 +1,16 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
-import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.objects.header.interfaces.Header;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
 
 
 /**
@@ -32,15 +34,17 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 
 	private static final Logger logger = LoggerFactory.getLogger( CurrencySelectorObject.class );
 
+	private HtmlElement ccl_header_currency_options, currency_selector;
 
 	//endregion
 
 
 	//region TopDestinationsObject - Constructor Methods Section
 
-	CurrencySelectorObject( WebDriver driver, final WebElement rootElement )
+	CurrencySelectorObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, CurrencySelector.LOGICAL_NAME );
+		super( rootElement, CurrencySelector.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -54,13 +58,16 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
-		ExpectedCondition<WebElement> condition1 =
-				WaitUtil.presenceOfChildBy( getRoot(), By.id( "currencySelector" ) );
-		ExpectedCondition<WebElement> condition2 =
-				WaitUtil.presenceOfChildBy( getRoot(), By.id( "ccl_header_currency_options" ) );
-		assertion.assertWaitThat( "Validate currency selector exists", 5000, condition1 );
-		assertion.assertWaitThat( "Validate currency options exists", 5000, condition2 );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( By.id( "currencySelector" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, "#currencySelector" ), e.isPresent(), JMatchers.is( true ) );
+		this.currency_selector = e.get();
+
+		e = getRoot().childExists( By.id( "ccl_header_currency_options" ), THREE_SECONDS );
+		assertion.assertThat( String.format( REASON, "#ccl_header_currency_options" ), e.isPresent(), JMatchers.is( true ) );
+		this.ccl_header_currency_options = e.get();
 	}
 
 	//endregion
@@ -71,10 +78,10 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 	private String getCurrencySelected()
 	{
 		final String CURRENCY_SELECTED_SCRIPT = "return utag_data.cp.CurrencySelected;";
-		return getWrappedDriver().getJavaScriptSupport().getString( CURRENCY_SELECTED_SCRIPT );
+		return getDriver().javascript().getString( CURRENCY_SELECTED_SCRIPT );
 	}
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( CurrencySelector.ROOT_BY );
 	}
@@ -82,7 +89,7 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 	//endregion
 
 
-	//region TopDestinationsObject - Business Methods Section
+	//region TopDestinationsObject - Header.HeaderBranding.CurrencySelector Implementation Methods Section
 
 	@Override
 	public boolean isDisplayed()
@@ -101,10 +108,10 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 	 *
 	 * @return a {@code WebElement} instance reference for the select#currencySelector
 	 */
-	private WebElement getCurrencySelectorSelect()
+	private HtmlElement getCurrencySelectorSelect()
 	{
 		By findBy = By.id( "currencySelector" );
-		return getWrappedDriver().findElement( findBy );
+		return getDriver().findElement( findBy );
 	}
 
 	/**
@@ -113,10 +120,10 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 	 *
 	 * @return a {@code WebElement} instance for the a.ccl-blue.nav-tooltip-trigger[data-id='currency']
 	 */
-	private WebElement getNavTooltipTriggerAnchor()
+	private HtmlElement getNavTooltipTriggerAnchor()
 	{
 		By findBy = By.cssSelector( "a.ccl-blue.nav-tooltip-trigger" );
-		return getWrappedDriver().findElement( findBy );
+		return getDriver().findElement( findBy );
 	}
 
 	/**
@@ -125,7 +132,7 @@ class CurrencySelectorObject extends HeaderBrandingObject implements Header.Head
 	 *
 	 * @return  a {@code WebElement} instance reference for the div#ccl_header_currency_options
 	 */
-	private WebElement getCclHeaderCurrencyOptionsDiv()
+	private HtmlElement getCclHeaderCurrencyOptionsDiv()
 	{
 		By findBy = By.id( "ccl_header_currency_options" );
 		return getRoot().findElement( findBy );

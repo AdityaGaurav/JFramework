@@ -1,7 +1,9 @@
 package com.framework.site.objects.body.interfaces;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.Ships;
 import com.framework.site.pages.core.cruiseships.CompareCruiseShipsPage;
+import com.google.gson.JsonObject;
 import org.openqa.selenium.By;
 
 import java.util.List;
@@ -28,21 +30,27 @@ public interface CompareShipBanner
 
 	static final By ROOT_BY = By.id( "compare-banner" );
 
+    static final String SESSION_STORAGE_COMPARE = "Explore.Ships.Compare";
+
+	static final String SESSION_STORAGE_QUERY = "Explore.Query.ship";
+
+	static final String COOKIE_NAME = "s_sq";
+
 	/**
 	 * Click on the a.blue-cta button.
 	 *
 	 * @return n new instance of {@code CompareCruiseShipsPage}
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the banner is not visible
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible
 	 */
-	CompareCruiseShipsPage doCompareShips();
+	//CompareCruiseShipsPage doCompareShips();
 
 	/**
 	 * Get a ship by his index from left to right.
 	 *
 	 * @param index the index of the ship to retrieve
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the banner is not visible
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible
 	 *  	   or if the index is out of bound.
 	 */
 	Ships getShip( final int index );
@@ -62,7 +70,7 @@ public interface CompareShipBanner
 	 *
 	 * @param ship the ship to remove
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the index is out bound
+	 * @throws com.framework.utils.error.PreConditionException if the index is out bound
 	 * 		   or the banner is not visible
 	 * @throws com.framework.site.exceptions.NoSuchShipException
 	 *         if the ship is not listed inside the comparison banner.
@@ -72,14 +80,14 @@ public interface CompareShipBanner
 	/**
 	 * @return a list of comparing ships from left to right.
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the banner is not visible.
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible.
 	 */
 	List<Ships> getShips();
 
 	/**
 	 * @return a list of comparing ships names
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the banner is not visible.
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible.
 	 */
 	List<String> getShipNames();
 
@@ -98,7 +106,7 @@ public interface CompareShipBanner
 	 *
 	 * @return a {@code Map} with the described above keys.
 	 *
-	 * @throws com.framework.driver.exceptions.PreConditionException if the index is out bound
+	 * @throws com.framework.utils.error.PreConditionException if the index is out bound
 	 * 		   or the banner is not visible
 	 * @throws com.framework.site.exceptions.NoSuchShipException
 	 *         if the ship is not listed inside the comparison banner.
@@ -109,5 +117,34 @@ public interface CompareShipBanner
 	 * @return {@code true} if the ship compare banner is visible, otherwise {@code false}.
 	 */
 	boolean isVisible();
+
+	/**
+	 * The banner must be displayed before calling the function.
+	 *
+	 * @return return {@code true} if the compare banner has items
+	 *
+	 * @see #isVisible()
+	 */
+	boolean hasItems();
+
+	boolean hasItems( long millis);
+
+	List<HtmlElement> getItems();
+
+	/**
+	 * Cleans related session storage key
+	 *
+	 * @see #SESSION_STORAGE_COMPARE
+	 */
+	void cleanSessionStorage();
+
+	/**
+	 * @param key 	the key to be retrieved
+	 *
+	 * @return a json string with the session storage value key
+	 */
+	JsonObject getSessionStorageKey( String key );
+
+	CompareCruiseShipsPage clickCompareShips( int ships );
 
 }

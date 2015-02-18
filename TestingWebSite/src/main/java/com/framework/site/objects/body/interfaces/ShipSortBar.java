@@ -49,9 +49,9 @@ public interface ShipSortBar
 	/**
 	 * Sets a sort type on the sort-bar.
 	 *
-	 * @param sortType a {@linkplain com.framework.site.objects.body.interfaces.ShipSortBar.SortType} value
+	 * @param sort a {@linkplain com.framework.site.objects.body.interfaces.ShipSortBar.SortType} value
 	 */
-	void setSortType( SortType sortType );
+	void setSortType( SortType sort );
 
 	/**
 	 * @return the current {@linkplain com.framework.site.objects.body.interfaces.ShipSortBar.LayoutType} value

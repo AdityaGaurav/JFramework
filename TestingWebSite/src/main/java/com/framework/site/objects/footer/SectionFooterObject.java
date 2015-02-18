@@ -1,17 +1,18 @@
 package com.framework.site.objects.footer;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.footer.interfaces.Footer;
-import com.framework.utils.datetime.TimeConstants;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.NoSuchElementException;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
 
 
 /**
@@ -35,9 +36,6 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	private static final Logger logger = LoggerFactory.getLogger( SectionFooterObject.class );
 
-	private static final By footerBy = By.id( "ccl-refresh-footer" );
-	private WebElement cclFooter = null;
-
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
@@ -53,9 +51,10 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	//region FooterObject - Constructor Methods Section
 
-	public SectionFooterObject( WebDriver driver, final WebElement rootElement )
+	public SectionFooterObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, Footer.LOGICAL_NAME );
+		super( rootElement, Footer.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -66,20 +65,20 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	@Override
 	protected void initWebObject()
 	{
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
+		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+				getQualifier(), getLogicalName() );
 
-		assertion.assertWaitThat(
-				"assert that element \".link-list\" exits",
-				TimeConstants.FIFTY_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), LinkList.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \".sub-footer\" exits",
-				TimeConstants.FIFTEEN_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), SubFooter.ROOT_BY ) );
-		assertion.assertWaitThat(
-				"assert that element \".zero-footer\" exits",
-				TimeConstants.FIFTY_HUNDRED_MILLIS,
-				WaitUtil.presenceOfChildBy( getRoot(), ZeroFooter.ROOT_BY ) );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( LinkList.ROOT_BY, FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".link-list" ), e.isPresent(), JMatchers.is( true ) );
+
+		e = getRoot().childExists( SubFooter.ROOT_BY, THREE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".sub-footer" ), e.isPresent(), JMatchers.is( true ) );
+
+		e = getRoot().childExists( ZeroFooter.ROOT_BY, THREE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".zero-footer" ), e.isPresent(), JMatchers.is( true ) );
 	}
 
 	//endregion
@@ -92,7 +91,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.subFooterDiv )
 		{
-			this.subFooterDiv = new SubFooterObject( getWrappedDriver(), getSubFooterDiv()  );
+			this.subFooterDiv = new SubFooterObject( getSubFooterDiv()  );
 		}
 		return subFooterDiv;
 	}
@@ -102,7 +101,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.zeroFooterDiv )
 		{
-			this.zeroFooterDiv = new ZeroFooterObject( getWrappedDriver(), getZeroFooterDiv() );
+			this.zeroFooterDiv = new ZeroFooterObject( getZeroFooterDiv() );
 		}
 		return zeroFooterDiv;
 	}
@@ -112,12 +111,12 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.linkList )
 		{
-			this.linkList = new LinkListObject( getWrappedDriver(), getZeroFooterDiv() );
+			this.linkList = new LinkListObject( getZeroFooterDiv() );
 		}
 		return linkList;
 	}
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Footer.ROOT_BY );
 	}
@@ -170,12 +169,12 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	//region FooterObject - Element Finder Methods Section
 
-	private WebElement getSubFooterDiv()
+	private HtmlElement getSubFooterDiv()
 	{
 		return getRoot().findElement( SubFooter.ROOT_BY );
 	}
 
-	private WebElement getZeroFooterDiv()
+	private HtmlElement getZeroFooterDiv()
 	{
 		return getRoot().findElement( ZeroFooter.ROOT_BY );
 	}

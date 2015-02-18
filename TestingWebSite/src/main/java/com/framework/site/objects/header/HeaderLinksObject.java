@@ -1,25 +1,28 @@
 package com.framework.site.objects.header;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.event.HtmlObject;
 import com.framework.driver.exceptions.ApplicationException;
+import com.framework.driver.exceptions.UrlNotAvailableException;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.objects.BaseElementObject;
 import com.framework.driver.objects.Link;
-import com.framework.driver.objects.PageObject;
-import com.framework.driver.utils.ui.WaitUtil;
+import com.framework.site.objects.header.enums.LevelOneMenuItem;
 import com.framework.site.objects.header.interfaces.Header;
-import com.framework.utils.datetime.TimeConstants;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.site.pages.bookedguest.BookedGuestLogonPage;
+import com.framework.site.pages.core.CruisingPage;
+import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.framework.matchers.MatcherUtils.containsString;
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
+import static com.framework.utils.matchers.JMatchers.containsString;
+import static com.framework.utils.matchers.JMatchers.is;
 
 
 /**
@@ -43,18 +46,27 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	private static final Logger logger = LoggerFactory.getLogger( HeaderLinksObject.class );
 
-	private static final String DATA_HIGHLIGHT_PATTERN = "data-highlightpattern";
+	private HtmlElement ul_pull_left, ul_pull_right;
 
-	//private String dataHighlightPattern;
+	private HtmlElement data_ccl_flyout_learn, data_ccl_flyout_explore, data_ccl_flyout_manage, data_ccl_flyout_plan;
+
+	private HtmlElement notification_flag, li_log, li_search;
+
+	private HtmlElement ccl_header_expand_login_link, greeting, join;
+
+	private HtmlElement glass_search;
+
+	private List<HtmlElement> span_org;
 
 	//endregion
 
 
 	//region HeaderLinksObject - Constructor Methods Section
 
-	HeaderLinksObject( WebDriver driver, final WebElement rootElement )
+	HeaderLinksObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, Header.HeaderLinks.LOGICAL_NAME );
+		super( rootElement, Header.HeaderLinks.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -68,11 +80,16 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
-		ExpectedCondition<List<WebElement>> condition =
-				WaitUtil.presenceOfAllBy( By.cssSelector( ".header-nav-additional input" ) );
-		assertion.assertWaitThat(
-				"Validate all \".header-nav-additional input\" elements exists", TimeConstants.FIFTY_HUNDRED_MILLIS, condition );
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<HtmlElement> e = getRoot().childExists( By.cssSelector( ".header-links ul.pull-right" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".header-links ul.pull-right" ), e.isPresent(), is( true ) );
+		this.ul_pull_right = e.get();
+
+		e = getRoot().childExists( By.cssSelector( ".header-links ul.pull-left" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".header-links ul.pull-left" ), e.isPresent(), is( true ) );
+		this.ul_pull_left = e.get();
 	}
 
 	//endregion
@@ -80,9 +97,15 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	//region HeaderLinksObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Header.HeaderLinks.ROOT_BY );
+	}
+
+	private List<String> getDataHighLightPattern( LevelOneMenuItem item )
+	{
+		String highLightPattern = findLevelOneMenuItemAnchor( item ).getAttribute( "data-highlightpattern" );
+		return Splitter.on( "|" ).splitToList( highLightPattern );
 	}
 
 	//endregion
@@ -91,52 +114,78 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	//region HeaderLinksObject - Business Methods Section
 
 	@Override
-	public PageObject selectMenuItem( final LevelOneMenuItem item )
+	public void hoverOnItem( final LevelOneMenuItem item )
 	{
-		return null;
+		logger.info( "hovering over level-one element item < '{}' >", item.getTitle() );
+
+		Link link = new Link( findLevelOneMenuItemAnchor( item ) );
+		link.hover( false );
+		findLevelOneMenuItemAnchor( item ).waitAttributeToMatch( "class", containsString( " hover " ), FIVE_SECONDS );
 	}
 
 	@Override
-	public void hoverOnMenuItem( final LevelOneMenuItem item )
+	public BaseCarnivalPage clickItem( final LevelOneMenuItem item )
 	{
-		logger.debug( "hovering over top-menu element item <\"{}\">", item.getTitle() );
-
-		WebElement itemAnchor = findTopLevelMenuItemAnchor( item.getTitle() );
-		String dataHighlightPattern = itemAnchor.getAttribute( DATA_HIGHLIGHT_PATTERN );
-		Link itemLink = new Link( itemAnchor );
-
-		// Waiting for anchor to include class name 'hover'
-
-		ExpectedCondition<Boolean> condition = WaitUtil.elementAttributeToMatch( itemAnchor, "class", containsString( "hover" ) );
-		itemLink.hover();
+		logger.info( "clicking on level-one element item < '{}' >", item.getTitle() );
 
 		try
 		{
-			WaitUtil.wait5( getWrappedDriver() ).until( condition );
+			Link link = new Link( findLevelOneMenuItemAnchor( item ) );
+			link.checkReference( 5000 );
+			link.click();
+			CruisingPage cp = new CruisingPage( );
+			logger.info( "returning a new page instance -> '{}'", cp );
+			return cp;
 		}
-		catch ( TimeoutException tEx )
+		catch ( UrlNotAvailableException e )
 		{
-			logger.error( "throwing a new ApplicationException on {}#hoverOnMenuItem.", getClass().getSimpleName() );
-			ApplicationException aex = new ApplicationException( getWrappedDriver(), tEx.getMessage(), tEx );
-			aex.addInfo( "business process", "hovering over top-level menu item \"" + item.getTitle() + "\"" );
-			throw aex;
+			throw new ApplicationException( e );
 		}
+
 	}
 
 	@Override
-	public boolean isDisplayed()
+	public Link getLink( final LevelOneMenuItem item )
 	{
-		return getRoot().isDisplayed();
+		return new Link( findLevelOneMenuItemAnchor( item ) );
 	}
 
 	@Override
 	public String[] getLinkNames()
 	{
-		logger.info( "Returning a list ot top-level link names ( span.org[testContent] )" );
-		List<WebElement> spans = findLinksOrgSpans();
-		List<String> names = BaseElementObject.extractAttribute( spans, "textContent" );
+		List<HtmlElement> spans = fidItemsOrgSpans();
+		List<String> names = HtmlObject.extractAttribute( spans, "textContent" );
 		logger.info( "returning a list of top-level links names [ {} ] ...", names );
 		return names.toArray( new String[ names.size() ] );
+	}
+
+	@Override
+	public BookedGuestLogonPage clickLogin()
+	{
+		Link login = new Link( findExpandLoginLinkAnchor() );
+		login.hover( true );
+		login.click();
+		return new BookedGuestLogonPage();
+	}
+
+	@Override
+	public String getGreeting()
+	{
+		HtmlElement greetingSpan = findGreetingSpan();
+		HtmlElement join = findJoinAnchor();
+		return greetingSpan.getText() + join.getText();
+	}
+
+	@Override
+	public Link getGreetingLink()
+	{
+		return new Link( findJoinAnchor() );
+	}
+
+	@Override
+	public Link getLoginLink()
+	{
+		return new Link( findExpandLoginLinkAnchor() );
 	}
 
 	//endregion
@@ -144,71 +193,148 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 
 	//region HeaderLinksObject - Element Finder Methods Section
 
-	/**
-	 * Full xpath  : {@code /html/body/div[4]/div[1]/div[1]/div[1]/div[5]/div/nav}
-	 * CSS Path    : {@code #ccl-refresh-header > div.header-nav > div.header-links > div > nav}
-	 *
-	 * @return an instance of nav {@code WebElement}
-	 *
-	 * @throws java.util.NoSuchElementException if not found.
-	 */
-	private WebElement findNavElement()
+
+	private HtmlElement findUlPullLeft()
 	{
-		By findBy = By.tagName( "nav" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( ".header-links ul.pull-left" );
+		if( null == this.ul_pull_left )
+		{
+			this.ul_pull_left = getDriver().findElement( findBy );
+		}
+		return this.ul_pull_left;
 	}
 
-	/**
-	 * Full xpath  : {@code /html/body/div[4]/div[1]/div[1]/div[1]/div[5]/div/nav/ul[1]}
-	 * Css Path    : {@code #ccl-refresh-header > div.header-nav > div.header-links > div > nav > ul.pull-left}
-	 * Css Style   : {@code #ccl-refresh-header nav > ul.pull-left}
-	 *
-	 * @return an instance of ul.pull-left {@code WebElement}
-	 *
-	 * @throws java.util.NoSuchElementException if not found.
-	 */
-	private WebElement findPullLeftUl()
+	private HtmlElement findUlPullRight()
 	{
-		By findBy = By.className( "pull-left" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( ".header-links ul.pull-right" );
+		if( null == this.ul_pull_right )
+		{
+			this.ul_pull_right = getDriver().findElement( findBy );
+		}
+
+		return this.ul_pull_right;
 	}
 
-	/**
-	 * Full xpath  : {@code /html/body/div[4]/div[1]/div[1]/div[1]/div[5]/div/nav/ul[2]}
-	 * Css Path    : {@code #ccl-refresh-header  nav > ul.pull-right}
-	 *
-	 * @return an instance of ul.pull-right {@code WebElement}
-	 *
-	 * @throws java.util.NoSuchElementException if not found.
-	 */
-	private WebElement findPullRightUl()
+	private HtmlElement findLevelOneMenuItemAnchor( LevelOneMenuItem item )
 	{
-		By findBy = By.className( "pull-right" );
-		return getRoot().findElement( findBy );
+		final By findBy = By.cssSelector( String.format( "a[data-ccl-flyout='%s']", item.name().toLowerCase() ) );
+		switch ( item )
+		{
+			case LEARN:
+			{
+				if( null == this.data_ccl_flyout_learn )
+				{
+					this.data_ccl_flyout_learn = findUlPullLeft().findElement( findBy );
+				}
+				return data_ccl_flyout_learn;
+			}
+			case PLAN:
+			{
+				if( null == this.data_ccl_flyout_plan )
+				{
+					this.data_ccl_flyout_plan = findUlPullLeft().findElement( findBy );
+				}
+				return data_ccl_flyout_plan;
+			}
+			case MANAGE:
+			{
+				if( null == this.data_ccl_flyout_manage )
+				{
+					this.data_ccl_flyout_manage = findUlPullLeft().findElement( findBy );
+				}
+				return data_ccl_flyout_manage;
+			}
+			case EXPLORE:
+			{
+				if( null == this.data_ccl_flyout_explore )
+				{
+					this.data_ccl_flyout_explore = findUlPullLeft().findElement( findBy );
+				}
+				return data_ccl_flyout_explore;
+			}
+			default:
+				return null;
+		}
 	}
 
-	/**
-	 * Full xpath : {@code /html/body/div[4]/div[1]/div[1]/div[1]/div[5]/div/nav/ul[1]/li//span[@class='org']}
-	 * Css path   : {@code #ccl-refresh-header nav > ul.pull-left a > span.org}
-
-	 * @return  a {@literal List<WebElement>} of span.org elements
-	 */
-	private List<WebElement> findLinksOrgSpans()
+	private HtmlElement findNotificationFlag()
 	{
-		By findBy = By.cssSelector( "ul.pull-left a > span.org" );
-		return getWrappedDriver().findElements( findBy );
+		final By findBy = By.className( "notification-flag" );
+		if( null == this.notification_flag )
+		{
+			this.notification_flag = findUlPullRight().findElement( findBy );
+		}
+		return this.notification_flag;
 	}
 
-	/**
-	 * Css Path  : {@code #ccl-refresh-header nav > ul.pull-left > li > a, #ccl-refresh-header nav > ul.pull-right > li.search > a}
-	 *
-	 * @return the anchor {@code WebElement} of the matching top-level menu item by argument {@code name}
-	 */
-	private WebElement findTopLevelMenuItemAnchor( String name )
+	private HtmlElement findExpandLoginLinkAnchor()
 	{
-		final String XPATH_PATTERN = "//span[@class='org' and text()='%s']/..";
-		By findBy = By.xpath( String.format( XPATH_PATTERN, name ) );
-		return getRoot().findElement( findBy );
+		final By findBy = By.id( "ccl_header_expand-login-link" );
+		if( null == this.ccl_header_expand_login_link )
+		{
+			this.ccl_header_expand_login_link = getDriver().findElement( findBy );
+		}
+		return this.ccl_header_expand_login_link;
+	}
+
+	private HtmlElement findLogLi()
+	{
+		final By findBy = By.className( "log" );
+		if( null == this.li_log )
+		{
+			this.li_log = findUlPullRight().findElement( findBy );
+		}
+		return this.li_log;
+	}
+
+	private HtmlElement findGreetingSpan()
+	{
+		final By findBy = By.id( "greeting" );
+		if( null == this.greeting )
+		{
+			this.greeting = findUlPullRight().findElement( findBy );
+		}
+		return this.greeting;
+	}
+
+	private HtmlElement findJoinAnchor()
+	{
+		final By findBy = By.id( "join" );
+		if( null == this.join )
+		{
+			this.join = findUlPullRight().findElement( findBy );
+		}
+		return this.join;
+	}
+
+	private HtmlElement findSearchLi()
+	{
+		final By findBy = By.className( "search" );
+		if( null == this.li_search )
+		{
+			this.li_search = findUlPullRight().findElement( findBy );
+		}
+		return this.li_search;
+	}
+
+	private HtmlElement findGlassSearchAnchor()
+	{
+		final By findBy = By.id( "glass_search" );
+		if( null == this.glass_search )
+		{
+			this.glass_search = getDriver().findElement( findBy );
+		}
+		return this.glass_search;
+	}
+
+	private List<HtmlElement> fidItemsOrgSpans()
+	{
+		final By findBy = By.className( "org" );
+		if( null == this.span_org )
+		{
+			this.span_org = findUlPullLeft().findElements( findBy );
+		}
+		return this.span_org;
 	}
 
 

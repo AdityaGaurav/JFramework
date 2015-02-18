@@ -1,4 +1,4 @@
-package com.framework.site.objects.header;
+package com.framework.site.objects.header.enums;
 
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
@@ -35,7 +35,7 @@ public enum MenuItems
 	CARIBBEAN ( "Caribbean" ),
 
 	// menu item Learn -> What's included ( UK only )
-	WHATS_INCLUDED ( "What's included?" ),
+	WHATS_INCLUDED ( "What's Included?" ),
 
 	// menu item Learn -> On the ship ( UK only )
 	ON_THE_SHIP ( "On the Ship" ),
@@ -56,10 +56,10 @@ public enum MenuItems
 	OUR_SHIPS ( "Our Ships" ),
 
 	// menu item Explore -> Shore Excursions ( on UK under LEARN )
-	SHORE_EXCURSIONS ( "Shore Excursions" ),
+	SHORE_EXCURSIONS ( "Shore Excursions"  ),
 
 	// menu item Plan -> Find a cruise
-	FIND_A_CRUISE ( "Find a Cruise" ),
+	FIND_A_CRUISE ( "Find a Cruise"  ),
 
 	// menu item Plan -> Find a port
 	FIND_A_PORT ( "Find a Port" ),
@@ -103,8 +103,8 @@ public enum MenuItems
 		return title;
 	}
 
-	public String getBundleKey( MenuItems item )
+	public String getBundleKey()
 	{
-		return item.name().toLowerCase().replace( "_", "." ) + ".png";
+		return name().toLowerCase().replace( "_", "." ) + ".png";
 	}
 }

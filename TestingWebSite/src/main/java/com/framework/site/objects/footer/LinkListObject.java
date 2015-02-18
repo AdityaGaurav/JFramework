@@ -1,18 +1,18 @@
 package com.framework.site.objects.footer;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.driver.utils.ui.WaitUtil;
 import com.framework.site.objects.footer.interfaces.Footer;
-import com.framework.utils.datetime.TimeConstants;
+import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Optional;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
 
 
 /**
@@ -45,9 +45,10 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 
 	//region LinkListObject - Constructor Methods Section
 
-	LinkListObject( WebDriver driver, final WebElement rootElement )
+	LinkListObject( final HtmlElement rootElement )
 	{
-		super( driver, rootElement, Footer.LinkList.LOGICAL_NAME );
+		super( rootElement, Footer.LinkList.LOGICAL_NAME );
+		initWebObject();
 	}
 
 	//endregion
@@ -61,10 +62,11 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		JAssertion assertion = new JAssertion( getWrappedDriver() );
-		ExpectedCondition<List<WebElement>> condition = WaitUtil.visibilityOfAllBy( By.cssSelector( ".link-lists li" ), true );
-		assertion.assertWaitThat(
-				"Validate all \".link-lists li\" elements are displayed", TimeConstants.FIFTY_HUNDRED_MILLIS, condition );
+		final String REASON = "assert that all elements \"%s\" exits";
+		JAssertion assertion = getRoot().createAssertion();
+
+		Optional<List<HtmlElement>> e = getRoot().allChildrenExists( By.cssSelector( ".link-lists li" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".link-lists li" ), e.isPresent(), JMatchers.is( true ) );
 	}
 
 	//endregion
@@ -72,7 +74,7 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 
 	//region LinkListObject - Service Methods Section
 
-	private WebElement getRoot()
+	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Footer.LinkList.ROOT_BY );
 	}
