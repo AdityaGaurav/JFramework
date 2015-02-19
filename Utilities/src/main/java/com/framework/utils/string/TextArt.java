@@ -83,7 +83,7 @@ public class TextArt
 
 	private static final String SUITE = " SUITE";
 
-	private static final String TEST = " TEST";
+	private static final String TEST = " TEST-CONTEXT";
 
 	private static final String TEST_CASE = " TEST CASE";
 
