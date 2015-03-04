@@ -16,6 +16,7 @@
  */
 package com.framework.utils.datetime;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,33 +32,40 @@ public class Sleeper
 	/**
 	 * Sleeps without explicitly throwing an InterruptedException
 	 *
-	 * @param timeoutInSeconds Sleep time in seconds.
+	 * @param timeInMilliseconds Sleep time in seconds.
 	 *
 	 * @throws RuntimeException wrapping an InterruptedException if one gets thrown
 	 */
-	public static void sleepTightInSeconds( long timeoutInSeconds )
+	public static void pauseFor( final long timeInMilliseconds )
 	{
-		sleepTight( timeoutInSeconds * 1000 );
+		try
+		{
+			sleep( timeInMilliseconds );
+		}
+		catch ( InterruptedException e )
+		{
+			logger.warn( "Wait interrupted:" + e.getMessage() );
+			throw new RuntimeException( "System timer interrupted", e );
+		}
 	}
 
 	/**
 	 * Sleeps without explicitly throwing an InterruptedException
 	 *
-	 * @param timeout the amout of time to sleep
+	 * @param timeInMilliseconds the amount of time to sleep
 	 *
 	 * @throws RuntimeException wrapping an InterruptedException if one gets thrown
 	 */
-	public static void sleepTight( long timeout )
+	protected static void sleep( long timeInMilliseconds ) throws InterruptedException
 	{
-		try
-		{
-			logger.debug( "Sleeping for <{}> milliseconds.", timeout );
-			Thread.sleep( timeout );
-		}
-		catch ( InterruptedException e )
-		{
-			throw new RuntimeException( e );
-		}
+		Thread.sleep( timeInMilliseconds );
+	}
+
+	/**
+	 * Find the current system time.
+	 */
+	public static DateTime getCurrentTime() {
+		return new DateTime();
 	}
 
 }

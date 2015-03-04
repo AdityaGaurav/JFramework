@@ -31,7 +31,7 @@ public class AppContextProxy implements ApplicationContextAware
 	{
 	}
 
-	public static AppContextProxy getInstance()
+	public static AppContextProxy get()
 	{
 		return _inst;
 	}

@@ -14,12 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.framework.driver.utils;
+package com.framework.utils.error;
 
-import com.framework.driver.exceptions.UnexpectedAttributeValueException;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.UnexpectedTagNameException;
 
 
 /**
@@ -174,7 +171,7 @@ public final class PreConditions
 	{
 		if ( reference == null )
 		{
-			throw new NullPointerException( String.valueOf( errorMessage ) );
+			throw new PreConditionException( new NullPointerException( String.valueOf( errorMessage ) ) );
 		}
 		return reference;
 	}
@@ -200,7 +197,8 @@ public final class PreConditions
 		if ( reference == null )
 		{
 			// If either of these parameters is null, the right thing happens anyway
-			throw new NullPointerException( format( errorMessageTemplate, errorMessageArgs ) );
+
+			throw new PreConditionException( new NullPointerException( format( errorMessageTemplate, errorMessageArgs ) ) );
 		}
 		return reference;
 	}
@@ -228,7 +226,7 @@ public final class PreConditions
 		// Carefully optimized for execution by hotspot (explanatory comment above)
 		if ( index < 0 || index >= size )
 		{
-			throw new IndexOutOfBoundsException( badElementIndex( index, size, desc ) );
+			throw new PreConditionException( new IndexOutOfBoundsException( badElementIndex( index, size, desc ) ) );
 		}
 		return index;
 	}
@@ -251,7 +249,7 @@ public final class PreConditions
 		// Carefully optimized for execution by hotspot (explanatory comment above)
 		if ( index < 0 || index > size )
 		{
-			throw new IndexOutOfBoundsException( badPositionIndex( index, size, desc ) );
+			throw new PreConditionException( new IndexOutOfBoundsException( badPositionIndex( index, size, desc ) ) );
 		}
 		return index;
 	}
@@ -274,7 +272,7 @@ public final class PreConditions
 		// Carefully optimized for execution by hotspot (explanatory comment above)
 		if ( start < 0 || end < start || end > size )
 		{
-			throw new IndexOutOfBoundsException( badPositionIndexes( start, end, size ) );
+			throw new PreConditionException( new IndexOutOfBoundsException( badPositionIndexes( start, end, size ) ) );
 		}
 	}
 
@@ -286,7 +284,7 @@ public final class PreConditions
 		}
 		else if ( size < 0 )
 		{
-			throw new IllegalArgumentException( "negative size: " + size );
+			throw new PreConditionException( new IllegalArgumentException( "negative size: " + size ) );
 		}
 		else
 		{ // index >= size
@@ -302,7 +300,7 @@ public final class PreConditions
 		}
 		else if ( size < 0 )
 		{
-			throw new IllegalArgumentException( "negative size: " + size );
+			throw new PreConditionException( new IllegalArgumentException( "negative size: " + size ) );
 		}
 		else
 		{ // index > size
@@ -345,7 +343,7 @@ public final class PreConditions
 		checkNotNull( s, message );
 		if ( s.isEmpty() )
 		{
-			throw new IllegalArgumentException( message );
+			throw new PreConditionException( new IllegalArgumentException( message ) );
 		}
 		return s;
 	}
@@ -372,7 +370,7 @@ public final class PreConditions
 		checkNotNull( s, format( errorMessageTemplate, errorMessageArgs ) );
 		if ( s.isEmpty() )
 		{
-			throw new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) );
+			throw new PreConditionException( new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) ) );
 		}
 		return s;
 	}
@@ -393,11 +391,11 @@ public final class PreConditions
 		checkNotNull( s, message );
 		if ( s.isEmpty() )
 		{
-			throw new IllegalArgumentException( message );
+			throw new PreConditionException( new IllegalArgumentException( message ) );
 		}
 		if ( StringUtils.isBlank( s ) )
 		{
-			throw new IllegalArgumentException( message );
+			throw new PreConditionException( new IllegalArgumentException( message ) );
 		}
 
 		return s;
@@ -425,11 +423,11 @@ public final class PreConditions
 		checkNotNull( s, format( errorMessageTemplate, errorMessageArgs ) );
 		if ( s.isEmpty() )
 		{
-			throw new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) );
+			throw new PreConditionException( new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) ) );
 		}
 		if ( StringUtils.isBlank( s ) )
 		{
-			throw new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) );
+			throw new PreConditionException( new IllegalArgumentException( format( errorMessageTemplate, errorMessageArgs ) ) );
 		}
 
 		return s;
@@ -440,27 +438,27 @@ public final class PreConditions
 
 	//region PreConditions - Check WebElement Methods Section
 
-	public static WebElement checkElementTagName( final WebElement element, final String tagName )
-	{
-		String actual = element.getTagName();
-		if ( null == actual || ! tagName.equals( actual.toLowerCase() ) )
-		{
-			throw new UnexpectedTagNameException( tagName, actual );
-		}
+//	public static WebElement checkElementTagName( final WebElement element, final String tagName )
+//	{
+//		String actual = element.getTagName();
+//		if ( null == actual || ! tagName.equals( actual.toLowerCase() ) )
+//		{
+//			throw new UnexpectedTagNameException( tagName, actual );
+//		}
+//
+//		return element;
+//	}
 
-		return element;
-	}
-
-	public static WebElement checkElementAttribute( final WebElement element, final String attributeName, final String attributeValue )
-	{
-		String actual = element.getAttribute( attributeName );
-		if ( null == actual || ! actual.equals( attributeValue.toLowerCase() ) )
-		{
-			throw new UnexpectedAttributeValueException( attributeName, attributeValue, actual );
-		}
-
-		return element;
-	}
+//	public static WebElement checkElementAttribute( final WebElement element, final String attributeName, final String attributeValue )
+//	{
+//		String actual = element.getAttribute( attributeName );
+//		if ( null == actual || ! actual.equals( attributeValue.toLowerCase() ) )
+//		{
+//			throw new UnexpectedAttributeValueException( attributeName, attributeValue, actual );
+//		}
+//
+//		return element;
+//	}
 
 	//endregion
 

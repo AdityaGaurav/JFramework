@@ -2,8 +2,6 @@ package com.framework.utils.datetime;
 
 import org.joda.time.*;
 import org.joda.time.format.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -32,12 +30,6 @@ public class DateTimeUtils
 {
 
 	//region DateTimeUtils - Variables Declaration and Initialization Section.
-
-	private static final Logger logger = LoggerFactory.getLogger( DateTimeUtils.class );
-
-	public static final String DATETIME_ZONE_KEY = "dateTimeZone";
-
-	public static final String DEFAULT_LOCALE_KEY = "locale";
 
 	private DateTimeZone dateTimeZone = DateTimeZone.getDefault();
 
@@ -72,6 +64,27 @@ public class DateTimeUtils
 		return formatter.print( duration.toPeriod() );
 	}
 
+	public static String getFormattedPeriodAbbr( Duration duration )
+	{
+		PeriodFormatter formatter = new PeriodFormatterBuilder().
+				appendMinutes().appendSuffix( " min", " mins" ).
+				appendSeparator( ", " ).
+				appendSeconds().appendSuffix( " sec", " secs" ).
+				appendSeparator( " and " ).
+				appendMillis3Digit().
+				appendSuffix( " ms", " ms" ).
+				toFormatter();
+
+		return formatter.print( duration.toPeriod() );
+	}
+
+
+	public static String getFormattedDuration( final DateTime start, final DateTime end )
+	{
+		Duration duration = new Duration( start, end );
+		return getFormattedPeriodAbbr( duration );
+	}
+
 	public PeriodFormatter getDefaultPeriodFormatter()
 	{
 		return new PeriodFormatterBuilder().
@@ -84,12 +97,12 @@ public class DateTimeUtils
 				toFormatter();
 	}
 
-	public PeriodFormatterBuilder getPeriodFormatterBuilder()
+	public static PeriodFormatterBuilder getPeriodFormatterBuilder()
 	{
 		return new PeriodFormatterBuilder();
 	}
 
-	public DateTimeFormatterBuilder getDateTimeFormatterBuilder()
+	public static DateTimeFormatterBuilder getDateTimeFormatterBuilder()
 	{
 		return new DateTimeFormatterBuilder();
 	}
@@ -104,30 +117,12 @@ public class DateTimeUtils
 		return locale;
 	}
 
-	public DateTime now()
-	{
-		return DateTime.now();
-	}
+
 
 	public DateTime now( DateTimeZone dtz )
 	{
 		return DateTime.now( dtz );
 	}
-
-	//endregion
-
-
-	//region DateTimeUtils - Protected Methods Section
-
-	//endregion
-
-
-	//region DateTimeUtils - Private Function Section
-
-	//endregion
-
-
-	//region DateTimeUtils - Inner Classes Implementation Section
 
 	//endregion
 

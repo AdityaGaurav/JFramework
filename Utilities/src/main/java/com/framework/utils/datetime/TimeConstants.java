@@ -27,13 +27,13 @@ public interface TimeConstants
 
 	public final long FIFTEEN_HUNDRED_MILLIS = NumberUtils.createLong( "1500" );
 
-	public final long TWENTY_HUNDRED_MILLIS = NumberUtils.createLong( "2000" );
+	public final long MILLIS_IN_ONE_SECONDS = NumberUtils.createLong( "2000" );
 
 	public final long TWENTY_FIVE_HUNDRED_MILLIS = NumberUtils.createLong( "2500" );
 
-	public final long THIRTY_HUNDRED_MILLIS = NumberUtils.createLong( "3000" );
+	public final long MILLIS_IN_THREE_SECONDS = NumberUtils.createLong( "3000" );
 
-	public final long FIFTY_HUNDRED_MILLIS = NumberUtils.createLong( "5000" );
+	public final long MILLIS_IN_FIVE_SECONDS = NumberUtils.createLong( "5000" );
 
 	public final long ZERO_SECONDS = NumberUtils.LONG_ZERO;
 
