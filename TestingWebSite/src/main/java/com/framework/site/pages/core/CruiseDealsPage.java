@@ -2,12 +2,10 @@ package com.framework.site.pages.core;
 
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
-import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -76,15 +74,6 @@ public class CruiseDealsPage extends BaseCarnivalPage
 
 		e = getDriver().elementExists( By.id( "emailSignupIFrame" ) );
 		assertion.assertThat( String.format( REASON, "#emailSignupIFrame" ), e.isPresent(), is( true ) );
-	}
-
-	@Override
-	protected void validatePageTitle()
-	{
-		final String EXPECTED_TITLE = ( String ) SiteProperty.CRUISE_DEALS_TITLE.fromContext();
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-		JAssertion assertion = new JAssertion( getDriver() );
-		assertion.assertThat( REASON, getTitle(), JMatchers.is( EXPECTED_TITLE ) );
 	}
 
 	//endregion

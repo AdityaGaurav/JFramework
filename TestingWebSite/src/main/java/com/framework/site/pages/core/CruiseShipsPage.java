@@ -1,16 +1,15 @@
 package com.framework.site.pages.core;
 
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
 import com.framework.site.data.xml.SmartRandomShipCard;
 import com.framework.site.data.xml.XmlShipCard;
-import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.*;
+import com.framework.site.objects.body.interfaces.CompareShipBanner;
+import com.framework.site.objects.body.interfaces.FilterCategories;
+import com.framework.site.objects.body.interfaces.ShipCard;
 import com.framework.site.objects.body.ships.CompareShipBannerObject;
+import com.framework.site.objects.body.ships.FiltersObject;
 import com.framework.site.objects.body.ships.ShipCardObject;
-import com.framework.site.objects.body.ships.SortBarObject;
-import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
@@ -19,7 +18,6 @@ import com.framework.utils.xml.XmlParseException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -29,22 +27,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.site.pages.core
- *
- * Name   : CruiseToPage
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-10
- *
- * Time   : 01:17
- */
-
 @DefaultUrl( matcher = "contains()", value = "/cruise-ships.aspx" )
-public class CruiseShipsPage extends BaseCarnivalPage
+public class CruiseShipsPage extends BaseCruiseShipsPage
 {
 
 	//region CruiseShipsPage - Variables Declaration and Initialization Section.
@@ -65,15 +49,9 @@ public class CruiseShipsPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private ShipSortBar sortBar;
-
 	private CompareShipBanner compareShipBanner;
 
-	private BreadcrumbsBar breadcrumbsBar;
-
 	private FilterCategories filterCategories;
-
-	private List<ShipCard> shipCards;
 
 	//endregion
 
@@ -91,72 +69,21 @@ public class CruiseShipsPage extends BaseCarnivalPage
 
 	//region CruiseShipsPage - Initialization and Validation Methods Section
 
-	protected void validatePageTitle()
-	{
-		String title = ( String ) SiteProperty.CRUISE_SHIPS_TITLE.fromContext();
-		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
-	}
-
-
 	@Override
 	protected void validatePageInitialState()
 	{
-		logger.debug( "validating page initial state for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
+		super.validatePageInitialState();
 
-				/* Validating breadcrumb last value pointing to Ships */
-
-		String lastChild = breadcrumbsBar().breadcrumbs().getLastChildName();
-		getDriver().assertThat( "Validate breadcrumb last position is \"Ships\"", lastChild, JMatchers.is( "Ships" ) );
-
-		/* Validating number of ships by property value ships.count */
-
-		String REASON = "Validating number of ships by property value ships.count";
-		final int shipsCount = NumberUtils.createInteger( SiteProperty.SHIPS_COUNT.fromContext().toString() );
-		final Matcher<Integer> EXPECTED_SHIPS_COUNT = JMatchers.is( shipsCount );
-		final int ACTUAL_SHIPS_COUNT = sortBar().getResults();
-		getDriver().assertThat( REASON, ACTUAL_SHIPS_COUNT, EXPECTED_SHIPS_COUNT );
-
-		/* Validating sort-type is "FEATURED" by default */
-
-		REASON = "Validating sort-type is \"FEATURED\" by default";
-		final Matcher<ShipSortBar.SortType> EXPECTED_VALUE_OF_SORT_TYPE = JMatchers.is( ShipSortBar.SortType.DISPLAY_FEATURED );
-		final ShipSortBar.SortType ACTUAL_SORT_TYPE = sortBar().getSortType();
-		getDriver().assertThat( REASON, ACTUAL_SORT_TYPE, EXPECTED_VALUE_OF_SORT_TYPE );
-
-		/* Validating sort-type is "FEATURED" by default */
-
-		REASON = "Validating layout-type is \"List\" by default";
-		final Matcher<ShipSortBar.LayoutType> EXPECTED_VALUE_OF_LAYOUT_TYPE = JMatchers.is( ShipSortBar.LayoutType.BY_LIST );
-		final ShipSortBar.LayoutType ACTUAL_LAYOUT_TYPE = sortBar().getLayoutType();
-		getDriver().assertThat( REASON, ACTUAL_LAYOUT_TYPE, EXPECTED_VALUE_OF_LAYOUT_TYPE );
-
+		String REASON = "Validating ships categories filter is expanded";
+		final Matcher<Boolean> EXPECTED_OF_BOOL = JMatchers.is( true );
+		final Boolean ACTUAL_BOOL = filterCategories().isExpanded();
+		getDriver().assertThat( REASON, ACTUAL_BOOL, EXPECTED_OF_BOOL );
 	}
 
 	//endregion
 
 
 	//region CruiseShipsPage - Service Methods Section
-
-	public ShipSortBar sortBar()
-	{
-		if ( null == this.sortBar )
-		{
-			this.sortBar = new SortBarObject( findSortBarDiv() );
-		}
-		return sortBar;
-	}
-
-	public BreadcrumbsBar breadcrumbsBar()
-	{
-		if ( null == this.breadcrumbsBar )
-		{
-			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbBarDiv() );
-		}
-		return breadcrumbsBar;
-	}
 
 	public CompareShipBanner compareBanner()
 	{
@@ -169,18 +96,44 @@ public class CruiseShipsPage extends BaseCarnivalPage
 
 	public FilterCategories filterCategories()
 	{
-//		if ( null == this.filterCategories )
-//		{
-//			this.filterCategories = new FilterCategoriesObject( getDriver(), findFilterCategories() );
-//		}
-//		return filterCategories;
-		return null;
+		if ( null == this.filterCategories )
+		{
+			this.filterCategories = new FiltersObject( findFilterCategories() );
+		}
+		return filterCategories;
 	}
 
 	//endregion
 
 
 	//region CruiseShipsPage - Business Methods Section
+
+	public ShipCard selectRandomShip()
+	{
+		logger.info( "selecting a random ship ..." );
+		List<XmlShipCard> selectedCards;
+
+		try
+		{
+			SmartRandomShipCard randomSelection = new SmartRandomShipCard( RANDOM_SHIP_CARDS_XML );
+			randomSelection.parse();
+			randomSelection.selectXmlCard( SelectRandom.LESS_TIMES_SELECTED, SelectRandom.NONE, SelectRandom.NONE );
+			selectedCards = randomSelection.getSelectedCards();
+		}
+		catch ( Exception e )
+		{
+			logger.error( ExceptionUtils.getRootCauseMessage( e ) );
+			throw new XmlParseException( e );
+		}
+
+		XmlShipCard selectedCard = selectedCards.get( 0 );
+		logger.info( "random ship selected is < {} >", selectedCard.getShipDescription() );
+		final String pattern = "div.activity-result.ship-result[data-id=\"%s\"]";
+		HtmlElement card = getDriver().findElement( By.cssSelector( String.format( pattern, selectedCard.getShipId() ) ) );
+		ShipCard shipCard = new ShipCardObject( card );
+		logger.info( "New ship card was created and evaluated -> < {} >", shipCard.toString() );
+		return shipCard;
+	}
 
 	/**
 	 * Select a list of 1-3 random ship by {@linkplain SelectRandom} queries.
@@ -296,19 +249,22 @@ public class CruiseShipsPage extends BaseCarnivalPage
 		}
 	}
 
+
+
 	//endregion
 
 
 	//region CruiseShipsPage - Element Finder Methods Section
 
-	private HtmlElement findSortBarDiv()
-	{
-		return getDriver().findElement( ShipSortBar.ROOT_BY );
-	}
 
 	private HtmlElement findCompareBannerDiv()
 	{
 		return getDriver().findElement( CompareShipBanner.ROOT_BY );
+	}
+
+	private HtmlElement findFilterCategories()
+	{
+		return getDriver().findElement( FilterCategories.ROOT_BY );
 	}
 
 	private List<HtmlElement> findShipCards()
@@ -427,6 +383,7 @@ public class CruiseShipsPage extends BaseCarnivalPage
 		Matcher<Boolean> EXPECTED_OF_BOOL = JMatchers.is( exists );
 		getDriver().assertThat( reason, ACTUAL_BOOL, EXPECTED_OF_BOOL );
 	}
+
 
 	//endregion
 

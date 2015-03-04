@@ -84,8 +84,6 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 			new JAssertion( getDriver() )
 					.assertThat( "Asserting locale from configuration and actual", parseRegion(), JMatchers.is( expected ) );
 		}
-
-		validatePageTitle();
 	}
 
 	//endregion
@@ -112,13 +110,6 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	{
 		return Optional.fromNullable( referrer );
 	}
-
-	//endregion
-
-
-	//region BaseCarnivalPage - Abstract methods Section
-
-	protected abstract void validatePageTitle();
 
 	//endregion
 

@@ -4,11 +4,9 @@ import com.framework.driver.event.ExpectedConditions;
 import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlDriverWait;
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.exceptions.BookedGuestLoginException;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
-import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.openqa.selenium.By;
@@ -70,16 +68,6 @@ public class BookedGuestLogonPage extends BaseCarnivalPage
 	protected void validatePageInitialState()
 	{
 		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
-	}
-
-	@Override
-	protected void validatePageTitle()
-	{
-		String title = ( String ) SiteProperty.BOOKED_GUEST_LOGON_TITLE.fromContext();
-		final org.hamcrest.Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
 	}
 
 	//endregion

@@ -1,19 +1,14 @@
 package com.framework.site.pages.core.cruiseto;
 
 import com.framework.asserts.JAssertion;
-import com.framework.driver.event.ExpectedConditions;
-import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Destinations;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
-import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import static org.hamcrest.Matchers.is;
 
 
-@DefaultUrl( matcher = "containsPattern()", value = "/cruise-to/(alaska|bahamas|bermuda|caribbean|europe|mexico)-cruises.aspx" )
+@DefaultUrl( matcher = "containsPattern()", value = "/cruise-to/(alaska-cruises|bahamas-cruises|bermuda-cruises|" +
+		"caribbean-cruises|australia|long-cruises|" +
+		"hawaii-cruises|europe-cruises|mexico-cruises|pacific-islands).aspx" )
 public class CruiseToDestinationPage extends BaseCarnivalPage
 {
 
@@ -71,23 +68,7 @@ public class CruiseToDestinationPage extends BaseCarnivalPage
 		assertion.assertThat( String.format( REASON, ".hero-slide" ), e.isPresent(), is( true ) );
 
 		String heroTitle = findHeroTitleH1().getText();
-		assertion.assertThat( "Validate page H1 inner title", heroTitle, JMatchers.is( destination.getDestination().toUpperCase() ) );
-	}
-
-	@Override
-	protected void validatePageTitle()
-	{
-
-		final String EXPECTED_TITLE_LIST =
-				( String ) SiteProperty.CRUISE_TO_DESTINATION_TITLE.fromContext( new Object[] { destination.getCapitalized() } );
-		String[] expectedTitles = StringUtils.split( EXPECTED_TITLE_LIST, "," );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-		HtmlCondition<Boolean> condition = ExpectedConditions.titleMatches( JMatchers.anyOf(
-						JMatchers.startsWith( expectedTitles[ 0 ] ),
-						JMatchers.startsWith( expectedTitles[ 1 ] ),
-						JMatchers.startsWith( expectedTitles[ 2 ] ) )
-																		  );
-		new JAssertion( getDriver() ).assertWaitThat( REASON, TimeConstants.ONE_MINUTE, condition );
+		assertion.assertThat( "Validate page H1 inner title", heroTitle, JMatchers.is( destination.toString().toUpperCase() ) );
 	}
 
 	//endregion
@@ -105,7 +86,7 @@ public class CruiseToDestinationPage extends BaseCarnivalPage
 		return destination;
 	}
 
-	public BreadcrumbsBar subscribe()
+	public BreadcrumbsBar breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{

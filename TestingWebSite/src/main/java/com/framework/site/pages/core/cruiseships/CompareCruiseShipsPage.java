@@ -1,7 +1,6 @@
 package com.framework.site.pages.core.cruiseships;
 
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.framework.site.objects.body.ships.ContentBlockComparingObject;
 import com.framework.site.pages.BaseCarnivalPage;
@@ -70,15 +69,6 @@ public class CompareCruiseShipsPage extends BaseCarnivalPage
 
 
 	//region CompareCruiseShipsPage - Initialization and Validation Methods Section
-
-	protected void validatePageTitle()
-	{
-		String title = ( String ) SiteProperty.COMPARE_CRUISE_SHIPS_TITLE.fromContext();
-		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
-	}
 
 	@Override
 	protected void validatePageInitialState()

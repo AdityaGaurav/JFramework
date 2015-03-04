@@ -1,10 +1,7 @@
 package com.framework.site.pages.core;
 
-import com.framework.site.config.SiteProperty;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
-import com.framework.utils.matchers.JMatchers;
-import org.hamcrest.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,15 +50,6 @@ public class CruiseCostPage extends BaseCarnivalPage
 
 
 	//region CruiseCostPage - Initialization and Validation Methods Section
-
-	protected void validatePageTitle()
-	{
-		String title = ( String ) SiteProperty.CRUISE_COST_TITLE.fromContext();
-		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
-	}
 
 	@Override
 	protected void validatePageInitialState()

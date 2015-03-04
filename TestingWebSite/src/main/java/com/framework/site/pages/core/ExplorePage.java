@@ -5,27 +5,27 @@ import com.framework.testing.annotations.DefaultUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-@DefaultUrl( value = "/core/closetohome.aspx", matcher = "endsWith()" )
-public class CloseToHomePage extends BaseCarnivalPage
+@DefaultUrl ( value = "/explore-carnival-cruises", matcher = "endsWith()" )
+public class ExplorePage extends BaseCarnivalPage
 {
 
-	//region CloseToHomePage - Variables Declaration and Initialization Section.
+	//region ExplorePage - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( CloseToHomePage.class );
+	private static final Logger logger = LoggerFactory.getLogger( ExplorePage.class );
 
-	private static final String LOGICAL_NAME = "Find a Port Page";
+	private static final String LOGICAL_NAME = "Explore Page";
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
+
 	//endregion
 
 
-	//region CloseToHomePage - Constructor Methods Section
+	//region ExplorePage - Constructor Methods Section
 
-	public CloseToHomePage()
+	public ExplorePage()
 	{
 		super( LOGICAL_NAME );
 		validatePageInitialState();
@@ -34,8 +34,7 @@ public class CloseToHomePage extends BaseCarnivalPage
 	//endregion
 
 
-	//region CloseToHomePage - Initialization and Validation Methods Section
-
+	//region ExplorePage - Initialization and Validation Methods Section
 
 	protected void validatePageInitialState()
 	{
@@ -45,19 +44,17 @@ public class CloseToHomePage extends BaseCarnivalPage
 	//endregion
 
 
-	//region CloseToHomePage - Service Methods Section
-
-
+	//region ExplorePage - Protected Methods Section
 
 	//endregion
 
 
-	//region CloseToHomePage - Business Methods Section
+	//region ExplorePage - Private Function Section
 
 	//endregion
 
 
-	//region CloseToHomePage - Element Finder Methods Section
+	//region ExplorePage - Inner Classes Implementation Section
 
 	//endregion
 

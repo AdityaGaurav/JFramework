@@ -1,7 +1,6 @@
 package com.framework.site.pages.core.cruiseships;
 
 import com.framework.driver.event.ExpectedConditions;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
@@ -58,16 +57,6 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage
 		getDriver().assertThat( "Validate breadcrumb last position", lastChild, JMatchers.is( ship.getFullName() ) );
 
 
-	}
-
-	@Override
-	protected void validatePageTitle()
-	{
-		String title = ( String ) SiteProperty.SHIP_DETAILS_PAGE_TITLE.fromContext( new Object[] { ship.getShipName() } );
-		final Matcher<String> EXPECTED_TITLE = JMatchers.equalToIgnoringCase( title );
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		getDriver().assertThat( REASON, getTitle(), EXPECTED_TITLE );
 	}
 
 	/**

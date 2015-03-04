@@ -4,7 +4,6 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.ExpectedConditions;
 import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.config.SiteProperty;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.LinkToutsContainerObject;
 import com.framework.site.objects.body.interfaces.LinkTouts;
@@ -57,7 +56,7 @@ public class HomePage extends BaseCarnivalPage
 	@Override
 	protected void validatePageUrl()
 	{
-		logger.debug( "validating page url and title for: <'{}'>, name: <'{}'> ...", getQualifier(), getLogicalName() );
+		logger.info( "validating page url for page < {} >, name < {} >; current < {} >", getQualifier(), getLogicalName(), getCurrentUrl() );
 
 		final String EXPECTED_ENV_URL = SiteSessionManager.get().getBaseUrl().toString();
 		HtmlCondition<Boolean> condition = ExpectedConditions.urlMatches( JMatchers.equalToIgnoringCase( EXPECTED_ENV_URL ) );
@@ -76,8 +75,7 @@ public class HomePage extends BaseCarnivalPage
 	@Override
 	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
-				getQualifier(), getLogicalName() );
+		logger.info( "validating static elements for page < {} >, name < {} > ...", getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
 		JAssertion assertion = new JAssertion( getDriver() );
@@ -92,16 +90,6 @@ public class HomePage extends BaseCarnivalPage
 
 		e = getDriver().elementExists( Footer.ROOT_BY );
 		assertion.assertThat( String.format( REASON, Footer.ROOT_BY.toString() ), e.isPresent(), is( true ) );
-	}
-
-	@Override
-	protected void validatePageTitle()
-	{
-		final String EXPECTED_TITLE = ( String ) SiteProperty.HOME_PAGE_TITLE.fromContext();
-		final String REASON = String.format( "Asserting \"%s\" page's title", LOGICAL_NAME );
-
-		HtmlCondition<Boolean> condition = ExpectedConditions.titleMatches( JMatchers.equalToIgnoringCase( EXPECTED_TITLE ) );
-		getDriver().assertWaitThat( REASON, TimeConstants.HALF_MINUTE, condition );
 	}
 
 	//endregion
