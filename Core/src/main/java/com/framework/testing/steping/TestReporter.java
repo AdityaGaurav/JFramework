@@ -1,4 +1,4 @@
-package com.framework.jreporter;
+package com.framework.testing.steping;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
@@ -10,7 +10,6 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
-import org.testng.annotations.*;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -18,53 +17,14 @@ import java.util.Map;
 
 //todo: class documentation
 
-public class TestReporter extends Reporter
+public class TestReporter implements LoggerProvider
 {
-
 	//region TestReporter - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( TestReporter.class );
-
-	public static final String BEFORE_SUITE = org.testng.annotations.BeforeSuite.class.getSimpleName();
-
-	public static final String BEFORE_TEST = BeforeTest.class.getSimpleName();
-
-	public static final String BEFORE_CLASS = BeforeClass.class.getSimpleName();
-
-	public static final String BEFORE_GROUPS = BeforeGroups.class.getSimpleName();
-
-	public static final String BEFORE_METHOD = BeforeMethod.class.getSimpleName();
-
-	public static final String AFTER_METHOD = AfterMethod.class.getSimpleName();
-
-	public static final String AFTER_GROUPS = AfterGroups.class.getSimpleName();
-
-	public static final String AFTER_CLASS = AfterClass.class.getSimpleName();
-
-	public static final String AFTER_TEST = AfterTest.class.getSimpleName();
-
-	public static final String AFTER_SUITE = AfterSuite.class.getSimpleName();
-
-
-	//	private static final String DEBUG = "[DEBUG]";
-//
-//	private static final String INFO = "[INFO]";
-//
-//	private static final String ERROR = "[ERROR]";
-//
-//	private static final String WARNING = "[WARNING]";
-//
-//	private static final String STEP = "[STEP]";
-//
-//	private static final String START = "[START]";
-//
-//	private static final String END = "[END]";
-//
-//	private static final String START_CONF = "[START-CONFIG]";
-//
-//	private static final String END_CONF = "[END-CONFIG]";
-//
-//	private static final String CHECKPOINT = "[CHECKPOINT]";
+	/**
+	 * this logger instance can be replaced by {@linkplain #setLogger(org.slf4j.Logger)}
+	 */
+	private static Logger logger = LoggerFactory.getLogger( TestReporter.class );
 
 	private static final Map<Integer,String> statuses = Maps.newHashMap();
 	static
@@ -74,6 +34,7 @@ public class TestReporter extends Reporter
 		statuses.put( 3, "SKIP" );
 		statuses.put( 4, "SUCCESS_PERCENTAGE_FAILURE" );
 		statuses.put( 16, "STARTED" );
+		Reporter.setEscapeHtml( false );
 	}
 
 	private static int lastTestId = NumberUtils.INTEGER_ZERO;
@@ -85,15 +46,18 @@ public class TestReporter extends Reporter
 
 	//region TestReporter - Constructor Methods Section
 
-	private TestReporter()
+	public TestReporter( Logger logger )
 	{
-		Reporter.setEscapeHtml( false );
+		TestReporter.logger = logger;
 	}
 
 	//endregion
 
+
+	//region TestReporter - TestNgLoggerProvider Implementation Section
+
 	//todo: method documentation
-	public static void startTest( final String id, final String name )
+	public void startTest( final String id, final String name )
 	{
 		if( logger.isInfoEnabled() )
 		{
@@ -104,7 +68,7 @@ public class TestReporter extends Reporter
 	}
 
 	//todo: method documentation
-	public static void endTest( int status, String id, String name )
+	public void endTest( int status, String id, String name )
 	{
 		if( logger.isInfoEnabled() )
 		{
@@ -115,7 +79,7 @@ public class TestReporter extends Reporter
 	}
 
 	//todo: method documentation
-	public static void startConfig( final ITestNGMethod method )
+	public void startConfig( final ITestNGMethod method )
 	{
 		if( logger.isInfoEnabled() )
 		{
@@ -127,7 +91,7 @@ public class TestReporter extends Reporter
 	}
 
 	//todo: method documentation
-	public static void endConfig( final ITestNGMethod method, int status )
+	public void endConfig( final ITestNGMethod method, int status )
 	{
 		if( logger.isInfoEnabled() )
 		{
@@ -139,64 +103,54 @@ public class TestReporter extends Reporter
 	}
 
 	//todo: method documentation
-	public static void checkpoint( final String id, final String description )
+	//todo: screenshot
+	@Override
+	public void checkpoint( final String id, String expected, int status )
 	{
-//		String s = String.format( "%s id:%s, %s", CHECKPOINT, id, description );
-//		Reporter.log( s );
-//		logger.info( s );
+		if( logger.isInfoEnabled() )
+		{
+			if( status == LoggerProvider.PASSED )
+			{
+				String s = String.format( "[CHECKPOINT]: '%s' --> PASSED", id );
+				logMessage( Level.TRACE_INT, s );
+			}
+			else
+			{
+				String s = String.format( "[CHECKPOINT]: '%s' - %s --> FAILED", id, expected );
+				logMessage( Level.ERROR_INT, s );
+			}
+		}
 	}
 
 	//todo: method documentation
-	public static void checkpoint( final String id, final String format, Object arg )
-	{
-//		FormattingTuple ft = MessageFormatter.format( format, arg );
-//		String s = String.format( "%s id:%s, %s", CHECKPOINT, id, ft.getMessage() );
-//		Reporter.log( s, false );
-//		logger.info( s );
-	}
-
-	//todo: method documentation
-	public static void checkpoint( final String id, final String format, final Object arg1, final Object arg2 )
-	{
-//		FormattingTuple ft = MessageFormatter.format( format, arg1, arg2 );
-//		String s = String.format( "%s id:%s, %s", CHECKPOINT, id, ft.getMessage() );
-//		Reporter.log( s, false );
-//		logger.info( s );
-	}
-
-	//todo: method documentation
-	public static void checkpoint( final String id, final String format, final Object... argArray )
-	{
-//		FormattingTuple ft = MessageFormatter.arrayFormat( format, argArray );
-//		String s = String.format( "%s id:%s, %s", CHECKPOINT, id, ft.getMessage() );
-//		Reporter.log( s );
-//		logger.info( s );
-	}
-
-	//todo: method documentation
-	public static void step( final float stepNo, String description )
+	public void step( final float stepNo, String description )
 	{
 		if( logger.isInfoEnabled() )
 		{
 			DecimalFormat df = new DecimalFormat();
 			df.setMaximumFractionDigits( 3 );
-			final String FMT = "[STEP:%s] - %s</span>";
+			final String FMT = "[STEP:%s] - %s";
 			logMessage( Level.INFO_INT, String.format( FMT, df.format( stepNo ), description  ) );
 		}
 	}
 
 	//todo: method documentation
-	public static void step( final float stepNo, final String format, final Object... argArray )
+	public void step( final float stepNo, final String format, final Object... argArray )
 	{
 		if( logger.isInfoEnabled() )
 		{
 			FormattingTuple ft = MessageFormatter.arrayFormat( format, argArray );
 			DecimalFormat df = new DecimalFormat();
 			df.setMaximumFractionDigits( 3 );
-			final String FMT = "[STEP:%s] - %s</span>";
-			logMessage( Level.INFO_INT, String.format( FMT, df.format( stepNo ), ft  ) );
+			final String FMT = "[STEP:%s] - %s";
+			logMessage( Level.INFO_INT, String.format( FMT, df.format( stepNo ), ft.getMessage()  ) );
 		}
 	}
+
+	//endregion
+
+
+	//region TestReporter - Public Static Functions Section
 
 	/**
 	 * Log a message at the DEBUG level.
@@ -219,7 +173,7 @@ public class TestReporter extends Reporter
 		{
 			final String FMT ="[DEBUG] - %s";
 			FormattingTuple ft = MessageFormatter.arrayFormat( format, arguments );
-			logMessage( Level.DEBUG_INT, String.format( FMT, ft  ) );
+			logMessage( Level.DEBUG_INT, String.format( FMT, ft.getMessage() ) );
 		}
 	}
 
@@ -244,7 +198,7 @@ public class TestReporter extends Reporter
 		{
 			final String FMT ="[INFO] - %s";
 			FormattingTuple ft = MessageFormatter.arrayFormat( format, arguments );
-			logMessage( Level.INFO_INT, String.format( FMT, ft  ) );
+			logMessage( Level.INFO_INT, String.format( FMT, ft.getMessage() ) );
 		}
 	}
 
@@ -290,7 +244,24 @@ public class TestReporter extends Reporter
 	{
 		final String FMT ="[ERROR] - %s";
 		FormattingTuple ft = MessageFormatter.arrayFormat( format, arguments );
-		logMessage( Level.ERROR_INT, String.format( FMT, ft  ) );
+		logMessage( Level.ERROR_INT, String.format( FMT, ft.getMessage() ) );
+	}
+
+	@Deprecated
+	public static String getAnnotation( ITestNGMethod method )
+	{
+		if( method.isBeforeSuiteConfiguration() ) return BEFORE_SUITE;
+		if( method.isBeforeClassConfiguration() ) return BEFORE_CLASS;
+		if( method.isBeforeGroupsConfiguration() ) return BEFORE_GROUPS;
+		if( method.isBeforeMethodConfiguration() ) return BEFORE_METHOD;
+		if( method.isBeforeTestConfiguration() ) return BEFORE_TEST;
+		if( method.isAfterClassConfiguration() ) return AFTER_CLASS;
+		if( method.isAfterGroupsConfiguration() ) return AFTER_GROUPS;
+		if( method.isAfterMethodConfiguration() ) return AFTER_METHOD;
+		if( method.isAfterSuiteConfiguration() ) return AFTER_SUITE;
+		if( method.isAfterTestConfiguration() ) return AFTER_TEST;
+
+		return StringUtils.EMPTY;
 	}
 
 	//endregion
@@ -300,7 +271,7 @@ public class TestReporter extends Reporter
 
 	private static void logMessage( int levelInt, String message )
 	{
-		Reporter.log( message, false );  // reporting message to TestNG reporter
+		Reporter.log( message, false );  // steping message to TestNG reporter
 
 		switch ( levelInt )
 		{
@@ -328,25 +299,18 @@ public class TestReporter extends Reporter
 				logger.error( message );
 				break;
 			}
+			case Level.TRACE_INT:
+			{
+				Reporter.log( "<span style='font-color: #008000; font-weight: normal'>" + message + "</span>", false );
+				logger.info( message );
+				break;
+			}
 		}
 	}
 
-	public static String getAnnotation( ITestNGMethod method )
+	public static void setLogger( Logger logger )
 	{
-		if( method.isBeforeSuiteConfiguration() ) return BEFORE_SUITE;
-		if( method.isBeforeClassConfiguration() ) return BEFORE_CLASS;
-		if( method.isBeforeGroupsConfiguration() ) return BEFORE_GROUPS;
-		if( method.isBeforeMethodConfiguration() ) return BEFORE_METHOD;
-		if( method.isBeforeTestConfiguration() ) return BEFORE_TEST;
-		return StringUtils.EMPTY;
-	}
-
-	private static void main( String[] args )
-	{
-
-		System.out.println( String.format( "%05d", 1000 ) );
-		System.out.println( String.format( "%+,05d", 1000 ) );
-
+		TestReporter.logger = logger;
 	}
 
 	//endregion
