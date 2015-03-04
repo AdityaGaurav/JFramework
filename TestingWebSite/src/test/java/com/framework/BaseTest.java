@@ -4,59 +4,42 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.util.StatusPrinter;
-import com.framework.driver.utils.PreConditions;
-import com.framework.jreporter.TestReporter;
-import com.framework.site.config.InitialPage;
-import com.framework.site.data.TestEnvironment;
-import com.google.common.base.Throwables;
-import org.apache.commons.lang3.Validate;
+import com.framework.config.Configurations;
+import com.framework.testing.steping.TestReporter;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.remote.BrowserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.SkipException;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Parameters;
 import org.testng.xml.XmlTest;
 
-import java.util.Locale;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework
- *
- * Name   : BaseTest
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-06
- *
- * Time   : 23:36
- */
 
 public class BaseTest
 {
 
 	//region BaseTest - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( BaseTest.class );
+	protected static Logger classLogger = LoggerFactory.getLogger( BaseTest.class );
 
-	private static final String SITE_SETTINGS = "/site.settings.xml";
+	protected final com.framework.testing.steping.LoggerProvider logger = new TestReporter( classLogger );
 
-	protected ApplicationContext appContext;
-
-	//protected Locale currentLocale;
-
-	//endregion
-
-	public BaseTest()
+	static
 	{
-		logger.info( "Testing logger status ..." );
+		classLogger.info( "Testing classLogger status ..." );
+
 		LoggerContext lc = ( LoggerContext ) LoggerFactory.getILoggerFactory();
 		StatusManager statusManager = lc.getStatusManager();
 		OnConsoleStatusListener onConsoleListener = new OnConsoleStatusListener();
@@ -64,51 +47,32 @@ public class BaseTest
 		StatusPrinter.print( lc );
 	}
 
+	//endregion
+
+
+	//region BaseTest - Constructor Section.
+
+	public BaseTest()
+	{
+		//
+	}
+
+	//endregion
+
 
 	//region BaseTest - Before Methods Section
 
-
-	@BeforeSuite ( description = "Starting the spring ApplicationContext context", alwaysRun = true )
-	public void beforeSuite()
+	@BeforeSuite( description = "Initializes the registered listener loggers", enabled = true, alwaysRun = true )
+	public static void beforeSuite( ITestContext testContext, XmlTest xmlTest ) throws Exception
 	{
-		this.appContext = new ClassPathXmlApplicationContext( SITE_SETTINGS );
-		InitialPage page = ( InitialPage ) appContext.getBean( "initial.page" );
-		TestReporter.info( "initialized Spring Framework ApplicationContext and Suite Configuration ..." );
+		Reporter.log("@BeforeSuite");
 	}
 
 
-	@Parameters ( { "current-locale", "current-environment", "browser-type" } )
-	@BeforeTest ( description = "startup classes, application appContext and bundles", alwaysRun = true )
-	public void beforeTest( String locale, String env, String brw, ITestContext testContext, XmlTest xmlTest ) throws Exception
+	@BeforeTest ( description = "startup classes, application appContext and bundles", alwaysRun = true, enabled = true )
+	public void beforeTest( ITestContext testContext, XmlTest xmlTest ) throws Exception
 	{
-		try
-		{
-			TestReporter.debug( "Checking Test Suite Pre-conditions ..." );
-			PreConditions.checkNotNullNotBlankOrEmpty( locale, "The currentLocale parameter is null, empty or blank." );
-			PreConditions.checkNotNullNotBlankOrEmpty( env, "The environment parameter is null, empty or blank." );
-			PreConditions.checkNotNullNotBlankOrEmpty( brw, "The browser type parameter is null, empty or blank." );
-
-			Locale currentLocale = getLocale( locale );
-
-			TestReporter.info( "Parameter test 'locale' is <'{}'>", currentLocale.getDisplayCountry() );
-			TestReporter.info( "Parameter test 'environment' is <'{}'>", TestEnvironment.valueOf( env ).name() );
-			TestReporter.info( "Parameter test 'browser' is <'{}'>", brw );
-
-			testContext.setAttribute( "locale", currentLocale );
-			testContext.setAttribute( "environment", TestEnvironment.valueOf( env ) );
-			testContext.setAttribute( "browser", brw );
-
-			Validate.notNull( currentLocale, "The initial Locale is null." );
-
-			InitialPage.getInstance().setInitialLocale( currentLocale );
-			InitialPage.getInstance().setTestEnvironment( TestEnvironment.valueOf( env ) );
-			InitialPage.getInstance().setBrowserType( brw );
-		}
-		catch ( Throwable e )
-		{
-			TestReporter.error( e.getMessage() );
-			Throwables.propagate( e );
-		}
+		classLogger.debug( "Executing Test index < {} > on test: < '{}' >", xmlTest.getIndex(), xmlTest.getName() );
 	}
 
 
@@ -124,38 +88,97 @@ public class BaseTest
 
 	//region BaseTest - Private Functions Section
 
-	private Locale getLocale( String locale )
+	protected void killExistingBrowsersOpenedByWebDriver()
 	{
-		if( locale.equals( "US" ) )
-		{
-			return Locale.US;
-		}
+		final String FIREFOX_MAC_PROCESS = "MacOS/firefox-bin";
 
-		if( locale.equals( "UK" ) )
-		{
-			return Locale.UK;
-		}
+		Process kill = null;
 
-		if( locale.equals( "UK" ) )
+		if( Platform.getCurrent().equals( Platform.MAC ) )
 		{
-			return new Locale( "en", "AU" );
-		}
-
-		return null;
-	}
-
-	protected String getTestId( String methodName, ITestContext testContext )
-	{
-		ITestNGMethod[] testMethods = testContext.getAllTestMethods();
-		for( ITestNGMethod method : testMethods )
-		{
-			if( method.getMethodName().equals( methodName ) )
+			Pattern pattern = Pattern.compile( "([0-9]+)" );
+			String processBuffer, processName = null;
+			BufferedReader input;
+			if( Configurations.getInstance().browserType().equals( BrowserType.FIREFOX ) )
 			{
-				return method.getId();
+				processName = FIREFOX_MAC_PROCESS;
+			}
+			else if( Configurations.getInstance().browserType().equals( BrowserType.CHROME ) )
+			{
+				processName = "Chrome";
+			}
+
+
+			if( processName == null )
+			{
+				return;
+			}
+
+			/**
+			 *   getRuntime: Returns the runtime object associated with the current Java application.
+			 *   xec: Executes the specified string command in a separate process.
+			 */
+
+			try
+			{
+				Process process = Runtime.getRuntime().exec( "ps -ax" );
+				input = new BufferedReader( new InputStreamReader( process.getInputStream() ) );
+				while ( ( processBuffer = input.readLine() ) != null )
+				{
+					if ( processBuffer.contains( processName ) )
+					{
+						Matcher matcher = pattern.matcher( processBuffer );
+						if ( matcher.find() )
+						{
+							classLogger.info( "Killing existing firefox process < {} > that was created by web driver...", matcher.group( 0 ) );
+							kill = Runtime.getRuntime().exec( "kill " + matcher.group( 0 ) );
+							int response = kill.waitFor();
+							classLogger.debug( "Response from kill command is < {} >", response );
+						}
+					}
+				}
+				input.close();
+			}
+			catch ( IOException | InterruptedException e )
+			{
+				classLogger.warn( "Killing firefox instance throw an error -> '{}' ", e.getMessage() );
+				if( kill != null )
+				{
+					try
+					{
+						InputStream error = kill.getErrorStream();
+						for ( int i = 0; i < error.available(); i++ )
+						{
+							System.out.println( "" + error.read() );
+						}
+					}
+					catch ( IOException e1 )
+					{
+						//
+					}
+				}
+			}
+			finally
+			{
+				if ( kill != null ) kill.destroy();
 			}
 		}
+	}
 
-		return methodName;
+	public <T> T skipIfNull( T reference, Object errorMessage )
+	{
+		if ( reference == null )
+		{
+			throw new SkipException( errorMessage.toString() );
+		}
+		return reference;
+	}
+
+	protected boolean shouldCloseSession( ITestResult testResult )
+	{
+		return testResult.getStatus() == ITestResult.FAILURE
+				|| testResult.getStatus() == ITestResult.SUCCESS_PERCENTAGE_FAILURE
+				|| testResult.getStatus() == ITestResult.SKIP;
 	}
 
 	//endregion
