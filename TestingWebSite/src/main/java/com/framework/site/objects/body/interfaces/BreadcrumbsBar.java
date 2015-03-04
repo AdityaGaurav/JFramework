@@ -1,5 +1,6 @@
 package com.framework.site.objects.body.interfaces;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.pages.core.HomePage;
 import org.openqa.selenium.By;
 
@@ -37,15 +38,23 @@ public interface BreadcrumbsBar
 
 		String getLastChildName();
 
+		HtmlElement getLastChild();
+
 		List<String> getNames();
 
 		boolean breadcrumbItemExists( String itemName );
+
+		void clickOnItem( String item );
 	}
 
 	interface Share
 	{
 		static final String LOGICAL_NAME = "Breadcrumb Bar Share";
 
-		static final By ROOT_BY = By.className( "share" );
+		static final By ROOT_BY = By.cssSelector( "ul.share" );
+
+		void clickPrint();
+
+		void clickShare();
 	}
 }

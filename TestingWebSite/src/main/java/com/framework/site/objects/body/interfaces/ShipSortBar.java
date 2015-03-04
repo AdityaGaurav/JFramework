@@ -1,5 +1,6 @@
 package com.framework.site.objects.body.interfaces;
 
+import com.framework.driver.event.HtmlElement;
 import org.openqa.selenium.By;
 
 
@@ -27,7 +28,7 @@ public interface ShipSortBar
 	/**
 	 * the enumeration for sorting ship cards by Featured or by A-Z
 	 */
-	public enum SortType{ DISPLAY_FEATURED, DISPLAY_AZ }
+	public enum SortType{ FEATURED, A_Z }
 
 	/**
 	 * the enumeration for displaying ship cards by gris or by list.
@@ -52,6 +53,14 @@ public interface ShipSortBar
 	 * @param sort a {@linkplain com.framework.site.objects.body.interfaces.ShipSortBar.SortType} value
 	 */
 	void setSortType( SortType sort );
+
+	HtmlElement hoverSortType();
+
+	HtmlElement hoverLayoutType();
+
+	HtmlElement getSortTypeOption( SortType option );
+
+	HtmlElement getLayoutOption( LayoutType option );
 
 	/**
 	 * @return the current {@linkplain com.framework.site.objects.body.interfaces.ShipSortBar.LayoutType} value

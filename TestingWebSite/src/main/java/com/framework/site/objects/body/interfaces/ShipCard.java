@@ -5,10 +5,9 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
-import com.framework.site.pages.bookingengine.FindACruisePage;
+import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.site.pages.core.cruisefrom.CruiseFromPortPage;
 import com.framework.site.pages.core.cruiseships.CruiseShipsDetailsPage;
-import com.framework.site.pages.core.cruiseto.CruiseToDestinationPage;
 
 import java.util.List;
 import java.util.Set;
@@ -92,7 +91,7 @@ public interface ShipCard
 	 *
 	 * @throws com.framework.site.exceptions.NoSuchDestinationException in case that the destination was not assigned to ship card.
 	 */
-	CruiseToDestinationPage selectDestination( Destinations destination );
+	BaseCarnivalPage selectDestination( Destinations destination );
 
 	/**
 	 * Select ( clicks )  a port from the 'Trip Duration' assigned list
@@ -103,7 +102,7 @@ public interface ShipCard
 	 *
 	 * @throws com.framework.site.exceptions.NoSuchDeparturePortException
 	 */
-	FindACruisePage selectTripDuration( TripDurations tripDuration );
+	BaseCarnivalPage selectTripDuration( TripDurations tripDuration );
 
 	/**
 	 * Clicks on the ship title link.
