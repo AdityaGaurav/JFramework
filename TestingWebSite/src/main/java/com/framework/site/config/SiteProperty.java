@@ -56,34 +56,6 @@ public enum SiteProperty
 	//endregion
 
 	//region  SiteProperty - properties defined in locale/messages.properties
-	
-	CRUISE_TO_DESTINATION_TITLE,
-	CRUISE_FROM_PORT_TITLE,
-	SHIP_DETAILS_PAGE_TITLE,
-	CRUISE_SHIPS_TITLE,
-	COMPARE_CRUISE_SHIPS_TITLE,
-	HOME_PAGE_TITLE,
-	CRUISE_DEALS_TITLE,
-	CRUISING_PAGE_TITLE,
-	WHAT_TO_EXPECT_TITLE,
-	CRUISE_DESTINATIONS_TITLE,
-	CRUISE_COST_TITLE,
-	VACATION_PLANNER_TITLE( "Vacation Planner title" ),
-	CRUISE_TO_TITLE,
-	ONBOARD_ACTIVITIES_TITLE,
-	DINING_TITLE,
-	STATE_ROOMS_TITLE,
-	SHORE_EXCURSIONS_TITLE,
-	FIND_A_CRUISE_TITLE,
-	FIND_A_PORT_TITLE,
-	FAQ_TITLE,
-	FORUMS_TITLE,
-	BOOKED_GUEST_LOGON_TITLE,
-	FUN_SHOP_TITLE,
-	VIFP_CLUB_TITLE,
-	CRUISE_DESTINATIONS_AND_PORTS_TILE,
-	UK_CARIBBEAN_TITLE,
-	BEGINNERS_GUIDE_TITLE,
 
 	IN_ROOM_GIFTS,
 	LEARN_MENU_ITEMS,
@@ -95,10 +67,12 @@ public enum SiteProperty
 
 	SHIPS_COUNT( "The number of ship expected on the CruiseShipPage. this property is localized"),
 	COMPARE_CAPABILITY( "A boolean value that determines if the ships page has compare capability. AU is currently not" ),
-	MAX_MENU_SUB_ITEMS
+	MAX_MENU_SUB_ITEMS,
+	FILTER_SOON_TEXT,
+	SITE_CORE_SHIP_FEATURE_IDS
 
 	//endregion
-	
+
 	;
 
 	//endregion
