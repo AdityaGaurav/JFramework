@@ -25,9 +25,4 @@ public @interface Step
 	 * @return  an expected result description list ( will be transformed into checkpoints )
 	 */
 	String[] expectedResults() default {};
-
-	/**
-	 * @return  a list of child steps.
-	 */
-	ChildStep[] childSteps() default {};
 }
