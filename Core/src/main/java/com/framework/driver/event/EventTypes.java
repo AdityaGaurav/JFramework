@@ -103,4 +103,12 @@ interface EventTypes
 	static final int EVENT_SEND_KEYS = 40;
 
     static final int EVENT_GET_TEXT = 41;
+
+	static final int EVENT_GET_ATTRIBUTE = 42;
+
+	static final int EVENT_JS_CLICK = 43;
+
+	static final int EVENT_IS_DISPLAYED = 44;
+
+	static final int EVENT_GET_CSS_PROPERTY = 45;
 }
