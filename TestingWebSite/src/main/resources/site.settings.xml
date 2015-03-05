@@ -1,10 +1,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd" default-lazy-init="true">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
 
@@ -25,8 +23,6 @@
         <property name="valueSeparator" value=":"/>
     </bean>
 
-    <bean id="applicationContextProxy" class="com.framework.utils.spring.AppContextProxy" factory-method="getInstance" lazy-init="false"/>
-
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="locale.messages" />
         <property name="defaultEncoding" value="UTF-8"/>
@@ -34,37 +30,93 @@
         <property name="commonMessages" value="locale/messages.properties"/>
     </bean>
 
-    <bean id="initial.page" class="com.framework.site.config.InitialPage" factory-method="getInstance" destroy-method="quitAllDrivers" lazy-init="true">
-        <description>Running configuration</description>
-        <property name="initialLocale">
-            <util:constant static-field="java.util.Locale.US" />
-        </property>
-        <property name="highLightOnClick" value="true"/>
-        <property name="highLightOnHover" value="true"/>
-        <property name="useBrowserStartupPage" value="true"/>
-        <property name="maximizeOnStartup"  value="true"/>
-        <property name="browserType">
-            <util:constant static-field="org.openqa.selenium.remote.BrowserType.FIREFOX" />
-        </property>
-        <property name="testCasePattern" value="(TC-ID:[0-9]{5})"/>
-        <property name="domains">
-            <props>
-                <prop key="us.prod">${us.prod.url}</prop>
-                <prop key="us.sys1">${us.sys1.url}</prop>
-                <prop key="us.sys3"></prop>
-                <prop key="us.uat2">${us.uat2.url}</prop>
-                <prop key="us.stg2"></prop>
-                <prop key="gb.prod">${uk.prod.url}</prop>
-                <prop key="gb.uat2">${uk.uat2.url}</prop>
-                <prop key="au.prod">${au.prod.url}</prop>
-            </props>
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"/>
+
+    <bean id="user.no.booking" class="com.framework.site.data.Guest">
+        <description>a guest with no bookings</description>
+        <constructor-arg name="firstName" value="AUTOMATION"/>
+        <constructor-arg name="lastName" value="TELERIK"/>
+        <constructor-arg name="emailAddress" value="automation_NoBooking@hotmail.com"/>
+        <property name="dateOfBirth" value="01/01/1950" />
+        <property name="title" value="Mr."/>
+        <property name="middleName" value=""/>
+        <property name="gender" value="M"/>
+        <property name="vifpClub" value="9002604574"/>
+        <property name="useEmailAsUserName" value="true"/>
+        <property name="currentPassword" value="9D4S0S4M29177AD974BF188962"/>
+        <property name="country" value="United States"/>
+        <property name="address1" value=""/>
+        <property name="address2" value=""/>
+        <property name="city" value="DOIAL"/>
+        <property name="state" value="Florida"/>
+        <property name="zip" value="33178-2418"/>
+        <property name="phoneType" value="Home"/>
+        <property name="phoneAreaCode" value="727"/>
+        <property name="phoneNumber" value="6925227"/>
+        <property name="sendOffersToAddress" value="true"/>
+        <property name="sendOffersToEmail" value="false"/>
+        <property name="preferenceDining" value=""/>
+        <property name="prepaidGratuities" value="false"/>
+        <property name="vacationProtection" value="false"/>
+        <property name="cruiseTransferFromAirport" value="false"/>
+        <property name="cruiseTransferToAirport" value="false"/>
+        <property name="companions">
+            <list>
+                <ref local="companion1" />
+                <ref local="companion2" />
+                <ref local="companion3" />
+                <ref local="companion4" />
+            </list>
         </property>
     </bean>
 
-    <bean id="localeAU" class="java.util.Locale" >
-        <constructor-arg name="language" value="en"/>
-        <constructor-arg name="country" value="AU"/>
+    <bean id="companion1" class="com.framework.site.data.Companion">
+        <constructor-arg name="firstName" type="java.lang.String" value="Automation"/>
+        <constructor-arg name="lastName" type="java.lang.String" value="Junior"/>
+        <property name="dateOfBirth" value="01/01/1980"/>
+        <property name="gender" value="M"/>
+        <property name="nationality" value="Unite States"/>
+        <property name="phoneAreaCode" value="727"/>
+        <property name="phoneCountryCode" value="001"/>
+        <property name="phoneNumber" value="6925227"/>
+        <property name="state" value="other State"/>
+        <property name="vifpClub" value="0"/>
     </bean>
-
+    <bean id="companion2" class="com.framework.site.data.Companion">
+        <constructor-arg name="firstName" type="java.lang.String" value="stela"/>
+        <constructor-arg name="lastName" type="java.lang.String" value="telerik"/>
+        <property name="dateOfBirth" value="01/01/1970"/>
+        <property name="gender" value="F"/>
+        <property name="nationality" value="Unite States"/>
+        <property name="phoneAreaCode" value="727"/>
+        <property name="phoneCountryCode" value="001"/>
+        <property name="phoneNumber" value="6925227"/>
+        <property name="state" value="other State"/>
+        <property name="vifpClub" value="0"/>
+    </bean>
+    <bean id="companion3" class="com.framework.site.data.Companion">
+        <constructor-arg name="firstName" type="java.lang.String" value="Tavel"/>
+        <constructor-arg name="lastName" type="java.lang.String" value="guesta"/>
+        <property name="dateOfBirth" value="01/01/1991"/>
+        <property name="gender" value="F"/>
+        <property name="nationality" value="Unite States"/>
+        <property name="phoneAreaCode" value="727"/>
+        <property name="phoneCountryCode" value=""/>
+        <property name="phoneNumber" value="6925227"/>
+        <property name="state" value="other State"/>
+        <property name="vifpClub" value="0"/>
+    </bean>
+    <bean id="companion4" class="com.framework.site.data.Companion">
+        <constructor-arg name="firstName" type="java.lang.String" value="HTVOS"/>
+        <constructor-arg name="lastName" type="java.lang.String" value="OVNVL"/>
+        <property name="dateOfBirth" value="06/06/2013"/>
+        <property name="gender" value="M"/>
+        <property name="nationality" value="Unite States"/>
+        <property name="phoneAreaCode" value="305"/>
+        <property name="phoneCountryCode" value="001"/>
+        <property name="phoneNumber" value="9999999"/>
+        <property name="state" value="Michigan"/>
+        <property name="vifpClub" value="0"/>
+    </bean>
 
 </beans>
