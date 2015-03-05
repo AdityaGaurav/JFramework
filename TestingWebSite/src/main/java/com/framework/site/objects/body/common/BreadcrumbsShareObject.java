@@ -1,17 +1,22 @@
 package com.framework.site.objects.body.common;
 
 import com.framework.asserts.JAssertion;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlDriverWait;
 import com.framework.driver.event.HtmlElement;
+import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
+import com.framework.driver.objects.Link;
 import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
+import com.framework.utils.datetime.Sleeper;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
-import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
 import static com.framework.utils.datetime.TimeConstants.TWO_SECONDS;
 import static org.hamcrest.Matchers.is;
 
@@ -36,6 +41,12 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 	//region BreadcrumbsShareObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( BreadcrumbsShareObject.class );
+
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private HtmlElement print, iShare;
 
 	//endregion
 
@@ -62,11 +73,16 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 		final String REASON = "assert that element \"%s\" exits";
 		JAssertion assertion = getRoot().createAssertion();
 
-		Optional<HtmlElement> e = getRoot().childExists( By.id( "HeaderFBLike" ), FIVE_SECONDS );
+		Optional<HtmlElement> e = getRoot().childExists( By.id( "HeaderFBLike" ), TWO_SECONDS );
 		assertion.assertThat( String.format( REASON, "#HeaderFBLike" ), e.isPresent(), is( true ) );
 
-		e = getRoot().childExists( By.className( "options" ), TWO_SECONDS );
-		assertion.assertThat( String.format( REASON, "#options" ), e.isPresent(), is( true ) );
+		e = getRoot().childExists( By.cssSelector( ".green.st_sharethis_custom" ), TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, ".green.st_sharethis_custom" ), e.isPresent(), is( true ) );
+		iShare = e.get();
+
+		e = getRoot().childExists( By.className( "print" ), TWO_SECONDS );
+		assertion.assertThat( String.format( REASON, ".print" ), e.isPresent(), is( true ) );
+		print = e.get();
 	}
 
 
@@ -85,27 +101,104 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Business Methods Section
 
+	@Override
+	public void clickPrint()
+	{
+		/** adds a new tag when event onbeforeprint is fired by the browser */
+
+		final String SCRIPT_LISTENER_BEFORE = "window.onbeforeprint = function(){\n" +
+				"   var div = document.createElement(\"div\");\n" +
+				"	div.setAttribute( \"id\", \"beforePrint\" );\n" +
+				"   document.body.appendChild( div );\n" +
+				"   window.close();\n" +
+				"}";
+		final String SCRIPT_LISTENER_AFTER = "window.onafterprint = function(){\n" +
+				"   var div = document.createElement(\"div\");\n" +
+				"	div.setAttribute( \"id\", \"afterPrint\" );\n" +
+				"   document.body.appendChild( div );\n" +
+				"}";
+
+		// injecting session listeners
+		getDriver().executeScript( SCRIPT_LISTENER_BEFORE );
+		getDriver().executeScript( SCRIPT_LISTENER_AFTER );
+
+		Link link = new Link( findPrint() );
+		link.hover( true );
+		getDriver().executeScript( "arguments[0].click()", findPrint() );
+		//findPrint().jsClick();
+
+		try
+		{
+			Sleeper.pauseFor( 2000 );
+			Robot r = new Robot();
+			r.keyPress( KeyEvent.VK_ESCAPE );
+			r.keyRelease( KeyEvent.VK_ESCAPE );
+		}
+		catch ( AWTException e )
+		{
+			logger.error( e.getMessage() );
+			throw new ApplicationException( e );
+		}
+
+		/* validates if div#beforePrint was created */
+
+		logger.debug( "waiting for element beforePrint to be created..." );
+		HtmlDriverWait.wait10( getDriver() ).until( ExpectedConditions.presenceBy( By.id( "beforePrint" ) ) );
+		logger.debug( "waiting for element afterPrint to be created..." );
+		HtmlDriverWait.wait5( getDriver() ).until( ExpectedConditions.presenceBy( By.id( "afterPrint" ) ) );
+	}
+
+	@Override
+	public void clickShare()
+	{
+		//todo current a bug: cannot implement
+	}
+
 	//endregion
 
 
 	//region BreadcrumbsShareObject - Element Finder Methods Section
 
-	private List<HtmlElement> getTopChickletsLis()
+//	private List<HtmlElement> getTopChickletsLis()
+//	{
+//		By findBy = By.id( "top_chicklets" );
+//		return getRoot().findElement( findBy ).findElements( By.tagName( "li" ) );
+//	}
+//
+//	private HtmlElement getChicletsSearchDiv()
+//	{
+//		By findBy = By.id( "chicklet_search" );
+//		return getRoot().findElement( findBy );
+//	}
+//
+//	private HtmlElement getAllChickletsDiv()
+//	{
+//		By findBy = By.id( "all_chicklets" );
+//		return getRoot().findElement( findBy );       document.createElement("div"); myPara.setAttribute("id", "id_you_like");  // add the newly created element and its content into the DOM
+//var currentDiv = document.getElementById("div1");
+//	document.body.insertBefore(newDiv, currentDiv);
+	//	}
+
+	private HtmlElement findPrint()
 	{
-		By findBy = By.id( "top_chicklets" );
-		return getRoot().findElement( findBy ).findElements( By.tagName( "li" ) );
+		if( null == print )
+		{
+			By findBy = By.className( "print" );
+			print = getRoot().findElement( findBy );
+		}
+
+		return print;
 	}
 
-	private HtmlElement getChicletsSearchDiv()
+	private HtmlElement findIShare()
 	{
-		By findBy = By.id( "chicklet_search" );
-		return getRoot().findElement( findBy );
-	}
+		if( null == iShare )
+		{
+			By findBy = By.className( "i-share" );
+			iShare = getRoot().findElement( findBy );
+		}
 
-	private HtmlElement getAllChickletsDiv()
-	{
-		By findBy = By.id( "all_chicklets" );
-		return getRoot().findElement( findBy );
+		return iShare;
 	}
 
 	//endregion

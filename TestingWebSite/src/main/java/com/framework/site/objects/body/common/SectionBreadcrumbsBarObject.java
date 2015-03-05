@@ -90,7 +90,7 @@ public class SectionBreadcrumbsBarObject extends AbstractWebObject implements Br
 	{
 		if ( null == this.share )
 		{
-			this.share = new BreadcrumbsShareObject( findBreadcrumbUl() );
+			this.share = new BreadcrumbsShareObject( findShareUl() );
 		}
 		return share;
 	}
@@ -124,8 +124,12 @@ public class SectionBreadcrumbsBarObject extends AbstractWebObject implements Br
 
 	private HtmlElement findBreadcrumbUl()
 	{
-		By findBy = By.cssSelector( "ul.breadcrumbs" );
-		return getRoot().findElement( findBy );
+		return getRoot().findElement( Breadcrumbs.ROOT_BY  );
+	}
+
+	private HtmlElement findShareUl()
+	{
+		return getRoot().findElement( Share.ROOT_BY );
 	}
 
 	//endregion

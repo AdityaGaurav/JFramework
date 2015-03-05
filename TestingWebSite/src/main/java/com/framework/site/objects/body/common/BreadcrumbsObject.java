@@ -1,5 +1,6 @@
 package com.framework.site.objects.body.common;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
@@ -47,7 +48,7 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+		logger.info( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
@@ -80,7 +81,7 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	@Override
 	public HomePage navigateHome()
 	{
-		logger.info( "Navigating using breadcrumbs to 'Home'" );
+		logger.info( "Navigating \"Home\" using breadcrumbs first item." );
 
 		Link findHomeLink = new Link( findHomeAnchor() );
 		findHomeLink.hover( true );
@@ -92,7 +93,7 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	@Override
 	public boolean isLastChildEnabled()
 	{
-		logger.info( "Determine if the 'last-child' is enabled ( active link )" );
+		logger.info( "Determine if the breadcrumbs 'last-child' is enabled ( active link )" );
 
 		HtmlElement lastActive = findLastChildActiveAnchor();
 		return ! lastActive.getAttribute( "href" ).isEmpty();
@@ -101,17 +102,19 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	@Override
 	public String getLastChildName()
 	{
-		return findLastChildActiveAnchor().getText();
+		String text = findLastChildActiveAnchor().getText();
+		logger.info( "reading last-child breadcrumb item name < {} >", text );
+		return text;
 	}
 
 	//todo: method documentation
 	@Override
 	public List<String> getNames()
 	{
-		logger.info( "Getting a List of breadcrumbs names" );
-
 		List<HtmlElement> lis = findBreadcrumbsLis();
-		return HtmlObject.extractText( lis );
+		List<String> names = HtmlObject.extractText( lis );
+		logger.info( "Getting a List of breadcrumbs names < {} >", Lambda.joinFrom( names ) );
+		return names;
 	}
 
 	//todo: method documentation
@@ -122,7 +125,29 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 		return getRoot().childExists( By.linkText( itemName ) ).isPresent();
 	}
 
+	@Override
+	public void clickOnItem( final String item )
+	{
+		logger.info( "Clicking on breadcrumb item < {} >", item );
+		List<HtmlElement> lis = findBreadcrumbsLis();
+		for( HtmlElement li : lis )
+		{
+			String text = li.getText();
+			if( text.endsWith( item ) )
+			{
+				li.findElement( By.tagName( "a" ) ).click();
+				return;
+			}
+		}
+	}
 
+	@Override
+	public HtmlElement getLastChild()
+	{
+		HtmlElement he = findLastChildLi();
+		logger.info( "Extracting the breadcrumb last-child element < {} > ", he.getAttribute( "testContext" ) );
+		return he;
+	}
 
 	//endregion
 
@@ -142,7 +167,13 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 
 	private HtmlElement findLastChildActiveAnchor()
 	{
-		By findBy = By.cssSelector( "li.last-child.active > a" );
+		By findBy = By.cssSelector( "li.last-child > a" );
+		return getRoot().findElement( findBy );
+	}
+
+	private HtmlElement findLastChildLi()
+	{
+		By findBy = By.cssSelector( "li.last-child" );
 		return getRoot().findElement( findBy );
 	}
 
