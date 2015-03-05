@@ -4,10 +4,9 @@ import com.framework.config.ResultStatus;
 import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlDriverWait;
+import com.framework.driver.utils.ui.screenshots.Photographer;
+import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.framework.testing.steping.LoggerProvider;
-import com.framework.testing.steping.screenshots.Photographer;
-import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
-import com.framework.utils.error.PreConditions;
 import com.google.common.base.Optional;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *     <li>onAfterAssert</li>
  * </ol>
  *
- * an optional instance of {@link com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource} might be
+ * an optional instance of {@link com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource} might be
  * present when the assertion failed. the html source is another optional error source than can be configured by
  * {@code jframework.store.html.source} property.
  */
@@ -74,7 +73,6 @@ public class JAssertion
 	 */
 	public JAssertion( final HtmlDriver driver )
 	{
-		PreConditions.checkNotNull( driver, "The Web Driver assigned cannot be null." );
 		this.driver = driver;
 	}
 
@@ -177,27 +175,30 @@ public class JAssertion
 	 * @param assertCommand the assertion command, with the checkpoint details.
 	 * @param ex			a detailed assertion error instance.
 	 *
-	 * @see com.framework.testing.steping.screenshots.Photographer
+	 * @see com.framework.driver.utils.ui.screenshots.Photographer
 	 * @see com.google.common.base.Optional
-	 * @see com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource
+	 * @see com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource
 	 */
 	protected void onAssertFailure( final JAssert assertCommand, final AssertionError ex )
 	{
 		setStatus( ResultStatus.FAILURE );
 		logger.error( "Assertion failed with message: < '{}' >", ex.getMessage() );
-		Photographer photographer = new Photographer( driver );
-		photographer.setLogger( logger );
-		this.snapshot = photographer.grabScreenshot(); //todo: publish it
-		if( snapshot.isPresent() )
+		if( driver!= null )
 		{
-			String png = snapshot.get().getScreenshotName();
-			String html = snapshot.get().getHtmlSourceName();
-			logger.info( "Screenshot file captured is < '{}' >", png );
-			logger.info( "Html Source file captured is < '{}' >", html );
-		}
-		else
-		{
-			logger.warn( "No screenshot was captured." );
+			Photographer photographer = new Photographer( driver );
+			photographer.setLogger( logger );
+			this.snapshot = photographer.grabScreenshot(); //todo: publish it
+			if ( snapshot.isPresent() )
+			{
+				String png = snapshot.get().getScreenshotName();
+				String html = snapshot.get().getHtmlSourceName();
+				logger.info( "Screenshot file captured is < '{}' >", png );
+				logger.info( "Html Source file captured is < '{}' >", html );
+			}
+			else
+			{
+				logger.warn( "No screenshot was captured." );
+			}
 		}
 	}
 
@@ -212,7 +213,7 @@ public class JAssertion
 	 */
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
-		logger.debug( "Finished to execute assertion: <'{}'> with status < {} >", assertCommand.getReason(), status.getStatusName() );
+		logger.info( "Finished to execute assertion: <'{}'> with status < {} >", assertCommand.getReason(), status.getStatusName() );
 	}
 
 	/**

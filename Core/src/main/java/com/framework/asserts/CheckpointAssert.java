@@ -2,7 +2,8 @@ package com.framework.asserts;
 
 import com.framework.config.ResultStatus;
 import com.framework.driver.event.HtmlDriver;
-import com.framework.testing.steping.screenshots.Photographer;
+import com.framework.driver.utils.ui.screenshots.Photographer;
+import com.framework.testing.steping.StepEventBus;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.LogStringStyle;
 import org.apache.commons.lang3.BooleanUtils;
@@ -51,6 +52,11 @@ public class CheckpointAssert extends JAssertion
 	 * @param id         a string representing the checkpoint identifier.
 	 * @param collector  a {@linkplain CheckPointCollector} that collect the results.
 	 */
+	public CheckpointAssert( final String id, CheckPointCollector collector )
+	{
+	    this( null, id, collector );
+	}
+
 	public CheckpointAssert( final HtmlDriver driver, final String id, CheckPointCollector collector )
 	{
 		super( driver );
@@ -58,6 +64,7 @@ public class CheckpointAssert extends JAssertion
 		this.id = id;
 		this.collector = collector;
 	}
+
 
 	//endregion
 
@@ -73,6 +80,7 @@ public class CheckpointAssert extends JAssertion
 	{
 		setStatus( ResultStatus.PENDING );
 		logger.debug( "Executing checkpoint \"{}\"", getId() );
+		StepEventBus.getEventBus().beforeCheckpoint( getId(), assertCommand );
 	}
 
 	/**
@@ -122,13 +130,13 @@ public class CheckpointAssert extends JAssertion
 		}
 
 		logger.error( "Checkpoint Report: {}", stb.toString() );
-
 	}
 
 	@Override
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
 		collector.addCheckpointInfo( getId(), getStatus() );
+		StepEventBus.getEventBus().afterCheckpoint( getId(), this );
 	}
 
 	@Override
