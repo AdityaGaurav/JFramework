@@ -5,7 +5,7 @@ import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.exceptions.DuplicateTestStepException;
 import com.framework.utils.error.PreConditions;
 import com.google.common.collect.Maps;
-import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.ConfigurationRuntimeException;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class StepsAnnotation
 
 	//region StepsAnnotation - Constructor Methods Section
 
-	public StepsAnnotation( Steps steps ) throws ConfigurationException
+	public StepsAnnotation( Steps steps )
 	{
 		boolean isFirst = true;
 		float prev = 0F;
@@ -67,7 +67,7 @@ public class StepsAnnotation
 		}
 		catch ( Exception e )
 		{
-			throw new ConfigurationException( e );
+			throw new ConfigurationRuntimeException( e );
 		}
 	}
 
