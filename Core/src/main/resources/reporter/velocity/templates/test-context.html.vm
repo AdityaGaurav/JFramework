@@ -1,0 +1,300 @@
+<title>$testContext.getName()</title>
+
+<style type="text/css">
+    .icon-text-block {
+        width: 100%;
+    }
+    .info-list .sum {
+        min-width: 140px;
+    }
+</style>
+
+</head>
+<body class="layout_fluid layout_responsive">
+
+	<div id="container">
+
+        <!-- MAIN HEADER -->
+		#parse( "header.vm" )
+        <!-- CONTENT -->
+
+        <div id="content">
+            <div id="content-border">
+
+                <!-- CONTENT HEADER -->
+				#parse( "content.header.vm" )
+
+                <div id="content-inner">
+
+                    <!-- SIDEBAR -->
+
+		            #parse( "side.bar.vm" )
+
+                    <!-- CONTENT -->
+
+                    <div id="content-main">
+                        <div id="content-main-inner">
+
+                            <section class="g_1_4">
+                                <div class="page-header">
+                                    <h2>Dashboard</h2>
+                                    <p>Reporter dashboard. Execution summary.</p>
+                                </div>
+                            </section>
+			                #parse( "no.g.one.vm" )
+                            <div class="spacer-20"><!-- New row --></div>
+                            <section class="g_1">
+                                <div class="separator">
+                                    <span></span>
+                                </div>
+                            </section>
+
+                            <section class="g_1_2">
+	                            <div id="context-config" class="e-block">
+		                            <header>
+			                            <h2>XmlTest Configuration</h2>
+		                            </header>
+		                            <div>
+			                            <div class="inner-spacer">
+                                            <div class="split-tag">
+                                                <a href="javascript:void(0);">AllowReturnValues</a>
+                                                <div>
+						                            #if( $testContext.getXmlSuite().getAllowReturnValues() )
+							                            #set( $checked = " checked='checked'" )
+							                            #set( $ch_style = "active" )
+						                            #else
+							                            #set( $checked = "" )
+							                            #set( $ch_style = "normal" )
+						                            #end
+                                                    <div class="e-checkbox e-checkbox-$ch_style">
+                                                        <div class="e-checkbox-img"></div>
+                                                        <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a class="tag" href="javascript:void(0);">Name: <strong>$testContext.getCurrentXmlTest().getName()</strong></a>
+                                            <a class="tag" href="javascript:void(0);">Excluded Groups: <strong>$testContext.getCurrentXmlTestExcludedGroups()</strong></a>
+                                            <a class="tag" href="javascript:void(0);">Included Groups: <strong>$testContext.getCurrentXmlTestIncludedGroups()</strong></a>
+                                            <a class="tag" href="javascript:void(0);">Preserve Order: <strong>$testContext.getCurrentXmlTest().getPreserveOrder()</strong></a>
+                                            <a class="tag" href="javascript:void(0);">Thread Count: <strong>$testContext.getCurrentXmlTest().getThreadCount()</strong></a>
+				                            #if( $suite.getXmlSuite().getTimeOut() )
+					                            #set( $timeout = $suite.getXmlSuite().getTimeOut() )
+				                            #else
+					                            #set( $timeout = "N/A" )
+				                            #end
+				                            <a class="tag" href="javascript:void(0);">Verbose: <strong>$testContext.getCurrentXmlTest().getVerbose()</strong></a>
+                                            <div class="split-tag">
+                                                <a href="javascript:void(0);">isJUnit</a>
+                                                <div>
+						                            #if( $suite.getXmlSuite().isJUnit() )
+							                            #set( $checked = " checked='checked'" )
+							                            #set( $ch_style = "active" )
+						                            #else
+							                            #set( $checked = "" )
+							                            #set( $ch_style = "normal" )
+						                            #end
+                                                    <div class="e-checkbox e-checkbox-$ch_style">
+                                                        <div class="e-checkbox-img"></div>
+                                                        <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="split-tag">
+                                                <a href="javascript:void(0);">GroupByInstances</a>
+                                                <div>
+						                            #if( $suite.getXmlSuite().getGroupByInstances() )
+							                            #set( $checked = " checked='checked'" )
+							                            #set( $ch_style = "active" )
+						                            #else
+							                            #set( $checked = "" )
+							                            #set( $ch_style = "normal" )
+						                            #end
+                                                    <div class="e-checkbox e-checkbox-$ch_style">
+                                                        <div class="e-checkbox-img"></div>
+                                                        <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a class="tag" href="javascript:void(0);">Index: <strong>$testContext.getCurrentXmlTest().getIndex()</strong></a>
+				                            #if( $testContext.getCurrentXmlTest().getParallel() == false )
+                                                <div class="split-tag">
+                                                    <a href="javascript:void(0);">Parallel</a>
+                                                    <div>
+                                                        <div class="e-checkbox e-checkbox-normal">
+                                                            <div class="e-checkbox-img"></div>
+                                                            <input readonly type="checkbox" name="" style="display: none;">
+                                                        </div>
+                                                    </div>
+                                                </div>
+				                            #else
+                                                <a class="tag" href="javascript:void(0);">Parallel: <strong>$testContext.getCurrentXmlTest().getParallel()</strong></a>
+				                            #end
+
+				                            #if( $testContext.getCurrentXmlTest().getTestParameters().size() > 0 )
+
+                                                <section class="g_1">
+                                                    <div class="separator">
+                                                        <span></span>
+                                                    </div>
+                                                </section>
+                                                <div class="g_1">Test Parameters</div>
+                                                <div class="spacer-5"></div>
+                                                <div class="g_1">
+						                            #foreach( $entry in $testContext.getCurrentXmlTest().getTestParameters().keySet() )
+							                            #set( $entry_value = $testContext.getCurrentXmlTest().getTestParameters().get( $entry ) )
+                                                        <a class="tag" href="javascript:void(0);">$entry :<strong>  "$entry_value"</strong></a>
+						                            #end
+                                                </div>
+
+				                            #end
+
+				                            #if( $testContext.getCurrentXmlTest().getClasses().size() > 0 )
+
+                                                <section class="g_1">
+                                                    <div class="separator">
+                                                        <span></span>
+                                                    </div>
+                                                </section>
+                                                <div class="g_1">All Classes</div>
+                                                <div class="spacer-5"></div>
+                                                <div class="g_1">
+						                            #foreach( $class in $testContext.getCurrentXmlTest().getClasses() )
+
+                                                        <div class="icon-text-block">
+                                                            <a href="javascript:void(0);">
+                                                                <div>
+                                                                    <span class="home-32 plix-32"></span>
+                                                                </div>
+                                                                <div>
+                                                                    <h3>$class.getName()</h3>
+                                                                    <span>index: $class.getIndex()</span>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+						                            #end
+                                                </div>
+
+				                            #end
+
+			                                #if( $testContext.getCurrentXmlTest().getPackages().size() > 0 )
+
+                                            <section class="g_1">
+                                                <div class="separator">
+                                                    <span></span>
+                                                </div>
+                                            </section>
+                                            <div class="g_1">Packages</div>
+                                            <div class="spacer-5"></div>
+                                            <div class="g_1">
+					                            #foreach( $pack in $testContext.getCurrentXmlTest().getPackages() )
+                                                    <div class="icon-text-block">
+                                                        <a href="javascript:void(0);">
+                                                            <div>
+                                                                <span class="home-32 plix-32"></span>
+                                                            </div>
+                                                            <div>
+                                                                <h3>$pack.getName()</h3>
+                                                                <span></span>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+					                            #end
+                                            </div>
+
+			                            #end
+
+			                            </div>
+		                            </div>
+	                            </div>
+
+	                        </section>
+
+                            <section class="g_1_2_last">
+                                <div id="context-config" class="e-block">
+                                    <header>
+                                        <h2>XmlTest Configuration</h2>
+                                    </header>
+                                    <div>
+                                        <ul class="info-list">
+                                            <li>
+                                                <div class="desc">Parameter</div>
+                                                <div class="sum">Result</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Total Configurations Invoked</div>
+                                                <div class="sum">$testContext.getConfigurationsCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Success Configurations</div>
+                                                <div class="sum">$testContext.getSuccessConfigurationsCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Failed Configurations</div>
+                                                <div class="sum">$testContext.getFailedConfigurationsCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Skipped Configurations</div>
+                                                <div class="sum">$testContext.getSkippedConfigurationsCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Total Test-Case Instances</div>
+                                                <div class="sum">$testContext.getTestCaseInstanceCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Success Test-Case Instances</div>
+                                                <div class="sum">$testContext.getSuccessTestCasesInstancesCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Failed Test-Case Instances</div>
+                                                <div class="sum">$testContext.getFailedTestCaseInstanceCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Failed with Success Percentage Test-Case Instances</div>
+                                                <div class="sum">$testContext.getFailedWithSuccessPercentageTestCaseInstanceCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Skipped Test-Case Instances</div>
+                                                <div class="sum">$testContext.getSkippedTestCasesCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Ignored Test-Case Instances</div>
+                                                <div class="sum"> $testContext.getIgnoredTestCaseCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Excluded Test-Cases</div>
+                                                <div class="sum"> $testContext.getExcludedTestCasesCount()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Start Date</div>
+                                                <div class="sum">$testContext.getFormattedStartDate()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Duration</div>
+                                                <div class="sum"> $testContext.getFormattedDuration()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">End Date</div>
+                                                <div class="sum">$testContext.getFormattedEndDate()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Success Rate</div>
+                                                <div class="sum">$testContext.getFormattedSuccessRate()</div>
+                                            </li>
+                                            <li>
+                                                <div class="desc">Host</div>
+		                                        #if( $testContext.getHost() )
+                                                    <div class="sum">$testContext.hetHost()()</div>
+		                                        #else
+                                                    <div class="sum">N/A</div>
+		                                        #end
+                                            </li>
+                                        </ul>
+	                                </div>
+	                            </div>
+                            </section>
+
+
+
+		                </div><!-- End #content-main-inner -->
+		            </div><!-- End #content-main -->
+		        </div><!-- End #content-inner -->

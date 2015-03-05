@@ -1,0 +1,44 @@
+<aside>
+
+    <!-- SIDEBAR PROFILE -->
+
+    <div id="sidebar-profile">
+        <div id="main-avatar">
+            <span class="indicator">38</span>
+            <img src="images/avatar.jpg" alt=""/>
+        </div>
+        <div id="profile-info">
+            <div>
+                <a href="javascript:void(0);"><b>Administrator</b></a>
+                <a href="javascript:void(0);">Profile settings</a>
+                <a href="javascript:void(0);">Server settings</a>
+                <a href="javascript:void(0);">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN MENU -->
+
+	#parse( "main.menu.vm" )
+
+
+</aside>
+<!-- sidebar meta stats -->
+<div id="sidebar-meta">
+    <div id="sidebar-meta-inner">
+        <div>
+            <p class="left">Space</p>
+            <p class="right">4,551 MB / 10 GB</p>
+        </div>
+        <div class="pbar">
+            <span style="width:50%"></span>
+        </div>
+        <div>
+            <p class="left">Traffic</p>
+            <p class="right">8,001 MB / 10 GB</p>
+        </div>
+        <div class="pbar">
+            <span style="width:81%"></span>
+        </div>
+    </div>
+</div>

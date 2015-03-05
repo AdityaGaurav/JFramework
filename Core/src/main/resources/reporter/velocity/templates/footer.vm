@@ -1,0 +1,33 @@
+				<footer id="content-footer">
+				    <div class="left">
+				        <div class="left">
+				            <a href="javascript:void(0);" class="button-icon tip-s" title="Some action">
+				                <span class="folder-10 plix-10"></span>
+				            </a>
+				            <a href="javascript:void(0);" class="button-icon tip-s" title="Some action">
+				                <span class="pencil-10 plix-10"></span>
+				            </a>
+				        </div><!-- End .left -->
+				        <div class="right">
+				            <a href="javascript:void(0);" class="button-icon tip-s" title="Some action">
+				                <span class="refresh-10 plix-10"></span>
+				            </a>
+				        </div> <!-- End .right -->
+				    </div><!-- End .left -->
+				    <div class="right">
+				        <div class="left">
+				            Copyright © 2012 <a href="http://bit.ly/ldjfWQ">CreativeMilk</a>
+				        </div><!-- End .left -->
+				        <div class="right">
+				            <div class="theme-version">Elite Responsive Admin Theme - Version 1.4</div>
+				        </div><!-- End .right -->
+				    </div><!-- End .right -->
+				</footer><!-- End #content-footer -->
+			</div><!-- End #content-border -->
+		</div><!-- End #content -->
+	</div><!-- End #container -->
+
+	<!-- scroll to top link -->
+
+</body>
+</html>

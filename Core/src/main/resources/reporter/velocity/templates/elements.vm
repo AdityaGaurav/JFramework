@@ -1,0 +1,11 @@
+<section id="no_g_one" class="g_3_4_last">
+    <div class="ui_action_element_list">
+        <ul class="middle-nav-r">
+            <li><a original-title="Support Tickets" href="#"><img alt="" src="../img/icons/middlenav/stats.png"></a></li>
+            <li><a original-title="Settings" href="#"><img alt="" src="../img/icons/middlenav/gear2.png"></a></li>
+            <li><a original-title="Events" href="#"><img alt="" src="../img/icons/middlenav/gear_1.png"></a></li>
+            <li><a original-title="Sales" href="#"><img alt="" src="img/icons/gray/glyphicons_202_shopping_cart.png"></a></li>
+            <li><a original-title="Groups" href="#"><img alt="" src="img/icons/gray/glyphicons_043_group.png"></a></li>
+        </ul>
+    </div>
+</section>

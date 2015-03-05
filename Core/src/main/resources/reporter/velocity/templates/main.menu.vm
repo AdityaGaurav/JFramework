@@ -1,0 +1,52 @@
+<nav id="main-menu">
+    <ul>
+        <li class="page-active"><a href="index.html"><span class="home-16 plix-16"></span> Dashboard</a></li>
+        <li><a href="testng.xml.html"><span class="calendar-16 plix-16"></span>XML Suites<span class="color-indicator">2</span></a></li>
+        <li><a href="suites.html"><span class="image-16 plix-16"></span> Suites</a></li>
+        <li><a href="javascript:void(0);"><span class="postcard-16 plix-16"></span> Test-Contexts <span class="button-icon"><span class="plus-10 plix-10"></span></span></a>
+
+            <ul>
+                <li><a href="test-context0.html">Test-Context1</a></li>
+                <li><a href="test-context1.html">Test-Context2</a></li>
+                <li><a href="test-context2.html">Test-Context3</a></li>
+            </ul>
+
+        </li>
+
+        <li><a href="planning.html"><span class="pencil-16 plix-16"></span> Planning</a></li>
+        <li><a href="maps.html"><span class="map-16 plix-16"></span> Google Maps <span class="indicator tip-w" title="Some tip goes here">tooltip</span></a></li>
+        <li><a href="fileexplore.html"><span class="folder-16 plix-16"></span> File Explore</a></li>
+        <li><a href="javascript:void(0);"><span class="warning-16 plix-16"></span> Error pages<span class="button-icon"><span class="plus-10 plix-10"></span></span></a>
+
+            <ul>
+                <li><a href="400.html">400</a></li>
+                <li><a href="401.html">401</a></li>
+                <li><a href="403.html">403</a></li>
+                <li><a href="404.html">404</a></li>
+                <li><a href="500.html">500</a></li>
+                <li><a href="503.html">503</a></li>
+            </ul>
+
+        </li>
+        <li><a href="widgets.html"><span class="rows4-16 plix-16"></span> Widgets</a></li>
+        <li><a href="tables.html"><span class="cells-16 plix-16"></span> Tables</a></li>
+        <li><a href="charts.html"><span class="stats2-16 plix-16"></span> Charts </a></li>
+        <li><a href="javascript:void(0);"><span class="controls-16 plix-16"></span> Interface Elements <span class="button-icon"><span class="plus-10 plix-10"></span></span> </a>
+
+            <ul>
+                <li><a href="accordion.html">Accordion</a></li>
+                <li><a href="breadcrumbs.html">Breadcrumbs</a></li>
+                <li><a href="buttons.html">Buttons</a></li>
+                <li><a href="dialogs.html">Dialogs</a></li>
+                <li><a href="icons.html">Icons</a></li>
+                <li><a href="listsblocks.html">Lists &amp; Blocks</a></li>
+                <li><a href="menus.html">Menus</a></li>
+                <li><a href="misc.html">Misc</a></li>
+                <li><a href="tabs.html">Tabs</a></li>
+                <li><a href="toolbars.html">Toolbars</a></li>
+            </ul>
+
+        </li>
+        <li><a href="grid.html"><span class="layout3-16 plix-16"></span> Grid <span class="indicator">960</span></a></li>
+    </ul>
+</nav>

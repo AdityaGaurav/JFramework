@@ -1,0 +1,377 @@
+   <title>testNG XML suites</title>
+   <style type="text/css">
+       span.toggle{
+           float: right;
+           margin-top: 10px;
+       }
+       .pln {
+           color: #000;
+       }
+
+       @media screen {
+           .str {
+               color: #080;
+           }
+
+           .kwd {
+               color: #008;
+           }
+
+           .com {
+               color: #800;
+           }
+
+           .typ {
+               color: #606;
+           }
+
+           .lit {
+               color: #066;
+           }
+
+           .pun, .opn, .clo {
+               color: #660;
+           }
+
+           .xml-tag {
+               color: #008;
+           }
+
+           .atn {
+               color: #606;
+           }
+
+           .atv {
+               color: #080;
+           }
+
+           .dec, .var {
+               color: #606;
+           }
+
+           .fun {
+               color: red;
+           }
+       }
+
+       @media print, projection {
+           .str {
+               color: #060;
+           }
+
+           .kwd {
+               color: #006;
+               font-weight: bold;
+           }
+
+           .com {
+               color: #600;
+               font-style: italic;
+           }
+
+           .typ {
+               color: #404;
+               font-weight: bold;
+           }
+
+           .lit {
+               color: #044;
+           }
+
+           .pun, .opn, .clo {
+               color: #440;
+           }
+
+           .tag {
+               color: #006;
+               font-weight: bold
+           }
+
+           .atn {
+               color: #404;
+           }
+
+           .atv {
+               color: #060;
+           }
+       }
+
+       pre.prettyprint {
+           padding: 2px;
+           border: 1px solid #888;
+       }
+
+       ol.linenums {
+           margin-top: 0;
+           margin-bottom: 0;
+       }
+
+       li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
+           list-style-type: none;
+       }
+
+       li.L1, li.L3, li.L5, li.L7, li.L9 {
+           background: #eee;
+       }
+       #output pre.xml {
+           height: 100%;
+           width: 100%;
+       }
+       code, pre {
+           border-radius: 4px;
+           display: block;
+           font-size: 12px;
+           line-height: 18px;
+           margin: 0 0 18px;
+           font-family: Monaco,Andale Mono,Courier New,monospace;
+       }
+       pre.sql, pre.xml, pre.html, pre.json, code.json, .prettyprint {
+           background-color: #FEFBF3;
+           border: 1px solid rgba(0, 0, 0, 0.2);
+           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+           padding: 9px;
+           overflow-y: scroll;
+           overflow-x: scroll;
+       }
+       pre.xml, pre.html, pre.xml {
+           white-space: pre-wrap;
+           word-wrap: pre;
+       }
+   </style>
+</head>
+ <body class="layout_fluid layout_responsive">
+    <div id="container">
+
+	     <!-- MAIN HEADER -->
+		 #parse( "header.vm" )
+	     <!-- CONTENT -->
+
+	     <div id="content">
+	         <div id="content-border">
+
+	             <!-- CONTENT HEADER -->
+				 #parse( "content.header.vm" )
+
+	             <div id="content-inner">
+
+                     <!-- SIDEBAR -->
+		             #parse( "side.bar.vm" )
+
+                     <!-- CONTENT -->
+
+                     <div id="content-main">
+                         <div id="content-main-inner">
+                             <section class="g_1_4">
+                                 <div class="page-header">
+                                     <h2>Dashboard</h2>
+                                     <p>Reporter dashboard. Execution summary.</p>
+                                 </div>
+                             </section>
+	                         #parse( "no.g.one.vm" )
+                             <div class="spacer-20"><!-- New row --></div>
+                             <section class="g_1">
+                                 <div class="separator">
+                                     <span></span>
+                                 </div>
+                             </section>
+
+	                         #foreach ($name in $xml_suite_names)
+								#set( $counter = $velocityCount - 1 )
+                            <section class="g_1" id="xml_suite_$velocityCount">
+                                 <div class="e-block">
+                                     <header>
+                                         <h2>$name</h2>
+
+	                                         #if( $velocityCount == 1 )
+                                             <span class="button-icon toggle">
+                                                 <span class="min-10 plix-10"></span>
+		                                     #else
+                                             <span class="button-icon toggle toggle_closed">
+                                                 <span class="plus-10 plix-10"></span>
+	                                         #end
+                                         </span>
+                                     </header>
+		                             #if( $velocityCount == 1 )
+                                        <div>
+	                                 #else
+                                        <div style="display: none;">
+		                             #end
+                                        <div class="dialog-big-inline warning">
+                                            <h3>Full path file name</h3>
+                                            <span>x</span>
+                                            <div>
+	                                            <a href="$xml_suite_files.get( $counter )">$xml_suite_files.get( $counter )</a>
+                                            </div>
+	                                    </div>
+                                        <div class="inner-spacer">
+                                             <p>
+                                                <pre>$xml_suite_contents.get( $counter )</pre>
+                                             </p>
+                                        </div>
+                                     </div>
+                                 </div>
+                             </section>
+                             <div class="spacer-20"></div>
+	                         #end
+                             <div class="clear"><!-- New row --></div>
+
+                             <!-- End grid -->
+
+                         </div><!-- End #content-main-inner -->
+                     </div><!-- End #content-main -->
+                 </div><!-- End #content-inner -->
+
+<!-- http://www.gnostice.com/nl_article.asp?id=208&t=making_an_interactive_treeview_control_from_an_html_nested_list -->
+##   <body class="layout_fluid layout_responsive">
+##   <div id="container">
+##	   #parse( "header.vm" )
+##	   #parse( "highlights.vm" )
+##       <!-- CONTENT -->
+##
+##       <div id="content">
+##           <div id="content-border">
+##
+##               <!-- CONTENT HEADER -->
+##               <header id="content-header">
+##                   <div class="left">
+##                       <a href="javascript:void(0);" id="toggle-mainmenu" class="button-icon tip-s" title="Toggle Main Menu">
+##                           <span class="arrow-up-10 plix-10"></span>
+##                       </a>
+##                       <!-- main search form -->
+##                       <form method="post" id="mainsearch">
+##                           <input type="text" placeholder="Live search..." name="" autocomplete="off"/>
+##                           <input type="submit" value="" />
+##                       </form>
+##                   </div>
+##
+##                   <div class="right">
+##                       <!-- sidebar switch -->
+##                       <a href="javascript:void(0);" id="toggle-sidebar" class="button-icon tip-s" title="Switch Main Menu">
+##                           <span class="arrow-left-10 plix-10"></span>
+##                       </a>
+##                       <!-- breadcrumbs -->
+##                       <nav id="main-breadcrumbs">
+##                           <ul>
+##                               <li class="bc-tab-first">
+##                                   <a href="index.html">Dashboard</a>
+##                               </li>
+##                               <li class="bc-tab-last">${something}</li>
+##                           </ul>
+##                       </nav>
+##                       <!-- demo dialog button -->
+##                       <a href="javascript:void(0);" id="open-main-dialog" class="button-text-icon tip-w" title="Some tooltip pointing right">
+##                           <span class="fullscreen-10 plix-10"></span> Dialog
+##                       </a>
+##
+##                       <!-- the main page dialog -->
+##                       <div id="main-page-dialog" title="Welcome to Elite" style="display:none">
+##                           <img src="images/jquery-ui-logo.png" alt="" class="dummy-img-dialog"/>
+##                           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+##                       </div>
+##
+##                       <span class="preloader"></span>
+##
+##                       <!-- widgets controls -->
+##                       <div id="widgets-controls">
+##                           <span class="preloader"></span>
+##                           <div class="icon-group">
+##                               <a href="javascript:void(0);" class="changeto-grid selected tip-s" title="Show grid"><span class="grid-10 plix-10"></span></a>
+##                               <span></span>
+##                               <a href="javascript:void(0);" class="changeto-rows tip-s" title="Show rows"><span class="rows-10 plix-10"></span></a>
+##                           </div>
+##
+##                       </div>
+##                   </div><!-- End .right -->
+##               </header>
+##
+##               <div id="content-inner">
+##                   <!-- SIDEBAR -->
+##		           #parse("tabs.vm")
+##
+##                   <!-- sidebar meta stats -->
+##                   <div id="sidebar-meta">
+##                       <div id="sidebar-meta-inner">
+##                           <div>
+##                               <p class="left">Space</p>
+##                               <p class="right">4,551 MB / 10 GB</p>
+##                           </div>
+##                           <div class="pbar">
+##                               <span style="width:50%"></span>
+##                           </div>
+##                           <div>
+##                               <p class="left">Traffic</p>
+##                               <p class="right">8,001 MB / 10 GB</p>
+##                           </div>
+##                           <div class="pbar">
+##                               <span style="width:81%"></span>
+##                           </div>
+##                       </div>
+##                   </div>
+##
+##                   <!-- CONTENT -->
+##                   <div id="content-main">
+##                       <div id="content-main-inner">
+##                           <section class="g_1_4">
+##                               <div class="page-header">
+##                                   <h2>XML Suites</h2>
+##                               </div>
+##                           </section>
+##
+##				           #parse( "elements.vm" )
+##
+##                           <div class="spacer-20"><!-- New row --></div>
+##                           <section class="g_1">
+##                               <div class="separator">
+##                                   <span></span>
+##                               </div>
+##                           </section>
+##
+##                           <!-- Start grid -->
+##
+##	                       #foreach ($name in $xml_suite_names)
+##
+##		                       #set( $counter = $velocityCount - 1 )
+##                               <section class="g_1">
+##
+##                                   <div class="ui-widget collapse">
+##                                       <div id="xmlsuite_$velocityCount" class="ui-widget-header">
+##                                           <span class="ui-icon ui-expander" style="float: left; margin: 5px;">+</span>
+##                                           <span>$name ( $xml_suite_files.get( $counter ) )</span>
+##                                           <div class="ui-helper-clearfix"></div>
+##                                       </div>
+##                                       <div id="expander-demo" class="ui-widget-content">
+##                                           <p>
+##	                                           <pre>$xml_suite_contents.get( $counter )</pre>
+##	                                       </p>
+##                                       </div>
+##                                   </div>
+##                               </section>
+##                               <div class="spacer-20"></div>
+##	                       #end
+##
+##                       </div><!-- #content-main-inner -->
+##                   </div><!-- #content-main -->
+##               </div><!-- #content-inner -->
+##
+##               <!-- CONTENT FOOTER -->
+##	           #parse( "footer.vm" )
+##
+##
+##
+##
+##
+##               <section class="g_1">
+##                   <div id="widget1" class="e-block">
+##                       <header>
+##                           <h2>Toggle</h2>
+##                                        <span class="button-icon toggle">
+##                                            <span class="min-10 plix-10"></span>
+##                                        </span>
+##                       </header>
+##                       <div>
+##                           <div class="inner-spacer">
+##                               Your content goes here...
+##                           </div>
+##                       </div>
+##                   </div>
+##               </section>

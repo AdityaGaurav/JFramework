@@ -1,0 +1,96 @@
+<div class="highligts_content">
+
+    <div class="container-fluid">
+        <div class="iMenu">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            <a class="btn tip-top" title="Dashboard" href="dashboard.html"><i class="icon-home"></i></a>
+                            <a class="btn tip-top" title="Forms" href="forms.html"><i class="icon-cog"></i></a>
+                            <a class="btn tip-top" title="UI Elements" href="ui_elements.html"><i class="icon-flag"></i></a>
+                            <a class="btn tip-top" title="Typography" href="typography.html"><i class="icon-font"></i></a>
+                            <a class="btn tip-top" title="Tables" href="tables.html"><i class="icon-list-alt"></i></a>
+                            <a class="btn tip-top" title="Gallery" href="gallery.html"><i class="icon-picture"></i></a>
+                            <a class="btn tip-top" title="Grid" href="grid.html"><i class="icon-th"></i></a>
+                            <a class="btn tip-top" title="Charts" href="charts.html"><i class="icon-signal"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="statistics">
+                        <ul class="quickstats">
+                            <li>
+                                <a href="#">
+                                    <img alt="" src="img/icons/gray/glyphicons_072_bookmark.png">
+                                    <span>Total Suites</span>
+                                    <strong class="strong-tip">$dashboard.getNumberOfSuites()</strong>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img alt="" src="img/icons/gray/glyphicons_232_cloud.png">
+                                    <span>Invoked Methods</span>
+                                    <strong class="strong-tip">$dashboard.getAllInvokedMethods()</strong>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img alt="" src="img/icons/gray/glyphicons_355_announcement.png">
+                                    <span>Support tickets</span>
+                                </a>
+                            </li>
+                            <li class="blue gradient">
+                                <a href="#">
+                                    <img alt="" src="img/icons/black/glyphicons_001_leaf.png">
+                                    <span>Upcoming events</span>
+                                </a>
+                            </li>
+
+	                        #if( $dashboard.isFailed() )
+                                <li class="red gradient">
+                                    <a href="#">
+                                        <img alt="" src="img/icons/black/glyphicons_041_charts.png">
+                                        <span>Status</span>
+                                    </a>
+                                </li>
+		                    #else
+                                <li class="green">
+                                    <a href="#">
+                                        <img alt="" src="img/icons/black/glyphicons_041_charts.png">
+                                        <span>Status</span>
+                                    </a>
+                                </li>
+	                        #end
+
+                            <li class="aqua gradient">
+                                <a href="#">
+                                    <img alt="" src="img/icons/black/glyphicons_013_beach_umbrella.png">
+                                    <span>New product</span>
+                                </a>
+                            </li>
+                            <li class="yellow gradient">
+                                <a href="#">
+                                    <img alt="" src="img/icons/black/glyphicons_023_cogwheels.png">
+                                    <span>Configuration</span>
+                                </a>
+                            </li>
+                            <li class="green gradient">
+                                <a href="#">
+                                    <img alt="" src="img/icons/black/glyphicons_000_glass.png">
+                                    <span>Check orders</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div><!-- statistics end -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div><!-- hightlights_content end -->

@@ -1,0 +1,35 @@
+<header id="header">
+
+    <div id="header-border">
+        <div id="header-inner">
+
+            <div class="left">
+                <a href="index.html" id="logo">COMPANY NAME</a>
+            </div><!-- End .left -->
+
+            <div class="right">
+                <!-- eMenu -->
+                <nav>
+                    <ul class="e-splitmenu" id="header-menu">
+                        <li class="e-menu-profile">
+                            <a href="javascript:void(0);" style="width:20px;"><span class="arrow-down-10 plix-10 white"></span></a>
+                            <img src="../img/icons/user.jpg" alt=""/>
+                            <div>
+                                <ul>
+                                    <li><a href="index.html"><span class="mail-10 plix-10"></span> $user_name</a></li>
+                                    <li><a href="index.html"><span class="upload-10 plix-10"></span> $user_timezone</a></li>
+                                </ul>
+                            </div>
+
+                        </li>
+                        <li><span>CREATED </span><a href="javascript:void(0);"><span><strong>$timestamp</strong></span></a></li>
+                        <li><span>OS </span><a href="javascript:void(0);"><span><strong>$os_version</strong></span></a></li>
+                        <li><span>JAVA </span><a href="javascript:void(0);"><span><strong>$java_version</strong></span></a></li>
+                    </ul>
+                </nav>
+            </div><!-- End .right -->
+
+        </div><!-- End #header-border -->
+    </div><!-- End #header-inner -->
+
+</header><!-- End #header -->

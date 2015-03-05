@@ -1,0 +1,1401 @@
+
+	<title>Reporter Dashboard</title>
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="../js/gauge-min.js"></script>
+
+	<style type="text/css">
+        #scenario_summary_table{
+            border-spacing: 2px;
+            box-sizing: border-box;
+            display: table;
+            text-indent: 0;
+        }
+        #scenario_summary_table tbody tr {
+            border-top: 1px solid #dfdfdf;
+        }
+        #scenario_summary_table tfoot tr {
+            border-top: 5px double #dfdfdf;
+            background-color: #ffffcc;
+        }
+        #scenario_summary_table tbody tr:nth-child(2n) {
+            background: none repeat scroll 0 0 #f2f2f2;
+        }
+        #scenario_summary_table tbody td, #scenario_summary_table tfoot td{
+            padding: 7px 11px;
+            vertical-align: middle;
+            text-align: center;
+            box-shadow: 0 1px 0 #fafafa inset;
+            border: 1px solid #dfdfdf;
+            line-height: 20px;
+            min-height: 20px;
+        }
+        #scenario_summary_table tr:hover td {
+            background-color: #ffff99;
+        }
+        #scenario_summary_table .sum-info {
+            border: 1px solid #999999;
+            font-family: "Courier New",serif;
+            height: auto;
+            line-height: 22px;
+            padding: 4px 7px;
+        }
+        #scenario_summary_table td.tag-red {
+            color:              #7f0000;
+            text-shadow: -1px 0 #ff0000, 0 1px #ff0000, 1px 0 #ff0000, 0 -1px #ff0000;
+            font-size: 15px;
+        }
+        #scenario_summary_table td.tag-orange {
+            color:              #FFB050;
+            text-shadow: -1px 0 #FF5600, 0 1px #FF5600, 1px 0 #FF5600, 0 -1px #FF5600;
+            font-size: 15px;
+        }
+        #scenario_summary_table td.tag-yellow {
+            color:              #eeeeee;
+            text-shadow: -1px 0 #999999, 0 1px #999999, 1px 0 #999999, 0 -1px #999999;
+            font-size: 15px;
+        }
+        #scenario_summary_table td.tag-green {
+            color:              #007600;
+            text-shadow: -1px 0 #50D050, 0 1px #50D050, 1px 0 #50D050, 0 -1px #50D050;
+            font-size: 15px;
+        }
+        #scenario_summary_table td.tag-blue {
+            color:              #23BEFC;
+            text-shadow: -1px 0 #1791be, 0 1px #1791be, 1px 0 #1791be, 0 -1px #1791be;
+            font-size: 15px;
+        }
+        .success_rate {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .failed {
+            color: #EF1919;
+        }
+        .passed{
+            color: #368c07;
+        }
+        .tDark thead th {
+            border-left: 1px solid #808080;
+        }
+        .tDark thead th {
+            background: url("../img/pattern/sidebar.jpg") repeat scroll 0 0 rgba(0, 0, 0, 0);
+            color: #f5f5f5;
+            font-weight: bold;
+            padding: 7px 12px;
+            text-align: center;
+        }
+        #gauge{
+            text-align: center;
+        }
+        .chart-footer {
+            border-top: 1px solid #cdcdcd;
+            height: 50px;
+            margin-bottom: 2px;
+            margin-top: 10px;
+        }
+        .chart-footer .chart-footer-element {
+            border-right: 1px solid #cdcdcd;
+            float: left;
+            height: 50px;
+        }
+        .chart-footer .chart-heading {
+            font-size: 15px;
+            margin-top: 4px;
+            text-align: center;
+        }
+        .chart-footer .chart-desc {
+            margin-top: 5px;
+            text-align: center;
+        }
+        .chart-footer .no-border-right {
+            border-right: medium none;
+        }
+        .icos_pie_chart {
+            background-image: url("../img/icons/pie_chart.png");
+            background-size: 20px auto;
+        }
+        .icos_gauge {
+            background-image: url("../img/icons/gauge.png");
+            background-size: 30px auto;
+        }
+        #pie_chart > header h2,
+        #success-rate-gauge > header h2 {
+            height: 100%;
+            margin: 0px;
+            width: auto;
+        }
+        #pie_chart h2, #success-rate-gauge h2 {
+            display: block;
+            float: left;
+            font-size: 13px;
+            font-weight: bolder;
+            line-height: 40px;
+            padding-left: 40px;
+        }
+        #success-rate-gauge h2 {
+            line-height: 55px;
+            padding-left: 45px;
+        }
+	</style>
+
+    <script id="3d.pie.chart.js" type="text/javascript">
+
+        google.load( "visualization", "1", { packages:[ "corechart" ] } );
+        google.setOnLoadCallback( drawChart );
+        function drawChart()
+        {
+            var data = google.visualization.arrayToDataTable
+            (
+                [
+                    [ 'Summary', 'Suites Summary' ],
+                    [ 'Passed', $scenario.getSuccessTestCasesInstancesCount() ],
+                    [ 'Failed', $scenario.getFailedTestCaseInstanceCount() ],
+                    [ 'Failed with Success Percentage', $scenario.getFailedWithSuccessPercentageTestCaseInstanceCount() ],
+                    [ 'Skipped', $scenario.getSkippedTestCaseInstanceCount() ],
+                    [ 'Ignored', $scenario.getIgnoredTestCaseCount() ]
+                ]
+            );
+
+	        var options =
+		        {
+		            #if( $const.PIE_USE_BACKGROUND_COLOR )
+	                    backgroundColor: "$const.PIE_BACKGROUND_COLOR",
+			        #else
+	                    backgroundColor : {
+	                        stroke : " $const.PIE_BACKGROUND_COLOR_STROKE",
+	                        strokeWidth : $const.PIE_BACKGROUND_COLOR_STROKE_WIDTH,
+	                        fill : "$const.PIE_BACKGROUND_COLOR_FILL"
+	                    },
+		            #end
+		            colors : [ '$const.PIE_COLOR_PASSED', '$const.PIE_COLOR_FAILED', '$const.PIE_COLOR_SUCCESS_PERCENTAGE', '$const.PIE_COLOR_SKIPPED', '$const.PIE_COLOR_IGNORED' ],
+		            enableInteractivity : $const.PIE_ENABLE_INTERACTIVITY,
+		            fontSize : $const.PIE_FONT_SIZE,
+		            fontName : "$const.PIE_FONT_NAME",
+		            height: $const.PIE_HEIGHT,
+		            legend : {
+			            alignment : "$const.PIE_LEGEND_ALIGNMENT",
+			            position : '$const.PIE_LEGEND_POSITION',
+			            textStyle : {
+				            color : '$const.PIE_LEGEND_TEXT_STYLE_COLOR',
+				            fontSize : $const.PIE_LEGEND_TEXT_STYLE_FONT_SIZE
+			            }
+		            },
+		            pieSliceText : "$const.PIE_SLICE_TEXT",
+		            pieSliceTextStyle : {
+			            color : '$const.PIE_SLICE_TEXT_STYLE_COLOR',
+			            fontSize : $const.PIE_SLICE_TEXT_FONT_SIZE },
+		            pieStartAngle : $const.PIE_START_ANGLE,
+		            tooltip : {
+			            text : "$const.PIE_TOOLTIP_TEXT",
+			            textStyle : {
+				            color : '$const.PIE_TOOLTIP_TEXT_STYLE_COLOR',
+				            fontSize : $const.PIE_TOOLTIP_TEXT_STYLE_FONT_SIZE,
+				            bold : $const.PIE_TOOLTIP_TEXT_STYLE_FONT_BOLD
+			            },
+			            showColorCode : $const.PIE_TOOLTIP_SHOW_COLOR_CODE
+		            },
+		            is3D : $const.PIE_OPTIONS_IS3D
+			        #if ( $const.PIE_OPTIONS_SHOW_TITLE )
+				        title: $const.PIE_OPTIONS_TITLE
+				    #end
+	            };
+
+            var chart = new google.visualization.PieChart( document.getElementById( 'pie.chart.3d' ) );
+            chart.draw( data, options );
+        }
+
+    </script>
+</head>
+<body class="layout_fluid layout_responsive">
+
+	<div id="container">
+
+    <!-- MAIN HEADER -->
+	#parse( "header.vm" )
+        <!-- CONTENT -->
+
+        <div id="content">
+            <div id="content-border">
+
+                <!-- CONTENT HEADER -->
+	            #parse( "content.header.vm" )
+
+                <div id="content-inner">
+
+                    <!-- SIDEBAR -->
+	                #parse( "side.bar.vm" )
+
+                    <!-- CONTENT -->
+
+                    <div id="content-main">
+                        <div id="content-main-inner">
+
+                            <section class="g_1_4">
+                                <div class="page-header">
+                                    <h2>Dashboard</h2>
+                                    <p>Reporter dashboard. Execution summary.</p>
+                                </div>
+                            </section>
+	                        #parse( "no.g.one.vm" )
+                            <div class="spacer-20"><!-- New row --></div>
+                            <section class="g_1">
+                                <div class="separator">
+                                    <span></span>
+                                </div>
+                            </section>
+
+                            <section class="g_1_2">
+
+                                <!-- New widget -->
+
+                                <div class="e-block" id="pie_chart">
+                                    <header>
+                                        <h2 class="icos_pie_chart">Test-Case Statistics</h2>
+                                    </header>
+                                    <div>
+	                                    <div class="inner-spacer">
+                                            <div id="pie.chart.3d"></div>
+                                            <div class="chart-footer">
+                                            <div style="width:17%; color:$const.PIE_COLOR_PASSED;" class="chart-footer-element">
+                                                <div class="chart-heading">$scenario.getSuccessTestCasesInstancesCount()</div>
+                                                <div class="chart-desc">PASSED</div>
+                                            </div>
+                                            <div style="width:16%; color:$const.PIE_COLOR_FAILED;" class="chart-footer-element">
+                                                <div class="chart-heading">$scenario.getFailedTestCaseInstanceCount()</div>
+                                                <div class="chart-desc">FAILED</div>
+                                            </div>
+                                            <div style="width:30%; color:$const.PIE_COLOR_SUCCESS_PERCENTAGE;" class="chart-footer-element">
+                                                <div class="chart-heading">$scenario.getFailedWithSuccessPercentageTestCaseInstanceCount()</div>
+                                                <div class="chart-desc">FAILED W/SUCCESS %</div>
+                                            </div>
+                                            <div style="width:17%; color:$const.PIE_COLOR_SKIPPED;" class="chart-footer-element">
+                                                <div class="chart-heading">$scenario.getSkippedTestCaseInstanceCount()</div>
+                                                <div class="chart-desc">SKIPPED</div>
+                                            </div>
+                                            <div style="width:18%; color:$const.PIE_COLOR_IGNORED;" class="chart-footer-element no-border-right">
+                                                <div class="chart-heading">$scenario.getIgnoredTestCaseCount()</div>
+                                                <div class="chart-desc">IGNORED</div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div><!-- End .powerwidget -->
+                            </section>
+
+	                        <section class="g_1_2_last">
+                                <div class="info-bar">
+                                    <div class="info-block">
+                                        <a href="javascript:void(0);"> <span>$scenario.getSuitesCount()</span> <span>Suites</span> </a>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="javascript:void(0);"> <span>$scenario.getTestContextCount()</span> <span>Test-Contexts</span> </a>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="javascript:void(0);"> <span>$scenario.getClasses().size()</span> <span>Classes</span> </a>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="javascript:void(0);"> <span>0</span> <span>Packages</span> </a>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="javascript:void(0);"> <span>0</span> <span>Groups</span> </a>
+                                    </div>
+                                </div>
+                                <div class="spacer-10"><!-- spacer 10px --></div>
+                                <div class="e-block" id="screenshots">
+		                            <header>
+			                            <span class="imagelist-16 plix-16"></span>
+                                        <h2>Screenshots</h2>
+                                    </header>
+                                    <div>
+                                        <div class="inner-spacer">
+                                            <div class="media-minimal">
+                                                <a href="images/uploads/img1.jpg" class="group3">
+                                                    <img src="images/uploads/img1-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img4.jpg" class="group3">
+                                                    <img src="images/uploads/img4-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img5.jpg" class="group3">
+                                                    <img src="images/uploads/img5-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img6.jpg" class="group3">
+                                                    <img src="images/uploads/img6-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img7.jpg" class="group3">
+                                                    <img src="images/uploads/img7-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img8.jpg" class="group3">
+                                                    <img src="images/uploads/img8-thumb.jpg" alt=""/>
+                                                </a>
+                                                <a href="images/uploads/img9.jpg" class="group3">
+                                                    <img src="images/uploads/img9-thumb.jpg" alt=""/>
+                                                </a>
+
+
+                                                <div class="g_1">
+                                                    More media <a href="media.html"><u>here</u></a>,
+                                                </div>
+
+                                                <div class="spacer-10"><!-- spacer 10px --></div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+		                    </section>
+                            <div class="spacer-20"><!-- spacer 10px --></div>
+		                    <section class="g_1_3">
+		                        <div class="e-block" id="success-rate-gauge">
+		                            <header>
+                                        <h2 class="icos_gauge">Succes Rate</h2>
+		                                <span class="indicator">$scenario.getFormattedSuccessRate()%</span>
+		                            </header>
+		                            <div>
+		                                    <div class="inner-spacer" align="center">
+		                                        <canvas style="display: inline;" id="success.rate.gauge"></canvas>
+		                                        <script type="text/javascript" id="3d.pie.javascript">
+		                                            var gauge = new Gauge
+		                                            (
+		                                                    {
+		                                                        renderTo: 'success.rate.gauge',
+		                                                        width: $const.GAUGE_WIDTH,
+		                                                        height: $const.GAUGE_HEIGHT,
+		                                                        glow: $const.GAUGE_GLOW,
+		                                                        units: '$const.GAUGE_UNITS',
+		                                                        plate: "$const.GAUGE_PLATE",
+		                                                        strokeTicks: $const.GAUGE_STROKE_TICKS,
+		                                                        colors:
+		                                                        {
+		                                                            plate      : '$const.GAUGE_COLORS_PLATE',
+		                                                            majorTicks : '$const.GAUGE_COLORS_MAJOR_TICKS',
+		                                                            minorTicks : '$const.GAUGE_COLORS_MINOR_TICKS',
+		                                                            title      : '$const.GAUGE_COLORS_TITLE',
+		                                                            units      : '$const.GAUGE_COLORS_UNITS',
+		                                                            numbers    : '$const.GAUGE_COLORS_NUMBERS',
+		                                                            needle     : { start : '$const.GAUGE_COLORS_NEEDLE_START', end : '$const.GAUGE_COLORS_NEEDLE_END' }
+		                                                        },
+		                                                        majorTicks: [$const.GAUGE_MAJOR_TICKS ],
+		                                                        valueFormat: { int : $const.GAUGE_VALUES_FORMAT_INT, dec : $const.GAUGE_VALUES_FORMAT_DEC },
+		                                                        minorTicks: $const.GAUGE_MINOR_TICKS,
+		                                                        highlights :
+		                                                                [
+		                                                                    { from: $const.GAUGE_HIGHLIGHTS_FAIL_FROM,
+		                                                                        to: $const.GAUGE_HIGHLIGHTS_FAIL_TO,
+		                                                                        color: '$const.GAUGE_HIGHLIGHTS_FAIL_COLOR' },
+		                                                                    { from: $const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_FROM,
+		                                                                        to: $const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_TO,
+		                                                                        color: '$const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_COLOR' },
+		                                                                    { from: $const.GAUGE_HIGHLIGHTS_SUCCESS_FROM,
+		                                                                        to: $const.GAUGE_HIGHLIGHTS_SUCCESS_TO,
+		                                                                        color: '$const.GAUGE_HIGHLIGHTS_SUCCESS_COLOR' }
+		                                                                ],
+		                                                        animation :
+		                                                        {
+		                                                            delay : $const.GAUGE_ANIMATION_DELAY,
+		                                                            duration: $const.GAUGE_ANIMATION_DURATION,
+		                                                            fn : '$const.GAUGE_ANIMATION_FUNCTION'
+		                                                        }
+		                                                    }
+		                                            );
+
+		                                            gauge.onready = function()
+		                                            {
+		                                                setInterval( function()
+		                                                {
+		                                                    gauge.setValue( $scenario.getFormattedSuccessRate() );
+		                                                }, 1000 );
+		                                            };
+
+		                                            gauge.draw();
+
+		                                        </script>
+		                                        <div class="spacer-10"><!-- spacer 10px --></div>
+		                                    </div>
+		                                </div>
+		                        </div>
+	                        </section>
+	                        <section class="g_2_3_last">
+		                        <section class="g_1_2">
+                                    <div class="e-block" id="test_cases_stats">
+                                    <header>
+                                        <span class="settings-16 plix-16"></span>
+                                        <h2>Methods Stats</h2>
+                                    </header>
+                                    <div>
+                                        <div class="inner-spacer">
+                                            <ul class="stats-list">
+                                                <li>
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Total Configurations</h3>
+                                                        <span>$scenario.getConfigurationsCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li class="stats-up">
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+                                                            <span class="spark_line small-dark random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Success Configurations</h3>
+                                                        <span>$scenario.getSuccessConfigurationsCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li class="stats-eq">
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Skipped Configurations</h3>
+                                                        <span>$scenario.getSkippedConfigurationsCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li class="stats-down">
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small-dark random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Failed Configurations</h3>
+                                                        <span>$scenario.getFailedConfigurationsCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Total Test-Cases</h3>
+                                                        <span>$scenario.getTotalTestCasesCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Total Methods Executed</h3>
+                                                        <span>$scenario.getTotalInvokedMethodsCount()</span>
+                                                    </a>
+                                                </li>
+                                                <li class="stats-inf">
+                                                    <a href="javascript:void(0);">
+                                                        <h3>
+	                                                        <span class="spark_line small-dark random_number_5 spark_inline">
+	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
+                                                            </span>Excluded Test-Cases</h3>
+                                                        <span>$scenario.getExcludedTestCasesCount()</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+	                                    </div>
+	                                </div>
+	                            </div>
+                                </section>
+                                <section class="g_1_2_last">
+                                    <div class="e-block" id="test_cases_stats">
+                                        <header>
+                                            <span class="graphics-16 plix-16"></span>
+                                            <h2>Steps and Checkpoints Stats</h2>
+                                        </header>
+                                        <div>
+                                            <div class="inner-spacer">
+                                                <ul class="stats-list">
+                                                    <li>
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Total Configurations</h3>
+                                                            <span>$scenario.getConfigurationsCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="stats-up">
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Success Configurations</h3>
+                                                            <span>$scenario.getSuccessConfigurationsCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="stats-eq">
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Skipped Configurations</h3>
+                                                            <span>$scenario.getSkippedConfigurationsCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="stats-down">
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Failed Configurations</h3>
+                                                            <span>$scenario.getFailedConfigurationsCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Total Test-Cases</h3>
+                                                            <span>$scenario.getTotalTestCasesCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Total Methods Executed</h3>
+                                                            <span>$scenario.getTotalInvokedMethodsCount()</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="stats-inf">
+                                                        <a href="javascript:void(0);">
+                                                            <h3>Excluded Test-Cases</h3>
+                                                            <span>$scenario.getExcludedTestCasesCount</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+	                        </section>
+
+
+                            <section class="g_1">
+                                <div class="separator">
+                                    <span></span>
+                                </div>
+                            </section>
+
+                            <section class="g_1">
+	                            <div class="e-block" id="statistics_table_widget">
+	                                <header>
+		                                <span class="stats2-16 plix-16"></span>
+	                                    <h2>Statistic Table</h2>
+		                                #if( $Scenario.isFailed() )
+                                            <span class="indicator" style="color: red">FAILED</span>
+			                            #else
+                                            <span class="indicator" style="color: darkgreen">SUCCESS</span>
+		                                #end
+	                                </header>
+	                                <div>
+	                                    <div class="inner-spacer">
+                                            <table id="scenario_summary_table" class="tDark">
+                                                <colgroup>
+                                                    <col class="bolt-col-0">
+                                                    <col class="bolt-col-1">
+                                                    <col class="bolt-col-0">
+                                                    <col class="bolt-col-1">
+                                                </colgroup>
+                                                <thead>
+	                                                <tr>
+	                                                    <th width="16%" rowspan="2" style="vertical-align: middle;">Test Name</th>
+	                                                    <th width="8%" rowspan="2" style="vertical-align: middle;">Success Rate</th>
+	                                                    <th width="40%" colspan="6">Test Summary</th>
+	                                                    <th width="34%" colspan="2">Timing</th>
+	                                                </tr>
+	                                                <tr>
+	                                                    <th width="8.5%" colspan="1" style="border-left: 1px solid #808080;border-top: 1px solid #808080;"># Tests</th>
+	                                                    <th width="22.5%" colspan="5" style="border-top: 1px solid #808080;">Status</th>
+	                                                    <th width="18%" colspan="1" style="border-top: 1px solid #808080;">Timings</th>
+	                                                    <th width="16%" colspan="1" style="border-top: 1px solid #808080;">Duration</th>
+	                                                </tr>
+                                                </thead>
+	                                            #set( $success_rate = $const.SUCCESS_RATE )
+	                                            <tbody>
+                                                #foreach ( $suite in $suites )
+	                                                #set ( $suiteId = $velocityCount )
+                                                    <tr><td colspan="10">Suite Name: <b>$suite.getName()</b></td></tr>
+	                                                #foreach ( $testContext in $suite.getTestContextAsList() )
+		                                                #if( $testContext.getSuccessRate() < $success_rate )
+			                                                #set( $suite_failed = true )
+			                                            #else
+				                                            #set( $suite_failed = false )
+			                                            #end
+                                                    <tr>
+                                                        <td>$testContext.getName()</td>
+                                                        <td>
+                                                            #if( $suite_failed )
+                                                                <span class="success_rate failed">$testContext.getFormattedSuccessRate()%</span>
+                                                            #else
+                                                                <span class="success_rate passed">$testContext.getFormattedSuccessRate()%</span>
+                                                            #end
+                                                        </td>
+                                                        <td width="8%" class="no-border-right"><span style="font-weight: bold">$testContext.getTestCaseInstanceCount()</span></td>
+                                                        <td width="5%" class="tag-green"><a href="#">$testContext.getSuccessTestCasesInstancesCount()</a></td>
+                                                        <td width="5%" class="tag-red"><a href="#">$testContext.getFailedTestCaseInstanceCount()</a></td>
+                                                        <td width="5%" class="tag-orange"><a href="#">$testContext.getFailedWithSuccessPercentageTestCaseInstanceCount()</a></td>
+                                                        <td width="5%" class="tag-yellow"><a href="#">$testContext.getSkippedTestCaseInstanceCount()</a></td>
+                                                        <td width="5%" class="tag-blue"><a href="#">$testContext.getIgnoredTestCaseCount()</a></td>
+                                                        <td>
+                                                            <span>$testContext.getFormattedStartDate()</span><br>
+                                                            <span>$testContext.getFormattedEndDate()</span>
+                                                        </td>
+                                                        <td>$testContext.getFormattedDuration()</td>
+                                                    </tr>
+		                                            #end
+                                                    #set( $scenarioTotalTests = $scenarioTotalTests + $suiteTotalTests )
+                                                    #set( $scenarioTotalPassed = $scenarioTotalPassed + $suiteTotalPassed )
+                                                    #set( $scenarioTotalSkipped = $scenarioTotalSkipped + $suiteTotalSkipped )
+                                                    #set( $scenarioTotalFailed = $scenarioTotalFailed + $suiteTotalFailed )
+                                                    #set( $scenarioTotalFailedWithSucessPercentage = $scenarioTotalFailedWithSucessPercentage + $suiteTotalFailedWithSucessPercentage )
+	                                                <tr>
+	                                                    <td>
+	                                                        <div class="sum-info">
+	                                                            <span>${suite.name} Summary</span>
+	                                                        </div>
+	                                                    </td>
+	                                                    <td>
+	                                                        <div class="sum-info">
+	                                                            <b> $suite.getFormattedSuccessRate()% </b>
+	                                                        </div>
+	                                                    </td>
+	                                                    <td>
+	                                                        <div class="sum-info">
+	                                                            <span>Σ</span><b> $suite.getTestCaseInstanceCount()</b>
+	                                                        </div>
+	                                                    </td>
+	                                                    <td colspan="5">
+	                                                        <div style="height: 25px; padding:10px;" class="sum-info">
+	                                                            <a style="float:none;padding:8px;" class="tag green">$suite.getSuccessTestCasesInstancesCount()</a>
+	                                                            <a style="float:none;padding:8px;" class="tag red">$suite.getFailedTestCaseInstanceCount()</a>
+	                                                            <a style="float:none;padding:8px;" class="tag orange">$suite.getFailedWithSuccessPercentageTestCaseInstanceCount()</a>
+	                                                            <a style="float:none;padding:8px;" class="tag yellow">$suite.getSkippedTestCasesCount()</a>
+	                                                            <a style="float:none;padding:8px;" class="tag blue">$suite.getIgnoredTestCaseCount()</a>
+	                                                        </div>
+	                                                    </td>
+	                                                    <td>
+	                                                        <div style="height: 44px;" class="sum-info">
+	                                                            <span class="dates">$suite.getFormattedStartDate()</span>
+	                                                            <span class="dates">$suite.getFormattedEndDate()</span>
+	                                                        </div>
+	                                                    </td>
+	                                                    <td><div class="sum-info">$suite.getFormattedDuration()</div></td>
+                                                    </tr>
+	                                            #end
+                                                </tbody>
+                                                <tfoot>
+		                                            <tr>
+		                                                <td>
+		                                                    <div class="sum-info">
+		                                                        <span>Scenario Summary</span>
+		                                                    </div>
+		                                                </td>
+                                                        <td>
+                                                            <div class="sum-info">
+                                                                <b> $scenario.getFormattedSuccessRate()% </b>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="sum-info">
+                                                                <span>Σ</span><b> $scenario.getTestCaseInstanceCount()</b>
+                                                            </div>
+                                                        </td>
+                                                        <td colspan="5">
+                                                            <div style="height: 25px; padding:10px;" class="sum-info">
+                                                                <a style="float:none;padding:8px;" class="tag green">$scenario.getSuccessTestCasesInstancesCount()</a>
+                                                                <a style="float:none;padding:8px;" class="tag red">$scenario.getFailedTestCaseInstanceCount()</a>
+                                                                <a style="float:none;padding:8px;" class="tag orange">$scenario.getFailedWithSuccessPercentageTestCaseInstanceCount()</a>
+                                                                <a style="float:none;padding:8px;" class="tag yellow">$scenario.getSkippedTestCaseInstanceCount()</a>
+                                                                <a style="float:none;padding:8px;" class="tag blue">$scenario.getIgnoredTestCaseCount()</a>
+                                                            </div>
+                                                        </td>
+	                                                    <td>
+	                                                        <div style="height: 44px;" class="sum-info">
+	                                                            <span class="dates">$scenario.getFormattedStartDate()</span>
+	                                                            <span class="dates">$scenario.getFormattedEndDate()</span>
+	                                                        </div>
+                                                        </td>
+                                                        <td><div class="sum-info">$scenario.getFormattedDuration()</div></td>
+                                                    </tr>
+                                                </tfoot>
+	                                        </table>
+	                                    </div><!-- div.inner-spacer -->
+	                                </div>
+	                            </div><!-- End .powerwidget -->
+	                        </section>
+
+                            <div class="clear"><!-- New row --></div>
+
+                            <!-- End grid -->
+
+                        </div><!-- End #content-main-inner -->
+                    </div><!-- End #content-main -->
+                </div><!-- End #content-inner -->
+
+
+
+            ##	#parse("common.head.vm")
+##    <title>Dashboard</title>
+##
+
+##
+##	<style type="text/css">
+##        .strong-tip {
+##            background: -moz-linear-gradient(center top , #ba6d6d 0%, #934848 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+##            border-radius: 2px;
+##            color: #ffffff;
+##            display: block;
+##            font-size: 12px;
+##            line-height: 12px;
+##            padding: 3px 5px;
+##            position: absolute;
+##            right: 3px;
+##            text-shadow: 0 -1px #848484;
+##            top: 3px;
+##        }
+##        strong {
+##            font-weight: bold;
+##        }
+##
+##        .status-passed {
+##            color: $const.PIE_COLOR_PASSED;
+##            text-shadow: 0 1px #005500;
+##        }
+##        .status-failed {
+##            color: $const.PIE_COLOR_FAILED;
+##            text-shadow: 0 1px #991100;
+##        }
+##        .status-skipped {
+##            color: $const.PIE_COLOR_SKIPPED;
+##            text-shadow: 0 1px #D7DF01;
+##        }
+##        .status-ignored {
+##            color: $const.PIE_COLOR_IGNORED;
+##            text-shadow: 0 1px #23BEFC;
+##        }
+##        .status-failed-percentage {
+##            color: $const.PIE_COLOR_SUCCESS_PERCENTAGE;
+##            text-shadow: 0 1px #FF8000;
+##        }
+##		#gauge{
+##            text-align: center;
+##		}
+##        #scenario_summary_table{
+##            width: 100%;
+##            background-color: #ffffff;
+##        }
+##        #scenario_summary_table thead, #scenario_summary_table tfoot {
+##            background-color: #eeeeee;
+##        }
+##        #scenario_summary_table thead th{
+##            text-align:     center;
+##            vertical-align: middle;
+##            font-size:      13px;
+##            font-weight:	bolder;
+##            background: 	none repeat scroll 0 0 #EEEEEE;
+##        }
+##        #scenario_summary_table thead th{
+##            border: 		1px solid #837E7C;
+##        }
+##
+##        #scenario_summary_table th, #scenario_summary_table tfoot td {
+##            font-weight: bold;
+##            line-height: 40px;
+##            min-height: 40px;
+##            padding: 5px 10px;
+##        }
+##        #scenario_summary_table tbody tr:hover{
+##            background-color : #FF9;
+##        }
+##        #scenario_summary_table td {
+##            border: 1px solid #999999;
+##            text-align:     center;
+##            vertical-align: middle;
+##        }
+##
+##        #scenario_summary_table .tag a{
+##            color:  #ffffff;
+##            cursor: pointer;
+##        }
+##        #scenario_summary_table tr.odd{
+##            background-color:   #FFFFCC !important;
+##            text-align:         center;
+##            font-size:          13px;
+##        }
+##        #scenario_summary_table .sum-info {
+##            border:         1px solid #999999;
+##            font-family:    "Courier New",serif;
+##            height:         auto;
+##            line-height:    22px;
+##            padding:        4px 7px;
+##        }
+##        #scenario_summary_table td.tag-red {
+##            background-color:   #B90000;
+##            border:             1px solid #FF4646;
+##            color:              #ffffff;
+##        }
+##        #scenario_summary_table td.tag-orange {
+##            background-color:   #FFB050;
+##            border:             1px solid #FF5600;
+##            color:              #333300;
+##        }
+##        #scenario_summary_table td.tag-yellow {
+##            background-color:   #dddddd;
+##            border:             1px solid #999999;
+##            color:              #333300;
+##        }
+##        #scenario_summary_table td.tag-green {
+##            background-color:   #007600;
+##            border:             1px solid #50D050;
+##            color:              #ffffff;
+##        }
+##        #scenario_summary_table td.tag-blue {
+##            background-color:   #23BEFC;
+##            border:             1px solid #004EBF;
+##            color:              #333300;
+##        }
+##        #scenario_summary_table .tag a{
+##            color:  #ffffff;
+##            cursor: pointer;
+##        }
+##        #scenario_summary_table td.tag-yellow a,
+##        #scenario_summary_table td.tag-blue a,
+##        #scenario_summary_table td.tag-orange a {
+##            color:  #333300;
+##        }
+##        #scenario_summary_table td.tag-red a,
+##        #scenario_summary_table td.tag-green a {
+##            color:  #FFFFFF;
+##        }
+##        .failed {
+##            color: #7f1c0f;
+##        }
+##        .success_rate {
+##            font-size: 20px;
+##            font-weight: bold;
+##            text-align: center;
+##        }
+##    </style>
+##
+##    <script id="3d.pie.chart.js" type="text/javascript">
+##
+##        google.load( "visualization", "1", { packages:[ "corechart" ] } );
+##        google.setOnLoadCallback( drawChart );
+##        function drawChart()
+##        {
+##            var data = google.visualization.arrayToDataTable
+##            (
+##                [
+##                    [ 'Summary', 'Suites Summary' ],
+##                    [ 'Passed', $scenario.getSuccessTestCasesInstancesCount() ],
+##                    [ 'Failed', $scenario.getFailedTestCaseInstanceCount() ],
+##                    [ 'Failed with Success Percentage', $scenario.getFailedWithSuccessPercentageTestCaseInstanceCount() ],
+##                    [ 'Skipped', $scenario.getSkippedTestCaseInstanceCount() ],
+##                    [ 'Ignored', $scenario.getIgnoredTestCaseCount() ]
+##                ]
+##            );
+##
+##	        var options =
+##		        {
+##		            #if( $const.PIE_USE_BACKGROUND_COLOR )
+##	                    backgroundColor: "$const.PIE_BACKGROUND_COLOR",
+##			        #else
+##	                    backgroundColor : {
+##	                        stroke : " $const.PIE_BACKGROUND_COLOR_STROKE",
+##	                        strokeWidth : $const.PIE_BACKGROUND_COLOR_STROKE_WIDTH,
+##	                        fill : "$const.PIE_BACKGROUND_COLOR_FILL"
+##	                    },
+##		            #end
+##		            colors : [ '$const.PIE_COLOR_PASSED', '$const.PIE_COLOR_FAILED', '$const.PIE_COLOR_SUCCESS_PERCENTAGE', '$const.PIE_COLOR_SKIPPED', '$const.PIE_COLOR_IGNORED' ],
+##		            enableInteractivity : $const.PIE_ENABLE_INTERACTIVITY,
+##		            fontSize : $const.PIE_FONT_SIZE,
+##		            fontName : "$const.PIE_FONT_NAME",
+##		            height: $const.PIE_HEIGHT,
+##		            legend : {
+##			            alignment : "$const.PIE_LEGEND_ALIGNMENT",
+##			            position : '$const.PIE_LEGEND_POSITION',
+##			            textStyle : {
+##				            color : '$const.PIE_LEGEND_TEXT_STYLE_COLOR',
+##				            fontSize : $const.PIE_LEGEND_TEXT_STYLE_FONT_SIZE
+##			            }
+##		            },
+##		            pieSliceText : "$const.PIE_SLICE_TEXT",
+##		            pieSliceTextStyle : {
+##			            color : '$const.PIE_SLICE_TEXT_STYLE_COLOR',
+##			            fontSize : $const.PIE_SLICE_TEXT_FONT_SIZE },
+##		            pieStartAngle : $const.PIE_START_ANGLE,
+##		            tooltip : {
+##			            text : "$const.PIE_TOOLTIP_TEXT",
+##			            textStyle : {
+##				            color : '$const.PIE_TOOLTIP_TEXT_STYLE_COLOR',
+##				            fontSize : $const.PIE_TOOLTIP_TEXT_STYLE_FONT_SIZE,
+##				            bold : $const.PIE_TOOLTIP_TEXT_STYLE_FONT_BOLD
+##			            },
+##			            showColorCode : $const.PIE_TOOLTIP_SHOW_COLOR_CODE
+##		            },
+##		            is3D : $const.PIE_OPTIONS_IS3D
+##			        #if ( $const.PIE_OPTIONS_SHOW_TITLE )
+##				        title: $const.PIE_OPTIONS_TITLE
+##				    #end
+##	            };
+##
+##            var chart = new google.visualization.PieChart( document.getElementById( 'pie.chart.3d' ) );
+##            chart.draw( data, options );
+##        }
+##
+##    </script>
+##
+##</head>
+##<body class="layout_fluid layout_responsive">
+##	<div id="container">
+##		#parse( "side.bar.vm" )
+##		#parse( "highlights.vm" )
+##
+##        <!-- CONTENT -->
+##
+##        <div id="content">
+##            <div id="content-border">
+##
+##                <!-- CONTENT HEADER -->
+##                <header id="content-header">
+##                    <div class="left">
+##                        <a href="javascript:void(0);" id="toggle-mainmenu" class="button-icon tip-s" title="Toggle Main Menu">
+##	                        <span class="arrow-up-10 plix-10"></span>
+##                        </a>
+##                        <!-- main search form -->
+##                        <form method="post" id="mainsearch">
+##                            <input type="text" placeholder="Live search..." name="" autocomplete="off"/>
+##                            <input type="submit" value="" />
+##                        </form>
+##                    </div>
+##
+##	                <div class="right">
+##                        <!-- sidebar switch -->
+##                        <a href="javascript:void(0);" id="toggle-sidebar" class="button-icon tip-s" title="Switch Main Menu">
+##	                        <span class="arrow-left-10 plix-10"></span>
+##                        </a>
+##                        <!-- breadcrumbs -->
+##                        <nav id="main-breadcrumbs">
+##                            <ul>
+##                                <li class="bc-tab-first">
+##                                    <a href="index.html">Dashboard</a>
+##                                </li>
+##                                <li class="bc-tab-last">${something}</li>
+##                            </ul>
+##                        </nav>
+##                        <!-- demo dialog button -->
+##                        <a href="javascript:void(0);" id="open-main-dialog" class="button-text-icon tip-w" title="Some tooltip pointing right">
+##	                        <span class="fullscreen-10 plix-10"></span> Dialog
+##                        </a>
+##
+##                        <!-- the main page dialog -->
+##                        <div id="main-page-dialog" title="Welcome to Elite" style="display:none">
+##                            <img src="images/jquery-ui-logo.png" alt="" class="dummy-img-dialog"/>
+##                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+##                        </div>
+##
+##                        <span class="preloader"></span>
+##
+##                        <!-- widgets controls -->
+##                        <div id="widgets-controls">
+##                            <span class="preloader"></span>
+##                            <div class="icon-group">
+##                                <a href="javascript:void(0);" class="changeto-grid selected tip-s" title="Show grid"><span class="grid-10 plix-10"></span></a>
+##                                <span></span>
+##                                <a href="javascript:void(0);" class="changeto-rows tip-s" title="Show rows"><span class="rows-10 plix-10"></span></a>
+##                            </div>
+##
+##                        </div>
+##	                </div><!-- End .right -->
+##	            </header>
+##
+##	            <div id="content-inner">
+##                    <!-- SIDEBAR -->
+##		            #parse("tabs.vm")
+##
+##                    <!-- sidebar meta stats -->
+##                    <div id="sidebar-meta">
+##                        <div id="sidebar-meta-inner">
+##                            <div>
+##                                <p class="left">Space</p>
+##                                <p class="right">4,551 MB / 10 GB</p>
+##                            </div>
+##                            <div class="pbar">
+##                                <span style="width:50%"></span>
+##                            </div>
+##                            <div>
+##                                <p class="left">Traffic</p>
+##                                <p class="right">8,001 MB / 10 GB</p>
+##                            </div>
+##                            <div class="pbar">
+##                                <span style="width:81%"></span>
+##                            </div>
+##                        </div>
+##                    </div>
+##
+##                    <!-- CONTENT -->
+##                    <div id="content-main">
+##                        <div id="content-main-inner">
+##                            <section class="g_1_4">
+##                                <div class="page-header">
+##                                    <h2>Dashboard</h2>
+##                                </div>
+##                            </section>
+##
+##	                        #parse( "elements.vm" )
+##
+##                            <div class="spacer-20"><!-- New row --></div>
+##                            <section class="g_1">
+##                                <div class="separator">
+##                                    <span></span>
+##                                </div>
+##                            </section>
+##
+##                            <!-- Start grid -->
+##
+##                            <section class="g_1_2">
+##                                <div class="e-block" id="pie-chart">
+##                                    <header>
+##                                        <h2>Pie Chart</h2>
+##                                    </header>
+##                                    <div id="pie.chart.3d"></div>
+##                                </div>
+##                                <div class="clear"><!-- New row --></div>
+##                                <div class="spacer-20"><!-- New row --></div>
+##                            </section>
+##	                        <section class="g_1_2_last">
+##                                <div class="e-block" id="screenshots">
+##                                    <header>
+##                                        <h2>Screenshots</h2>
+##                                    </header>
+##                                    <div>
+##                                        <div class="inner-spacer">
+##                                            <div class="media-minimal">
+##                                                <a href="images/uploads/img1.jpg" class="group3">
+##                                                    <img src="images/uploads/img1-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img4.jpg" class="group3">
+##                                                    <img src="images/uploads/img4-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img5.jpg" class="group3">
+##                                                    <img src="images/uploads/img5-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img6.jpg" class="group3">
+##                                                    <img src="images/uploads/img6-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img7.jpg" class="group3">
+##                                                    <img src="images/uploads/img7-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img8.jpg" class="group3">
+##                                                    <img src="images/uploads/img8-thumb.jpg" alt=""/>
+##                                                </a>
+##                                                <a href="images/uploads/img9.jpg" class="group3">
+##                                                    <img src="images/uploads/img9-thumb.jpg" alt=""/>
+##                                                </a>
+##
+##
+##                                                <div class="g_1">
+##                                                    More media <a href="media.html"><u>here</u></a>,
+##                                                </div>
+##
+##                                                <div class="spacer-10"><!-- spacer 10px --></div>
+##
+##                                            </div>
+##                                        </div>
+##                                    </div>
+##                                </div>
+##	                        </section>
+##                            <div class="spacer-20"></div>
+##	                        <section class="g_1">
+##		                        <section class="g_1_3">
+##                                    <div class="e-block" id="success-rate-gauge">
+##                                        <header>
+##                                            <span class="icon-day-calendar"></span>
+##                                            <h2>Succes Rate Gauge</h2>
+##                                            <span class="indicator">$scenario.getFormattedSuccessRate()%</span>
+##                                        </header>
+##                                        <div>
+##                                            <div class="inner-spacer" align="center">
+##                                                <canvas style="display: inline;" id="success.rate.gauge"></canvas>
+##                                                <script type="text/javascript" id="3d.pie.javascript">
+##                                                    var gauge = new Gauge
+##                                                    (
+##                                                            {
+##                                                                renderTo: 'success.rate.gauge',
+##                                                                width: $const.GAUGE_WIDTH,
+##                                                                height: $const.GAUGE_HEIGHT,
+##                                                                glow: $const.GAUGE_GLOW,
+##                                                                units: '$const.GAUGE_UNITS',
+##                                                                plate: "$const.GAUGE_PLATE",
+##                                                                strokeTicks: $const.GAUGE_STROKE_TICKS,
+##                                                                colors:
+##                                                                {
+##                                                                    plate      : '$const.GAUGE_COLORS_PLATE',
+##                                                                    majorTicks : '$const.GAUGE_COLORS_MAJOR_TICKS',
+##                                                                    minorTicks : '$const.GAUGE_COLORS_MINOR_TICKS',
+##                                                                    title      : '$const.GAUGE_COLORS_TITLE',
+##                                                                    units      : '$const.GAUGE_COLORS_UNITS',
+##                                                                    numbers    : '$const.GAUGE_COLORS_NUMBERS',
+##                                                                    needle     : { start : '$const.GAUGE_COLORS_NEEDLE_START', end : '$const.GAUGE_COLORS_NEEDLE_END' }
+##                                                                },
+##                                                                majorTicks: [$const.GAUGE_MAJOR_TICKS ],
+##                                                                valueFormat: { int : $const.GAUGE_VALUES_FORMAT_INT, dec : $const.GAUGE_VALUES_FORMAT_DEC },
+##                                                                minorTicks: $const.GAUGE_MINOR_TICKS,
+##                                                                highlights :
+##                                                                        [
+##                                                                            { from: $const.GAUGE_HIGHLIGHTS_FAIL_FROM,
+##                                                                                to: $const.GAUGE_HIGHLIGHTS_FAIL_TO,
+##                                                                                color: '$const.GAUGE_HIGHLIGHTS_FAIL_COLOR' },
+##                                                                            { from: $const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_FROM,
+##                                                                                to: $const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_TO,
+##                                                                                color: '$const.GAUGE_HIGHLIGHTS_SUCCESS_PERCENTAGE_COLOR' },
+##                                                                            { from: $const.GAUGE_HIGHLIGHTS_SUCCESS_FROM,
+##                                                                                to: $const.GAUGE_HIGHLIGHTS_SUCCESS_TO,
+##                                                                                color: '$const.GAUGE_HIGHLIGHTS_SUCCESS_COLOR' }
+##                                                                        ],
+##                                                                animation :
+##                                                                {
+##                                                                    delay : $const.GAUGE_ANIMATION_DELAY,
+##                                                                    duration: $const.GAUGE_ANIMATION_DURATION,
+##                                                                    fn : '$const.GAUGE_ANIMATION_FUNCTION'
+##                                                                }
+##                                                            }
+##                                                    );
+##
+##                                                    gauge.onready = function()
+##                                                    {
+##                                                        setInterval( function()
+##                                                        {
+##                                                            gauge.setValue( $scenario.getFormattedSuccessRate() );
+##                                                        }, 1000 );
+##                                                    };
+##
+##                                                    gauge.draw();
+##
+##                                                </script>
+##                                                <div class="spacer-10"><!-- spacer 10px --></div>
+##                                            </div>
+##                                        </div>
+##                                    </div>
+##		                        </section>
+##		                        <section class="g_2_3_last">
+##                                    <div class="info-bar">
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getSuitesCount()</span>
+##                                                <span>Suites</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getTestContextCount()</span>
+##                                                <span>Test-Contexts</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getClasses().size()</span>
+##                                                <span>Classes</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>0</span>
+##                                                <span>Packages</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>0</span>
+##                                                <span>Groups</span>
+##                                            </a>
+##                                        </div>
+##                                    </div>
+##                                    <div class="spacer-20"></div>
+##                                    <div class="info-bar">
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getSuitesCount()</span>
+##                                                <span>Suites</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getTestContextCount()</span>
+##                                                <span>Test-Contexts</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>$scenario.getClasses().size()</span>
+##                                                <span>Classes</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>0</span>
+##                                                <span>Packages</span>
+##                                            </a>
+##                                        </div>
+##                                        <div class="info-block">
+##                                            <a href="javascript:void(0);">
+##                                                <span>0</span>
+##                                                <span>Groups</span>
+##                                            </a>
+##                                        </div>
+##                                    </div>
+##		                        </section>
+##	                        </section>
+##	                        <section class="g_1">
+##                                <div class="e-block" id="statistics-table">
+##                                    <header>
+##                                        <h2>Form examples</h2>
+##                                    </header>
+##                                    <div>
+##                                        <div class="dialog-big-inline warning">
+##                                            <h3>Hello there...</h3>
+##                                            <span>x</span>
+##                                            <div>
+##                                                The plugins that are used in this widget are almost all custom made for this theme, you can find more about these plugins on de form page, just click on the link at te bottom of the
+##                                                widget.
+##                                            </div>
+##                                        </div>
+##                                        <div class="spacer-10"><!-- spacer 10px --></div>
+##
+##                                        <div class="inner-spacer">
+##
+##                                            <table class="basic-table" id="scenario_summary_table" width="100%" cellspacing="0" cellpadding="0">
+##                                                <colgroup>
+##                                                    <col class="bolt-col-0" Test Name>
+##                                                    <col class="bolt-col-1" Success Rate>
+##                                                    <col class="bolt-col-0" Test Summary>
+##                                                    <col class="bolt-col-1" Timing>
+##                                                </colgroup>
+##                                                <thead>
+##                                                <tr>
+##                                                    <th rowspan="2" width="16%">Test Name</th>
+##                                                    <th rowspan="2" width="10%">Success Rate</th>
+##                                                    <th colspan="6" width="31%">Test Summary</th>
+##                                                    <th colspan="2" width="41%">Timing</th>
+##                                                </tr>
+##                                                <tr>
+##                                                    <th colspan="1" width="8.5%"># Tests</th>
+##                                                    <th colspan="5" width="22.5%">Status</th>
+##                                                    <th colspan="1" width="20%">Timings</th>
+##                                                    <th colspan="1" width="21%">Duration</th>
+##                                                </tr>
+##                                                </thead>
+##                                                <tbody>
+##							                        #set( $success_rate = $const.SUCCESS_RATE )
+##							                        #foreach ( $suite in $suites )
+##
+##								                        #set ( $suiteId = $velocityCount )
+##                                                    <tr class="odd"><td colspan="10">Suite Name: <b>$suite.getName()</b></td></tr>
+##								                        #foreach ( $testContext in $suite.getTestContextAsList() )
+##									                        #if( $testContext.getSuccessRate() < $success_rate )
+##										                        #set( $suite_failed = true )
+##									                        #else
+##										                        #set( $suite_failed = false )
+##									                        #end
+##                                                        <tr>
+##                                                            <td>$testContext.getName()</td>
+##                                                            <td>
+##										                        #if( $suite_failed )
+##                                                                    <span class="success_rate failed">$testContext.getFormattedSuccessRate()%</span>
+##										                        #else
+##                                                                    <span class="success_rate passed">$testContext.getFormattedSuccessRate()%</span>
+##										                        #end
+##                                                            </td>
+##
+##                                                            <td class="no-border-right" width="8.5%"><span style="font-weight: bold">$testContext.getTestCaseInstanceCount()</span></td>
+##                                                            <td class="tag-green" width="4.5%"><a hre="#">$testContext.getSuccessTestCasesInstancesCount()</a></td>
+##                                                            <td class="tag-red" width="4.5%"><a hre="#">$testContext.getFailedTestCaseInstanceCount()</a></td>
+##                                                            <td class="tag-orange" width="4.5%"><a hre="#">$testContext.getFailedWithSuccessPercentageTestCaseInstanceCount()</a></td>
+##                                                            <td class="tag-yellow" width="4.5%"><a hre="#">$testContext.getSkippedTestCaseInstanceCount()</a></td>
+##                                                            <td class="tag-blue" width="4.5%"><a hre="#">$testContext.getIgnoredTestCaseCount()</a></td>
+##
+##                                                            <td>
+##                                                                <span>$testContext.getFormattedStartDate()</span><br/>
+##                                                                <span>$testContext.getFormattedEndDate()</span>
+##                                                            </td>
+##                                                            <td>$testContext.getFormattedDuration()</td>
+##                                                        </tr>
+##								                        #end
+##							                        ## #set( $scenarioTotalTests = $scenarioTotalTests + $suiteTotalTests )
+##							                        ## #set( $scenarioTotalPassed = $scenarioTotalPassed + $suiteTotalPassed )
+##							                        ## #set( $scenarioTotalSkipped = $scenarioTotalSkipped + $suiteTotalSkipped )
+##							                        ## #set( $scenarioTotalFailed = $scenarioTotalFailed + $suiteTotalFailed )
+##							                        ## #set( $scenarioTotalFailedWithSucessPercentage = $scenarioTotalFailedWithSucessPercentage + $suiteTotalFailedWithSucessPercentage )
+##                                                    <tr>
+##                                                        <td>
+##                                                            <div class="sum-info">
+##                                                                <span>${suite.name} Summary</span>
+##                                                            </div>
+##                                                        </td>
+##                                                        <td>
+##                                                            <div class="sum-info">
+##                                                                <b> $suite.getFormattedSuccessRate()% </b>
+##                                                            </div>
+##                                                        </td>
+##                                                        <td>
+##                                                            <div class="sum-info">
+##                                                                <span>&Sigma;</span>:<b>$suite.getTestCaseInstanceCount()</b>
+##                                                            </div>
+##                                                        </td>
+##                                                        <td colspan="5">
+##                                                            <div class="sum-info" style="height: 25px; padding:10px;">
+##                                                                <a class="tag green" style="float:none;padding:8px;">$suite.getSuccessTestCasesInstancesCount()</a>
+##                                                                <a class="tag red" style="float:none;padding:8px;">$suite.getFailedTestCaseInstanceCount()</a>
+##                                                                <a class="tag orange" style="float:none;padding:8px;">$suite.getFailedWithSuccessPercentageTestCaseInstanceCount()</a>
+##                                                                <a class="tag yellow" style="float:none;padding:8px;">$suite.getSkippedTestCasesCount()</a>
+##                                                                <a class="tag blue" style="float:none;padding:8px;">$suite.getIgnoredTestCaseCount()</a>
+##                                                            </div>
+##                                                        </td>
+##                                                        <td>
+##                                                            <div class="sum-info" style="height: 44px;">
+##                                                                <span class="dates">$suite.getFormattedStartDate()</span>
+##                                                                <span class="dates">$suite.getFormattedEndDate()</span>
+##                                                            </div>
+##                                                        </td>
+##                                                        <td><div class="sum-info">$suite.getFormattedDuration()</div></td>
+##                                                    </tr>
+##							                        #end
+##                                                </tbody>
+##                                                <tfoot>
+##                                                <tr class="odd"><td colspan="10">Scenario Summary</td></tr>
+##                                                <tr>
+##                                                    <td>
+##                                                        <div class="sum-info">
+##                                                            <span>Scenario Summary</span>
+##                                                        </div>
+##                                                    </td>
+##                                                    <td>
+##                                                        <div class="sum-info">
+##                                                            <b> $scenario.getFormattedSuccessRate()% </b>
+##                                                        </div>
+##                                                    </td>
+##                                                    <td>
+##                                                        <div class="sum-info">
+##                                                            <span>&Sigma;</span>:<b> $scenario.getTestCaseInstanceCount()</b>
+##                                                        </div>
+##                                                    </td>
+##                                                    <td colspan="5">
+##                                                        <div class="sum-info" style="height: 25px; padding:10px;">
+##                                                            <a class="tag green" style="float:none;padding:8px;">$scenario.getSuccessTestCasesInstancesCount()</a>
+##                                                            <a class="tag red" style="float:none;padding:8px;">$scenario.getFailedTestCaseInstanceCount()</a>
+##                                                            <a class="tag orange" style="float:none;padding:8px;">$scenario.getFailedWithSuccessPercentageTestCaseInstanceCount()</a>
+##                                                            <a class="tag yellow" style="float:none;padding:8px;">$scenario.getSkippedTestCaseInstanceCount()</a>
+##                                                            <a class="tag blue" style="float:none;padding:8px;">$scenario.getIgnoredTestCaseCount()</a>
+##                                                        </div>
+##                                                    </td>
+##                                                    <td style="text-align: center">
+##                                                        <div class="sum-info" style="height: 44px;">
+##                                                            <span class="dates">$scenario.getFormattedStartDate()</span>
+##                                                            <span class="dates">$scenario.getFormattedEndDate()</span>
+##                                                        </div>
+##                                                    </td>
+##                                                    <td style="text-align: center"><div class="sum-info">$scenario.getFormattedDuration()</div></td>
+##                                                </tr>
+##                                                </tfoot>
+##                                            </table>
+##
+##                                            <div class="spacer-20"><!-- spacer 20px --></div>
+##
+##                                            <div class="g_1">
+##                                                More forms elements can be found <a href="forms.html"><u>here</u></a>.
+##                                            </div>
+##                                        </div>
+##                                    </div>
+##                                </div><!-- End .powerwidget -->
+##	                        </section>
+##
+##	                    </div><!-- #content-main-inner -->
+##	                </div><!-- #content-main -->
+##	            </div><!-- #content-inner -->
+##
+##                <!-- CONTENT FOOTER -->
+##	            #parse( "footer.vm" )
+##

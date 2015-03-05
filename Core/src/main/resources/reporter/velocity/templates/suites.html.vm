@@ -1,0 +1,248 @@
+
+	<title>Suites</title>
+	<style type="text/css">
+        ul.flat {
+            border: medium none;
+            margin-top: 0;
+            padding: 0;
+        }
+        ul.flat:first-child li:first-child {
+            border-top: 0 none;
+        }
+        ul.flat li {
+            border-bottom: 1px solid #eeeeee;
+            display: block;
+            list-style: outside none none;
+            margin: 0;
+            padding: 5px 10px !important;
+            width: auto;
+        }
+        ul.flat > li{
+            color: #666666;
+            line-height: 24px;
+        }
+	</style>
+    <script type="text/javascript" language="javascript">
+        $(window).load(function(){
+			#foreach ( $suite in $suites )
+				#set ( $suiteId = $velocityCount )
+                $("#tabs-$velocityCount").eTabs({
+                    storeTab: true,
+                    responsive: false,
+                    onSwitch: function(){ }
+                });
+			#end
+        });
+    </script>
+</head>
+<body class="layout_fluid layout_responsive">
+
+<div id="container">
+
+    <!-- MAIN HEADER -->
+	#parse( "header.vm" )
+    <!-- CONTENT -->
+
+    <div id="content">
+        <div id="content-border">
+
+            <!-- CONTENT HEADER -->
+			#parse( "content.header.vm" )
+
+            <div id="content-inner">
+
+                <!-- SIDEBAR -->
+
+		        #parse( "side.bar.vm" )
+
+                <!-- CONTENT -->
+
+                <div id="content-main">
+                    <div id="content-main-inner">
+
+                        <section class="g_1_4">
+                            <div class="page-header">
+                                <h2>Suites</h2>
+                                <p>Executed Suites and child suites.</p>
+                            </div>
+                        </section>
+	                    #parse( "no.g.one.vm" )
+                        <div class="spacer-20"><!-- New row --></div>
+                        <section class="g_1">
+                            <div class="separator">
+                                <span></span>
+                            </div>
+                        </section>
+
+                        #foreach ( $suite in $suites )
+	                        #set ( $suiteId = $velocityCount )
+                            <section class="g_1">
+                                <div class="g_1">
+                                    <label class="g_1_4">$suite.getName() :</label>
+                                    <div class="g_3_4_last">
+                                        <div id="tabs-$velocityCount" class="etabs-vertical">
+                                            <div class="etabs-vertical-inner">
+					                            <ul class="etabs">
+						                            #set( $tabid_1 = "etab_" + $velocityCount + "_1" )
+						                            #set( $tabid_2 = "etab_" + $velocityCount + "_2" )
+					                                <li class="etabs-active etabs-open-active"><a href="#$tabid_1">Runtime information</a></li>
+					                                <li><a href="#$tabid_2">Configuration</a></li>
+					                            </ul>
+					                            <div class="etabs-content clearfix" id="$tabid_1" style="display: none;">
+					                                <ul class="flat">
+                                                        <li>Is Failed?: <strong> $suite.isFailed()</strong></li>
+                                                        <li>Test-Contexts: <strong> $suite.getTestContextCount()</strong> Methods.</li>
+					                                    <li>Total Configurations Invoked: <strong> $suite.getConfigurationsCount()</strong> Methods.</li>
+					                                    <li>Success Configurations: <strong> $suite.getSuccessConfigurationsCount()</strong> Methods.</li>
+					                                    <li>Failed Configurations: <strong> $suite.getFailedConfigurationsCount()</strong> Methods.</li>
+					                                    <li>Skipped Configurations: <strong> $suite.getSkippedConfigurationsCount()</strong> Methods.</li>
+					                                    <li>Total Test-Case Instances: <strong> $suite.getTestCaseInstanceCount()</strong> Methods.</li>
+					                                    <li>Success Instances: <strong> $suite.getSuccessTestCasesInstancesCount()</strong> Methods.</li>
+					                                    <li>Failed Instances: <strong> $suite.getFailedTestCaseInstanceCount()</strong> Methods.</li>
+					                                    <li>Failed w/Success % Instances: <strong> $suite.getFailedWithSuccessPercentageTestCaseInstanceCount()</strong> Methods.</li>
+					                                    <li>Skipped Instances: <strong> $suite.getSkippedTestCasesCount()</strong> Methods.</li>
+					                                    <li>Ignored Instances: <strong> $suite.getIgnoredTestCaseCount()</strong> Methods.</li>
+					                                    <li>Excluded Test-Cases: <strong> $suite.getExcludedTestCasesCount()</strong> Methods.</li>
+					                                    <li>Start Date: <strong> $suite.getFormattedStartDate()</strong></li>
+					                                    <li>Duration: <strong> $suite.getFormattedDuration()</strong></li>
+                                                        <li>End Date: <strong> $suite.getFormattedEndDate()</strong></li>
+                                                        <li>Success Rate: <strong> $suite.getFormattedSuccessRate()%</strong></li>
+						                                #if( $suite.getSuiteRunner().getHost() )
+                                                            <li>Host: <strong> $suite.getSuiteRunner().getHost()</strong></li>
+							                            #else
+                                                            <li>Host: <strong> N/A</strong></li>
+						                                #end
+
+                                                        <li>Parallel: <strong> $suite.getSuiteRunner().getParallel()</strong></li>
+                                                        <li>Attributes: <strong> $suite.getFormattedAttributeNames()</strong></li>
+                                                        <li>Parent Module: <strong> $suite.getSuiteRunner().getParentModule()</strong></li>
+					                                </ul>
+					                            </div>
+                                                <div class="etabs-content clearfix" id="$tabid_2" style="display: none;">
+                                                    <div class="inner-spacer">
+						                            <div class="g_1">$suite.getName(): <a href="#">$suite.getXmlSuite().getFileName()</a></div>
+						                            <div class="spacer-5"></div>
+						                            <div class="g_1">
+                                                        <div class="split-tag">
+                                                            <a href="javascript:void(0);">AllowReturnValues</a>
+                                                            <div>
+	                                                            #if( $suite.getXmlSuite().getAllowReturnValues() )
+		                                                            #set( $checked = " checked='checked'" )
+		                                                            #set( $ch_style = "active" )
+	                                                            #else
+		                                                            #set( $checked = "" )
+		                                                            #set( $ch_style = "normal" )
+	                                                            #end
+                                                                <div class="e-checkbox e-checkbox-$ch_style">
+                                                                    <div class="e-checkbox-img"></div>
+                                                                    <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <a class="tag" href="javascript:void(0);">ConfigFailurePolicy: <strong>$suite.getXmlSuite().getConfigFailurePolicy()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">DataProviderThreadCount: <strong>$suite.getXmlSuite().getDataProviderThreadCount()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">Child Suites: <strong>$suite.getXmlSuite().getChildSuites().size()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">Name: <strong>$suite.getXmlSuite().getName()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">Excluded Groups: <strong>$suite.getXmlSuiteExcludedGroups()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">Included Groups: <strong>$suite.getXmlSuiteIncludedGroups()</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">XML Packages: <strong>$suite.getXmlSuitePackagesNames()</strong></a>
+                                                        <div class="split-tag">
+                                                            <a href="javascript:void(0);">PreserveOrder</a>
+                                                            <div>
+									                            #if( $suite.getXmlSuite().getPreserveOrder() == "true" )
+										                            #set( $checked = " checked='checked'" )
+										                            #set( $ch_style = "active" )
+									                            #else
+										                            #set( $checked = "" )
+										                            #set( $ch_style = "normal" )
+									                            #end
+                                                                <div class="e-checkbox e-checkbox-$ch_style">
+                                                                    <div class="e-checkbox-img"></div>
+                                                                    <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <a class="tag" href="javascript:void(0);">ThreadCount: <strong>$suite.getXmlSuite().getThreadCount()</strong></a>
+                                                        #if( $suite.getXmlSuite().getTimeOut() )
+	                                                        #set( $timeout = $suite.getXmlSuite().getTimeOut() )
+	                                                    #else
+		                                                    #set( $timeout = "N/A" )
+                                                        #end
+							                            <a class="tag" href="javascript:void(0);">Timeout: <strong>$timeout</strong></a>
+                                                        <a class="tag" href="javascript:void(0);">Verbose: <strong>$suite.getXmlSuite().getVerbose()</strong></a>
+                                                        <div class="split-tag">
+                                                            <a href="javascript:void(0);">GroupByInstances</a>
+                                                            <div>
+									                            #if( $suite.getXmlSuite().getGroupByInstances() )
+										                            #set( $checked = " checked='checked'" )
+										                            #set( $ch_style = "active" )
+									                            #else
+										                            #set( $checked = "" )
+										                            #set( $ch_style = "normal" )
+									                            #end
+                                                                <div class="e-checkbox e-checkbox-$ch_style">
+                                                                    <div class="e-checkbox-img"></div>
+                                                                    <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="split-tag">
+                                                            <a href="javascript:void(0);">isJUnit</a>
+                                                            <div>
+									                            #if( $suite.getXmlSuite().isJUnit() )
+										                            #set( $checked = " checked='checked'" )
+										                            #set( $ch_style = "active" )
+									                            #else
+										                            #set( $checked = "" )
+										                            #set( $ch_style = "normal" )
+									                            #end
+                                                                <div class="e-checkbox e-checkbox-$ch_style">
+                                                                    <div class="e-checkbox-img"></div>
+                                                                    <input readonly type="checkbox" name="" style="display: none;" $checked>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+							                            #if( $suite.getXmlSuite().getParallel() == false )
+                                                        <div class="split-tag">
+                                                            <a href="javascript:void(0);">Parallel</a>
+	                                                        <div>
+                                                                <div class="e-checkbox e-checkbox-normal">
+                                                                    <div class="e-checkbox-img"></div>
+                                                                    <input readonly type="checkbox" name="" style="display: none;">
+                                                                </div>
+	                                                        </div>
+								                        </div>
+								                        #else
+                                                            <a class="tag" href="javascript:void(0);">Parallel: <strong>$suite.getXmlSuite().getParallel()</strong></a>
+							                            #end
+						                            </div>
+	                                                #if( $suite.getXmlSuite().getAllParameters().size() > 0 )
+
+                                                    <section class="g_1">
+                                                        <div class="separator">
+                                                            <span></span>
+                                                        </div>
+                                                    </section>
+                                                    <div class="g_1">All Parameters</div>
+                                                    <div class="spacer-5"></div>
+	                                                <div class="g_1">
+		                                                #foreach( $entry in $suite.getXmlSuite().getAllParameters().keySet() )
+			                                                #set( $entry_value = $suite.getXmlSuite().getAllParameters().get( $entry ) )
+                                                            <a class="tag" href="javascript:void(0);">$entry :<strong>  "$entry_value"</strong></a>
+		                                                #end
+	                                                </div>
+
+	                                                #end
+
+                                                </div>
+                                            </div><!-- etabs-vertical-inner -->
+                                        </div><!-- .etabs-vertical -->
+                                    </div><!-- .g_3_4_last -->
+                                </div><!-- div.g_1 -->
+                            </section><!-- section.g_1 -->
+                            <div class="spacer-20"><!-- New row --></div>
+	                    #end
+
+                    </div><!-- End #content-main-inner -->
+                </div><!-- End #content-main -->
+            </div><!-- End #content-inner -->

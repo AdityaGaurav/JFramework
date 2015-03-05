@@ -1,0 +1,108 @@
+
+
+<aside>
+
+    <!-- SIDEBAR PROFILE -->
+
+    <div id="sidebar-profile">
+        <div id="main-avatar">
+            <span class="indicator">38</span>
+            <img src="images/avatar.jpg" alt=""/>
+        </div>
+        <div id="profile-info">
+            <div>
+                <a href="javascript:void(0);"><b>Administrator</b></a>
+                <a href="javascript:void(0);">Profile settings</a>
+                <a href="javascript:void(0);">Server settings</a>
+                <a href="javascript:void(0);">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN MENU -->
+
+    <nav id="main-menu">
+        <ul>
+            <li class="page-active"><a href="index.html"><span class="home-16 plix-16"></span> Dashboard</a></li>
+            <li class="no-mobile"><a href="documentation.html"><span class="note-16 plix-16"></span> Documentation</a>
+
+                <ul>
+                    <li><a href="doc-accordion.html">Accordion</a></li>
+                    <li><a href="doc-breadcrumbs.html">Breadcrumbs</a></li>
+                    <li><a href="doc-buttons.html">Buttons</a></li>
+                    <li><a href="doc-calendar.html">Calendar</a></li>
+                    <li><a href="doc-charts.html">Charts</a></li>
+                    <li><a href="doc-dialogs.html">Dialogs</a></li>
+                    <li><a href="doc-editors.html">Editors</a></li>
+                    <li><a href="doc-fileexplore.html">File Explore</a></li>
+                    <li><a href="doc-forms.html">Forms</a></li>
+                    <li><a href="doc-grid.html">Grid</a></li>
+                    <li><a href="doc-icons.html">Icons</a></li>
+                    <li><a href="doc-listsblocks.html">Lists &amp; Blocks</a></li>
+                    <li><a href="doc-media.html">Media</a></li>
+                    <li><a href="doc-menus.html">Menus</a></li>
+                    <li><a href="doc-misc.html">Misc</a></li>
+                    <li><a href="doc-search.html">Search</a></li>
+                    <li><a href="doc-tables.html">Tables</a></li>
+                    <li><a href="doc-tabs.html">Tabs</a></li>
+                    <li><a href="doc-toolbars.html">Toolbars</a></li>
+                    <li><a href="doc-widgets.html">Widgets</a></li>
+                    <li><a href="doc-wizard.html">Wizard</a></li>
+                </ul>
+
+            </li>
+            <li><a href="testng.xml.html"><span class="calendar-16 plix-16"></span>Suites XML <span class="color-indicator">28</span></a></li>
+            <li><a href="javascript:void(0);"><span class="postcard-16 plix-16"></span> Form Elements <span class="button-icon"><span class="plus-10 plix-10"></span></span></a>
+
+                <ul>
+                    <li><a href="editors.html">Editors</a></li>
+                    <li><a href="forms.html">Forms</a></li>
+                    <li><a href="login.html">Login form 1</a></li>
+                    <li><a href="login-2.html">Login form 2</a></li>
+                    <li><a href="login-3.html">Login form 3</a></li>
+                    <li><a href="login-4.html">Login form 4</a></li>
+                    <li><a href="search.html">Search</a></li>
+                    <li><a href="wizard.html">Wizard</a></li>
+                </ul>
+
+            </li>
+            <li><a href="suites.html"><span class="image-16 plix-16"></span> Suites</a></li>
+            <li><a href="planning.html"><span class="pencil-16 plix-16"></span> Test-Contexts</a></li>
+            <li><a href="maps.html"><span class="map-16 plix-16"></span> Test-Cases <span class="indicator tip-w" title="Some tip goes here">tooltip</span></a></li>
+            <li><a href="fileexplore.html"><span class="folder-16 plix-16"></span> Groups</a></li>
+            <li><a href="javascript:void(0);"><span class="warning-16 plix-16"></span> Error pages<span class="button-icon"><span class="plus-10 plix-10"></span></span></a>
+
+                <ul>
+                    <li><a href="400.html">400</a></li>
+                    <li><a href="401.html">401</a></li>
+                    <li><a href="403.html">403</a></li>
+                    <li><a href="404.html">404</a></li>
+                    <li><a href="500.html">500</a></li>
+                    <li><a href="503.html">503</a></li>
+                </ul>
+
+            </li>
+            <li><a href="widgets.html"><span class="rows4-16 plix-16"></span> Ignored Methods</a></li>
+            <li><a href="tables.html"><span class="cells-16 plix-16"></span> Chronological View</a></li>
+            <li><a href="charts.html"><span class="stats2-16 plix-16"></span> Logs </a></li>
+            <li><a href="javascript:void(0);"><span class="controls-16 plix-16"></span> Interface Elements <span class="button-icon"><span class="min-10 plix-10"></span></span></a>
+
+                <ul>
+                    <li><a href="accordion.html">Accordion</a></li>
+                    <li><a href="breadcrumbs.html">Breadcrumbs</a></li>
+                    <li><a href="buttons.html">Buttons</a></li>
+                    <li><a href="dialogs.html">Dialogs</a></li>
+                    <li><a href="icons.html">Icons</a></li>
+                    <li><a href="listsblocks.html">Lists &amp; Blocks</a></li>
+                    <li><a href="menus.html">Menus</a></li>
+                    <li><a href="misc.html">Misc</a></li>
+                    <li><a href="tabs.html">Tabs</a></li>
+                    <li><a href="toolbars.html">Toolbars</a></li>
+                </ul>
+
+            </li>
+            <li><a href="grid.html"><span class="layout3-16 plix-16"></span> Grid <span class="indicator">960</span></a></li>
+        </ul>
+    </nav>
+</aside>
+
