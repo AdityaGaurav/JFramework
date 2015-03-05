@@ -167,6 +167,20 @@ public class Scenario
 		return excludedTestCasesCount;
 	}
 
+	public int getTotalTestCasesCount()
+	{
+		int totalMethods = 0;
+		for( Suite suite : this.suitesStack )
+		{
+			for( TestContext context : suite.getTestContextAsList() )
+			{
+				totalMethods += context.getTInvokedTestCasesCount();
+			}
+		}
+
+		return totalMethods;
+	}
+
 	/**
 	 * increases the success configurationStack counter and total counter by 1.
 	 */
@@ -277,7 +291,6 @@ public class Scenario
 	public void setExcludedTestCases( Collection<ITestNGMethod> excludedMethods ) //todo: need method?
 	{
 		this.excludedTestCasesCount += excludedMethods.size();
-		//suites.get( currentSuiteName ).setExcludedTestCases( excludedMethods );
 	}
 
 	void pushConfigurationInstance( ITestResult itr )

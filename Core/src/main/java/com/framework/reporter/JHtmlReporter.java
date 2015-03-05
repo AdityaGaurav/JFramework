@@ -13,7 +13,6 @@ import org.apache.velocity.app.FieldMethodizer;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.event.implement.IncludeRelativePath;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.tools.ToolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.FileSystemUtils;
@@ -90,6 +89,7 @@ public class JHtmlReporter extends ScenarioListenerAdapter implements IReporter
 			generateDashboard( suites );
 			generateSuites();
 			generateTestNGXml( suites );
+			generateTestContexts();
 			copyResources();
 		}
 		catch ( Exception e )
@@ -134,9 +134,9 @@ public class JHtmlReporter extends ScenarioListenerAdapter implements IReporter
 	{
 		try
 		{
-			ToolManager velocityToolManager = new ToolManager();
+			//ToolManager velocityToolManager = new ToolManager();
 
-			VelocityContext context = new VelocityContext( velocityToolManager.createContext() );
+			VelocityContext context = new VelocityContext();// velocityToolManager.createContext() );
 
 			// adding a logger
 			context.put( ReporterKeys.LOGGER_KEY.getLiteral(), LoggerFactory.getLogger( "Dashboard" ) );
@@ -199,6 +199,7 @@ public class JHtmlReporter extends ScenarioListenerAdapter implements IReporter
 		{
 			mergeTemplate( TEMPLATES_PATH + Templates.COMMON_HEAD_VM.getLiteral(), SystemUtils.FILE_ENCODING, context, writer );
 			mergeTemplate( TEMPLATES_PATH + templateName, SystemUtils.FILE_ENCODING, context, writer );
+			mergeTemplate( TEMPLATES_PATH + Templates.COMMON_FOOTER_VM.getLiteral(), SystemUtils.FILE_ENCODING, context, writer );
 			writer.flush();
 		}
 		catch ( Exception ex )
@@ -234,8 +235,27 @@ public class JHtmlReporter extends ScenarioListenerAdapter implements IReporter
 		logger.info( "creating html file {}", Templates.SUITES_VM );
 		VelocityContext context = createContext();
 
+		context.put( ReporterKeys.SUITES_KEY.getLiteral(), getScenarioManager().getSuitesAsList() );
 		generateFile( new File( configuration.getOutputDirectory(), Templates.SUITES_VM.getLiteral() ),
 				Templates.SUITES_VM.getLiteral() + TEMPLATE_EXTENSION, context );
+	}
+
+	private void generateTestContexts() throws Exception
+	{
+		List<Suite> suites = getScenarioManager().getSuitesAsList();
+		for( Suite suite : suites )
+		{
+			List<TestContext> testContexts = suite.getTestContextAsList();
+			for( int contextIndex = 0; contextIndex < testContexts.size(); contextIndex ++ )
+			{
+				String fileName = String.format( Templates.TEST_CONTEXT_PATTERN_VM.getLiteral(), contextIndex );
+				logger.info( "creating html file {}", fileName );
+				VelocityContext context = createContext();
+				context.put( ReporterKeys.TEST_CONTEXT_KEY.getLiteral(), testContexts.get( contextIndex ) );
+				generateFile( new File( configuration.getOutputDirectory(), fileName ),
+						Templates.TEST_CONTEXT_VM.getLiteral() + TEMPLATE_EXTENSION, context );
+			}
+		}
 	}
 
 	private void generateTestNGXml( List<ISuite> suites ) throws Exception

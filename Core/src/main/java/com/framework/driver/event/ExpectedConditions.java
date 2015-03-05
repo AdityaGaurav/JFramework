@@ -60,7 +60,7 @@ public class ExpectedConditions
 				String currentUrl = input.getCurrentUrl().toLowerCase();
 				boolean response = matcher.matches( currentUrl );
 				if ( ! response ) desc.appendText( ", however current url is <'" ).appendValue( currentUrl ).appendText( "'>" );
-				logger.debug( getDurationString( dt, desc ) );
+				logger.info( getDurationString( dt, desc ) );
 
 				return response;
 			}
@@ -92,7 +92,7 @@ public class ExpectedConditions
 				String currentTitle = input.getTitle();
 				boolean response = matcher.matches( currentTitle );
 				if ( ! response )  desc.appendText( ", however current title is <" ).appendValue( currentTitle ).appendText( ">" );
-				logger.debug( getDurationString( dt, desc ) );
+				logger.info( getDurationString( dt, desc ) );
 
 				return response;
 			}
@@ -124,7 +124,7 @@ public class ExpectedConditions
 				Cookie cookie = input.manage().getCookieNamed( cookieName );
 				boolean response = cookie != null;
 				if ( ! response )  desc.appendText( ", however cookie is not is present" );
-				logger.debug( getDurationString( dt, desc ) );
+				logger.info( getDurationString( dt, desc ) );
 
 				return response ? cookie : null;
 			}
@@ -633,8 +633,8 @@ public class ExpectedConditions
 
 	//todo: method documentation
 	public static HtmlCondition<Boolean> elementCssPropertyToMatch( final HtmlElement element,
-																		    final String propertyName,
-																		    final Matcher<String> matcher )
+																	final String propertyName,
+																	final Matcher<String> matcher )
 	{
 		final DateTime dt = DateTime.now();
 

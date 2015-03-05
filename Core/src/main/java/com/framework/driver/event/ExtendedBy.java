@@ -10,11 +10,12 @@ import static java.util.Arrays.asList;
 
 //todo: documentation
 
-@Deprecated
+
 public abstract class ExtendedBy extends org.openqa.selenium.By
 {
 
 	//region ExtendedBy - Static Methods Section.
+
 
 	/**
 	 * Finds elements by the presence of an attribute name irrespective of element name. Currently implemented via XPath.
@@ -26,6 +27,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 	 * @throws NullPointerException     if {@code name} is null.
 	 * @throws IllegalArgumentException if( {@code nme} is empty or blank.
 	 */
+	@Deprecated
 	public static ByAttribute attribute( final String name )
 	{
 		return attribute( name, null );
@@ -43,6 +45,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 	 * @throws IllegalArgumentException if( {@code nme} is empty or blank.
 	 *
 	 */
+	@Deprecated
 	public static ByAttribute attribute( final String name, final String value )
 	{
 		final String ERR_MSG1 = "Cannot find elements when the attribute name is null, blank or empty";
@@ -61,6 +64,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 	 *
 	 * @return a {@linkplain NotByAttribute} instance
 	 */
+	@Deprecated
 	public static ByAttribute notAttribute( final String name )
 	{
 		final String ERR_MSG = "Cannot find elements when the attribute name is null, blank or empty";
@@ -68,7 +72,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 		return new NotByAttribute( name );
 	}
 
-	//todo: method documentation
+	@Deprecated
 	public static ByComposite composite( final org.openqa.selenium.By ... bys )
 	{
 		final String ERR_MSG1 = "Cannot make composite with no varargs of Bys";
@@ -97,6 +101,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 
 	//region ExtendedBy - ByAttribute Class Section.
 
+	@Deprecated
 	public static class ByAttribute extends ExtendedBy
 	{
 		protected final String name;
@@ -153,6 +158,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 
 	//region ExtendedBy - NotByAttribute Class Section.
 
+	@Deprecated
 	public static class NotByAttribute extends ByAttribute
 	{
 		NotByAttribute( String name )
@@ -177,6 +183,7 @@ public abstract class ExtendedBy extends org.openqa.selenium.By
 
 	//region ExtendedBy - ByComposite Class Section.
 
+	@Deprecated
 	public static class ByComposite extends ExtendedBy
 	{
 		private final By[] bys;

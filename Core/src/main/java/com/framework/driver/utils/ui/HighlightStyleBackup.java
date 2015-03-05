@@ -1,7 +1,7 @@
 package com.framework.driver.utils.ui;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class HighlightStyleBackup extends HighlightStyle
 
 	//region HighlightStyleBackup - Variables Declaration and Initialization Section.
 
-	private final WebElement element;
+	private final HtmlElement element;
 
 	//endregion
 
@@ -37,12 +37,11 @@ public class HighlightStyleBackup extends HighlightStyle
 	 *
 	 * @param styles               style of highlighted element.
 	 */
-	public HighlightStyleBackup( Map<String, String> styles, WebElement element )
+	public HighlightStyleBackup( Map<String, String> styles, HtmlElement element )
 	{
 		super( styles );
 		this.element = element;
 	}
-
 
 	//endregion
 
@@ -54,7 +53,7 @@ public class HighlightStyleBackup extends HighlightStyle
 	 *
 	 * @param driver        instance of WebDriver.
 	 */
-	public void restore( WebDriver driver )
+	public void restore( HtmlDriver driver )
 	{
 		doHighlight( driver, element );
 	}

@@ -25,6 +25,8 @@ public enum ReporterKeys
 
 	SUITES_KEY( "suites" ),
 
+	TEST_CONTEXT_KEY( "testContext" ),
+
 	XML_SUITE_NAMES_KEY( "xml_suite_names" ),
 
 	XML_SUITE_FILES_KEY( "xml_suite_files" ),

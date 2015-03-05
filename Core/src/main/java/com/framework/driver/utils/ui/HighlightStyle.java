@@ -1,10 +1,11 @@
 package com.framework.driver.utils.ui;
 
-import org.openqa.selenium.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
+import com.google.common.collect.Maps;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.StaleElementReferenceException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -27,15 +28,17 @@ public class HighlightStyle
 
 	//region HighlightStyle - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( HighlightStyle.class );
-
 	/**
 	 * element styles.
+	 *
+	 * .css("outline", "blue solid 1px");
+	 * .css("backgroundColor","rgba(100,100,255,0.5)");63, 187, 81, 0.5
 	 */
 	public static HighlightStyle[] ELEMENT_STYLES = new HighlightStyle[] {
-			new HighlightStyle( "backgroundColor: yellow", "outline: #8f8 solid 2px" ),
+			new HighlightStyle( "backgroundColor: rgba(63,187,81,0.5)", "outline: #2e3b0b solid 1px" ),
 			new HighlightStyle( "backgroundColor: orange", "outline: #484 solid 2px" ),
-			new HighlightStyle( "backgroundColor: #00CCFF", "outline: #330066 solid 2px" )
+			new HighlightStyle( "backgroundColor: rgba(63,187,81,0.5)", "outline: #2e3b0b solid 3px" ),
+			new HighlightStyle( "backgroundColor: transparent", "outline: #339900 solid 2px" ),
 	};
 
 	private static final String SCRIPT = "return (function(element, hlStyle) {\n"
@@ -72,7 +75,8 @@ public class HighlightStyle
 	 */
 	public HighlightStyle( String... styles )
 	{
-		this.styles = new HashMap<String, String>();
+		this.styles = Maps.newHashMap();
+
 		for ( String style : styles )
 		{
 			String[] kv = style.split( "\\s*:\\s*", 2 );
@@ -95,23 +99,15 @@ public class HighlightStyle
 	 * @return previous style.
 	 */
 	@SuppressWarnings ( "unchecked" )
-	public Map<String, String> doHighlight( WebDriver driver, WebElement element )
+	public Map<String, String> doHighlight( HtmlDriver driver, HtmlElement element )
 	{
 		try
 		{
-			if ( driver instanceof JavascriptExecutor )
-			{
-				Object result = ( ( JavascriptExecutor ) driver ).executeScript( SCRIPT, element, styles );
-				return result instanceof Map ? ( Map<String, String> ) result : null;
-			}
-			else
-			{
-				return null;
-			}
+			Object result = driver.executeScript( SCRIPT, element, styles );
+			return result instanceof Map ? ( Map<String,String> ) result : null;
 		}
 		catch ( Exception e )
 		{
-			// element specified by locator is not found.
 			if ( e instanceof NotFoundException || e.getCause() instanceof NotFoundException || e instanceof StaleElementReferenceException )
 			{
 				return null;
