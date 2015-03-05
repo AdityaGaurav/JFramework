@@ -3,6 +3,7 @@ package com.framework.reporter;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.LogStringStyle;
+import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
@@ -146,16 +147,9 @@ public class Suite
 		return configurationsCount + testCaseInstanceCount;
 	}
 
-	int getExcludedTestCasesCount()
+	public int getExcludedTestCasesCount()
 	{
-//		int excludeCounter = 0;
-//		for( String contextName : getTestContexts().keySet() )
-//		{
-//			excludeCounter += testContextStack.get( contextName ).getExcludedTestCases().size();
-//		}
-//		return excludeCounter;
-
-		return 0;
+		return suite.getExcludedMethods().size();
 	}
 
 	TestCase addTestCase( ITestResult itr )
@@ -370,7 +364,7 @@ public class Suite
 		return this.testContextStack.peek();
 	}
 
-	int getTestContextCount()
+	public int getTestContextCount()
 	{
 		return testContextStack.size();
 	}
@@ -379,6 +373,7 @@ public class Suite
 	{
 		return testContextStack;
 	}
+
 
 	//endregion
 
@@ -395,7 +390,7 @@ public class Suite
 		return new DecimalFormat( "#.##" ).format( getSuccessRate() );
 	}
 
-	boolean isFailed()
+	public boolean isFailed()
 	{
 		return suite.getSuiteState().isFailed();
 	}
@@ -450,7 +445,7 @@ public class Suite
 		return suite.getName();
 	}
 
-	SuiteRunner getSuiteRunner()
+	public SuiteRunner getSuiteRunner()
 	{
 		return suite;
 	}
@@ -460,9 +455,47 @@ public class Suite
 		return suite.getAttributeNames();
 	}
 
-	XmlSuite getXmlSuite()   //todo retrieve info
+	public String getFormattedAttributeNames()
+	{
+		if( suite.getAttributeNames().size() > 0 )
+		{
+			return Joiner.on( ", " ).join( suite.getAttributeNames() );
+		}
+
+		return "{}";
+	}
+
+
+	public XmlSuite getXmlSuite()   //todo retrieve info
 	{
 		return suite.getXmlSuite();
+	}
+
+	public String getXmlSuiteExcludedGroups()
+	{
+		if(suite.getXmlSuite().getExcludedGroups().size() == 0 )
+		{
+			return "{ }";
+		}
+		return "{ " + Joiner.on( "," ).join( suite.getXmlSuite().getExcludedGroups() ) + " }";
+	}
+
+	public String getXmlSuiteIncludedGroups()
+	{
+		if( suite.getXmlSuite().getIncludedGroups().size() == 0 )
+		{
+			return "{ }";
+		}
+		return "{ " + Joiner.on( "," ).join( suite.getXmlSuite().getIncludedGroups() ) + " }";
+	}
+
+	public String getXmlSuitePackagesNames()
+	{
+		if(suite.getXmlSuite().getPackageNames().size() == 0 )
+		{
+			return "{ }";
+		}
+		return "{ " + Joiner.on( "," ).join( suite.getXmlSuite().getPackageNames() ) + " }";
 	}
 
 	//endregion

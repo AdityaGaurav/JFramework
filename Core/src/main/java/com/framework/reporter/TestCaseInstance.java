@@ -1,14 +1,23 @@
 package com.framework.reporter;
 
+import ch.lambdaj.Lambda;
 import com.framework.config.ResultStatus;
+import com.framework.testing.steping.TestResultList;
+import com.framework.testing.steping.TestStep;
+import com.framework.testing.steping.TestStepInstance;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.string.LogStringStyle;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -39,13 +48,17 @@ public class TestCaseInstance
 
 	private static int counter = 0;
 
-	private ResultStatus status = ResultStatus.UNDEFINED;
+	private List<ResultStatus> statuses = Lists.newArrayList( ResultStatus.PENDING );
+
+	private ResultStatus finalStatus = null;
 
 	private final ITestResult testResult;
 
 	private final TestCase parentTestCase;
 
 	private final int index;
+
+	private Map<Float,TestStepInstance> testSteps = Maps.newHashMap();
 
 	//endregion
 
@@ -57,7 +70,7 @@ public class TestCaseInstance
 		this.startDate = DateTime.now();
 		this.parentTestCase = parent;
 		this.testResult = result;
-		this.status = ResultStatus.valueOf( result.getStatus() );
+		this.statuses.add( ResultStatus.STARTED );
 		index = ++ counter;
 	}
 
@@ -70,6 +83,25 @@ public class TestCaseInstance
 
 	//region TestCaseInstanceUtil - Service Methods Section
 
+	public TestStepInstance getTestStepInstance( float number )
+	{
+		return testSteps.get( number );
+	}
+
+	public TestStepInstance injectTestStep( TestStep testStep )
+	{
+		TestStepInstance tsi = new TestStepInstance( testStep );
+		logger.debug( "creating a new TestStepInstance -> < {} >", tsi.toString() );
+		testSteps.put( testStep.getNumber(), tsi );
+		logger.debug( "putting step in testSteps. current map size is -> < {} > ", testSteps.size() );
+		return tsi;
+	}
+
+	public TestCase getParentTestCase()
+	{
+		return parentTestCase;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -77,7 +109,7 @@ public class TestCaseInstance
 				.append( "name", parentTestCase.getName() )
 				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
 				.append( "index", index )
-				.append( "status", status.name() );
+				.append( "status", Lambda.join( Lambda.extractString( statuses ), ", " ) );
 		if( duration != null )
 		{
 			tsb.append( "duration", getFormattedDuration() );
@@ -90,9 +122,31 @@ public class TestCaseInstance
 
 	//region TetCaseInstance - State and Status Service Methods Section
 
+	void addStatus( ResultStatus status )
+	{
+		statuses.add( status );
+	}
+
 	public ResultStatus getStatus()
 	{
-		return ResultStatus.valueOf( testResult.getStatus() );
+		if( testSteps.isEmpty() )
+		{
+			return ResultStatus.valueOf( testResult.getStatus() );
+		}
+
+		if( finalStatus != null )
+		{
+			return finalStatus;
+		}
+
+		List<ResultStatus> temp = Lists.newArrayList( statuses );
+		for( TestStepInstance tsi : testSteps.values() )
+		{
+			temp.add( tsi.getFinalStatus() );
+		}
+		TestResultList trl = new TestResultList( temp );
+		this.finalStatus =  trl.getOverallResult();
+		return finalStatus;
 	}
 //
 //	private boolean groupResultOverridesChildren()

@@ -112,7 +112,7 @@ class TopDestinationsObject extends HeaderBrandingObject implements Header.Heade
 	@Override
 	public CruiseToDestinationPage clickLink( final Destinations destination ) throws UrlNotAvailableException
 	{
-		logger.info( "Clicking and testing href for link {} Cruises", destination.getCapitalized() );
+		logger.info( "Clicking and testing href for link {} Cruises", destination.toString() );
 
 		Link destinationLink = new Link( findTopDestination( destination ) );
 		destinationLink.checkReference( 5000 );

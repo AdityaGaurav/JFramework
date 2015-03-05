@@ -1,6 +1,7 @@
 package com.framework.reporter;
 
 import ch.lambdaj.Lambda;
+import com.framework.config.ResultStatus;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
@@ -16,6 +17,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestRunner;
+import org.testng.xml.XmlTest;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -99,20 +101,6 @@ public class TestContext
 	//endregion
 
 
-//	private boolean groupResultOverridesChildren()
-//	{
-//		return ( ( testContextStatus == UNDEFINED )
-//				|| ( testContextStatus == SUCCESS )
-//				|| ( testContextStatus == STARTED )
-//				|| ( testContextStatus == PENDING ) );
-//	}
-
-	//endregion
-
-
-
-
-
 	//region Suite - Counter Methods Section
 
 	/**
@@ -163,6 +151,11 @@ public class TestContext
 		return skippedTestCaseInstanceCount;
 	}
 
+	public int getTInvokedTestCasesCount()
+	{
+		return invokedTestCases.size();
+	}
+
 	public int getTestCaseInstanceCount()
 	{
 		return testCaseInstanceCount;
@@ -207,34 +200,50 @@ public class TestContext
 	{
 		successTestCaseInstanceCount ++;
 		testCaseInstanceCount ++;
-		return null;
+		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
+		tci.recordEndDate();
+		tci.addStatus( ResultStatus.SUCCESS );
+		return tci;
 	}
 
 	TestCaseInstance increaseFailedTestCaseInstanceCounters( ITestResult result )
 	{
 		failedTestCaseInstanceCount ++;
 		testCaseInstanceCount ++;
-		return null;
+		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
+		tci.recordEndDate();
+		tci.addStatus( ResultStatus.FAILURE );
+		return tci;
 	}
 
 	TestCaseInstance increaseFailedWithSuccessPercentageTestCaseInstanceCounters( ITestResult result )
 	{
 		failedWithSuccessPercentageTestCaseInstanceCount ++;
 		testCaseInstanceCount ++;
-		return null;
+		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
+		tci.recordEndDate();
+		tci.addStatus( ResultStatus.SUCCESS_PERCENTAGE_FAILURE );
+		return tci;
 	}
 
 	TestCaseInstance increaseSkippedTestCaseInstanceCounters( ITestResult result )
 	{
 		skippedTestCaseInstanceCount ++;
 		testCaseInstanceCount ++;
-		return null;
+		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
+		tci.recordEndDate();
+		tci.addStatus( ResultStatus.SKIPPED );
+		return tci;
 	}
 
-	void increaseIgnoredTestCaseCounters( ITestResult result )
+	TestCaseInstance increaseIgnoredTestCaseCounters( ITestResult result )
 	{
 		ignoredTestCasesCount ++;
 		testCaseInstanceCount ++;
+		//TestCaseInstance tci = invokedTestCases.peek().createTestCaseInstance( result );
+		//tci.addStatus( ResultStatus.IGNORED );
+		//return tci;
+		return null;
 	}
 
 	void addConfigurationInstance( ITestResult itr )
@@ -422,6 +431,34 @@ public class TestContext
 	public String getName()
 	{
 		return testContextRunner.getName();
+	}
+
+	public TestRunner getTestRunner()
+	{
+		return testContextRunner;
+	}
+
+	public XmlTest getCurrentXmlTest()
+	{
+		return testContextRunner.getCurrentXmlTest();
+	}
+
+	public String getCurrentXmlTestIncludedGroups()
+	{
+		if( testContextRunner.getCurrentXmlTest().getIncludedGroups().size() == 0 )
+		{
+			return "{ }";
+		}
+		return "{ " + Joiner.on( "," ).join( testContextRunner.getCurrentXmlTest().getIncludedGroups() ) + " }";
+	}
+
+	public String getCurrentXmlTestExcludedGroups()
+	{
+		if( testContextRunner.getCurrentXmlTest().getExcludedGroups().size() == 0 )
+		{
+			return "{ }";
+		}
+		return "{ " + Joiner.on( "," ).join( testContextRunner.getCurrentXmlTest().getExcludedGroups() ) + " }";
 	}
 
 	//endregion

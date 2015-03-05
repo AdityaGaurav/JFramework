@@ -8,6 +8,7 @@ import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.LogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.testng.internal.annotations.TestAnnotation;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 
@@ -53,7 +55,7 @@ public class TestCase
 
 	private List<Long> testIds = Lists.newArrayList();
 
-	private Stack<TestStep> steps;
+	private Map<Float,TestStep> steps;
 
 	private TestAnnotation testAnnotation = null;
 
@@ -119,6 +121,7 @@ public class TestCase
 		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
 				.append( "name", null != testNGMethod ? testNGMethod.getMethodName() : "N/A" )
 				.append( "testClass", getTestNGMethod() != null ? getTestNGMethod().getTestClass().getName() : "N/A" )
+				.append( "instances count", this.testCaseInstanceStack.size() )
 				.toString();
 	}
 
@@ -127,7 +130,7 @@ public class TestCase
 
 	//region TestCase - TestCaseInstance Implementation Section
 
-	TestCaseInstance getCurrentTestCaseInstance()
+	public TestCaseInstance getCurrentTestCaseInstance()
 	{
 		return testCaseInstanceStack.peek();
 	}
@@ -142,6 +145,11 @@ public class TestCase
 
 
 	//region TestCase - Stepping Implementation Methods Section
+
+	public Map<Float, TestStep> getSteps()
+	{
+		return steps;
+	}
 
 	public boolean isAnnotationsParsed()
 	{
@@ -173,10 +181,11 @@ public class TestCase
 
 	void registerSteps( StepsAnnotation stepsAnnotation )
 	{
-		steps = new Stack<>();
+		steps = Maps.newHashMap();
 		for( Float number : stepsAnnotation.getMap().keySet() )
 		{
-
+			TestStep ts = new TestStep( stepsAnnotation.getMap().get( number ) );
+			steps.put( number, ts );
 		}
 	}
 
@@ -184,7 +193,7 @@ public class TestCase
 	{
 		if( issuesList.size() > 0 )
 		{
-			logger.info( "Adding < {} > issues to test case ...", issues.size() );
+			logger.debug( "Adding < {} > issues to test case ...", issues.size() );
 			issues.addAll( issuesList );
 			this.issues = removeIssuesDuplicates( issues );
 		}
@@ -194,7 +203,7 @@ public class TestCase
 	{
 		if( list.size() > 0 )
 		{
-			logger.info( "Registering the following ids to current test cae < {} >", Joiner.on( "," ).join( list ) );
+			logger.debug( "Registering the following ids to current test case < {} >", Joiner.on( "," ).join( list ) );
 			for( Long id : list )
 			{
 				if( ! testIds.contains( id ) )
@@ -213,7 +222,7 @@ public class TestCase
 
 	private List<IssueTracker> removeIssuesDuplicates( List<IssueTracker> issues )
 	{
-		logger.info( "Removing duplicated issues if any ... " );
+		logger.debug( "Removing duplicated issues if any ... " );
 		List<IssueTracker> issuesWithNoDuplicates = Lists.newArrayList();
 		if ( issues != null )
 		{
@@ -226,7 +235,7 @@ public class TestCase
 			}
 		}
 
-		logger.info( "Currently are < {} > registered issues to test case.", issuesWithNoDuplicates.size() );
+		logger.debug( "Currently are < {} > registered issues to test case.", issuesWithNoDuplicates.size() );
 		return issuesWithNoDuplicates;
 	}
 

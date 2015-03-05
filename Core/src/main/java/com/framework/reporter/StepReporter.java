@@ -1,6 +1,5 @@
 package com.framework.reporter;
 
-import com.framework.testing.steping.StepEventBus;
 import com.framework.testing.steping.exceptions.NoSuchTestStepException;
 import com.framework.utils.error.PreConditionException;
 import com.framework.utils.string.TextArt;
@@ -26,6 +25,7 @@ import org.testng.ITestResult;
  *
  */
 
+@Deprecated
 public class StepReporter //extends ScenarioListenerAdapter implements StepListener
 {
 
@@ -65,7 +65,7 @@ public class StepReporter //extends ScenarioListenerAdapter implements StepListe
 	public void onTestCaseStart( final ITestResult result )
 	{
 		/** initializes the {@link com.framework.testing.steping.StepEventBus} */
-		StepEventBus.getEventBus().testCaseStarted( result );
+		//StepEventBus.getEventBus().testCaseStarted( result );
 
 		// create a new instance of TestCase
 	//	this.currentTestCase = new TestCase( result );
