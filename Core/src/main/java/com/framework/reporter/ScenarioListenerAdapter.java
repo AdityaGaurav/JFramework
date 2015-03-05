@@ -1,8 +1,10 @@
 package com.framework.reporter;
 
+import com.framework.asserts.JAssertion;
 import com.framework.config.Configurations;
 import com.framework.config.FrameworkConfiguration;
 import com.framework.config.FrameworkProperty;
+import com.framework.config.ResultStatus;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.*;
@@ -38,6 +40,15 @@ import static com.framework.config.FrameworkProperty.REPORT_DIRECTORY_PATTERN;
  *
  */
 
+// ┌────────────────────────────────────────────────────────────────────┐ \\
+// │ Raphaël 2.1.3 - JavaScript Vector Library                          │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Copyright © 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)    │ \\
+// │ Copyright © 2008-2012 Sencha Labs (http://sencha.com)              │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Licensed under the MIT (http://raphaeljs.com/license.html) license.│ \\
+// └────────────────────────────────────────────────────────────────────┘ \\
+
 class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IResultListener2, StepListener
 {
 
@@ -51,7 +62,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 
 	protected FrameworkConfiguration configuration;
 
-	private boolean enableStepping = false;
+	private boolean enableStepping = false, haveStepsAnnotation = false;
 
 	//endregion
 
@@ -143,6 +154,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 
 			Suite suiteManager = new Suite( DateTime.now(), suite );
 			scenarioManager.pushSuite( suiteManager );
+			Configurations.getInstance().init( suite );
 			scenarioManager.setExcludedTestCases( suite.getExcludedMethods() );
 
 			logger.info( "new Suite manager created -> {}", suiteManager );
@@ -178,6 +190,12 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	{
 		scenarioManager.pushConfigurationInstance( itr );
 
+		if( itr.getMethod().isBeforeSuiteConfiguration() )
+		{
+			// registering test context to configuration this required for driver initialization
+			//logger.debug( "Registering ITestContext < '{}' > in Configurations...", testContext.getName() );
+			Configurations.getInstance().init( itr.getTestContext().getSuite() );
+		}
 		if ( itr.getMethod().isBeforeTestConfiguration() )
 		{
 			WebDriverFactory factory = new WebDriverFactory( configuration.driverId() );
@@ -194,9 +212,6 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	{
 		//this.scenarioUtil.increaseSkippedConfigurations();
 		logger.debug( "configuration skipped: {}", scenarioManager.increaseSkippedConfigurationInstanceCounters( itr ) );
-
-
-
 	}
 
 	@Override
@@ -248,43 +263,46 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	{
 		logger.info( TextArt.getTestCaseStart( String.format( "'%s'", itr.getName() ) ) );
 		TestCase tc = scenarioManager.pushTestCase( itr );
+		haveStepsAnnotation = true;
 		if( ! tc.isAnnotationsParsed() )
 		{
 			tc.parseAnnotations();
+			if( enableStepping )
+			{
+				Optional<Steps> annotatedSteps = determineStepAnnotations( itr );
+				if ( ! annotatedSteps.isPresent() )
+				{
+					logger.info( "No @Step annotations were found for method \"{}\"", itr.getMethod().getMethodName() );
+					haveStepsAnnotation = false;
+					return;
+				}
+				try
+				{
+					StepsAnnotation stepsAnnotation = new StepsAnnotation( annotatedSteps.get() );
+					tc.registerSteps( stepsAnnotation );
+					logger.debug( "Test-case have < {} > registered step/steps.", stepsAnnotation.getMap().size() );
+					onTestCaseStart( tc, itr );
+				}
+				catch ( ConfigurationException e )
+				{
+					logger.warn( e.getMessage() );
+				}
+			}
 		}
-
-		if( enableStepping )
+		else
 		{
-			Optional<Steps> annotatedSteps = determineStepAnnotations( itr );
-			if ( ! annotatedSteps.isPresent() )
-			{
-				logger.info( "No @Step annotations were found for method \"{}\"", itr.getMethod().getMethodName() );
-				return;
-			}
-			try
-			{
-				StepsAnnotation stepsAnnotation = new StepsAnnotation( annotatedSteps.get() );
-				tc.registerSteps();
-				logger.debug( "Test-case have < {} > registered step/steps. parsing additional annotations.", stepsAnnotation.getMap().size() );
-			}
-			catch ( ConfigurationException e )
-			{
-				logger.warn( e.getMessage() );
-			}
+			onTestCaseStart( tc, itr );
 		}
-		//
-		//		scenarioUtil.increaseTestCasesCount();
-		//		scenarioUtil.addClass( result.getMethod().getRealClass().getName() );
-		//		lastStartedMethod = result.getMethod();
-
-
-
 	}
 
 	@Override
 	public void onTestSuccess( final ITestResult tr )
 	{
 		scenarioManager.increaseSuccessTestCaseInstanceCounters( tr );
+		if( enableStepping && haveStepsAnnotation )
+		{
+			StepEventBus.getEventBus().testCaseEnded( tr );
+		}
 	}
 
 	@Override
@@ -296,18 +314,31 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 			LoggerFactory.getLogger( tr.getTestClass().getRealClass() ).error( t.toString(), t );
 		}
 		logger.error( "test-case failed: ", scenarioManager.increaseFailedTestCaseInstanceCounters( tr ) );
+
+		if( enableStepping && haveStepsAnnotation )
+		{
+			StepEventBus.getEventBus().testCaseEnded( tr );
+		}
 	}
 
 	@Override
 	public void onTestSkipped( final ITestResult tr )
 	{
 		scenarioManager.increaseSkippedTestCaseInstanceCounters( tr );
+		if( enableStepping && haveStepsAnnotation )
+		{
+			StepEventBus.getEventBus().testCaseEnded( tr );
+		}
 	}
 
 	@Override
 	public void onTestFailedButWithinSuccessPercentage( final ITestResult tr )
 	{
 		scenarioManager.increaseFailedWithSuccessPercentageTestCaseInstanceCounters( tr );
+		if( enableStepping && haveStepsAnnotation )
+		{
+			StepEventBus.getEventBus().testCaseEnded( tr );
+		}
 	}
 
 	/**
@@ -320,11 +351,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 
 		TestContext testContextManager = new TestContext( DateTime.now(), testContext, scenarioManager.getCurrentSuite() );
 		scenarioManager.pushTestContext( testContextManager );
-		logger.info( "new Test-Context manager created -> {}", testContextManager );
-
-		// registering test context to configuration this required for driver initialization
-		logger.info( "Registering ITestContext < '{}' > in Configurations...", testContext.getName() );
-		Configurations.getInstance().setTestContext( testContext );
+		logger.debug( "new Test-Context manager created -> {}", testContextManager );
 
 		final String MSG = "Configurations were uploaded successfully. current configuration is -> < '{}' >";
 		logger.info( MSG, Configurations.getInstance().toString() );
@@ -342,41 +369,49 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	//region ScenarioListenerAdapter - StepListener Implementation Section
 
 	@Override
-	public void onTestCaseStart( final ITestResult result )
+	public void onTestCaseStart( final TestCase testCase, ITestResult itr )
 	{
 		/** initializes the {@link com.framework.testing.steping.StepEventBus} */
-		StepEventBus.getEventBus().testCaseStarted( result );
-		//			this.currentTestCase.createTesCaseInstance();
+		StepEventBus.getEventBus().testCaseStarted( testCase, itr );
 	}
 
 	@Override
-	public void onTestStepStart( final float number )
+	public void onTestStepStart( final float number, TestCaseInstance instance )
 	{
-
+		TestCase tc = instance.getParentTestCase();
+		logger.debug( "Parent test case is < {} >", tc.getName() );
+		TestStep tp = tc.getSteps().get( number );
+		logger.debug( "injecting Registered step is < {} >", tp.getNumber() );
+		TestStepInstance tsi = instance.injectTestStep( tp );
+		tsi.setStatuses( ResultStatus.STARTED );
+		logger.debug( "TestStepInstance injected ->  {} >", tsi.toString() );
 	}
 
 	@Override
-	public void onTestStepEnd( final float number )
+	public void onTestStepEnd( final float number, TestCaseInstance instance )
 	{
-
+		TestStepInstance tsi = instance.getTestStepInstance( number );
+		tsi.recordEndDate();
+		tsi.setStatuses( ResultStatus.ENDED );
+		logger.debug( "TestStepInstance updated -> < {} >", tsi.toString() );
 	}
 
 	@Override
-	public void onTestStepSuccess( final float number )
+	public void onTestStepSuccess( final float number, TestCaseInstance instance )
 	{
-
+		TestStepInstance tsi = instance.getTestStepInstance( number );
+		tsi.setStatuses( ResultStatus.SUCCESS );
+		logger.debug( "TestStepInstance updated -> < {} >", tsi.toString() );
 	}
 
 	@Override
-	public void onTestStepFailure( final float number, final StepFailure failure )
+	public void onTestStepFailure( final float number, TestCaseInstance instance, final Throwable cause )
 	{
-
-	}
-
-	@Override
-	public void onTestStepFailure( final float number, final Throwable cause )
-	{
-
+		TestStepInstance tsi = instance.getTestStepInstance( number );
+		tsi.setStatuses( ResultStatus.FAILURE );
+		tsi.addThrowable( cause );
+		logger.debug( "TestStepInstance updated -> < {} >", tsi.toString() );
+		tsi.reportErrors( logger );
 	}
 
 	@Override
@@ -398,21 +433,29 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	}
 
 	@Override
-	public void onCheckpointStarted( final String id )
+	public void onCheckpointStarted( final Checkpoint checkpoint, TestStepInstance tsi )
 	{
-
+		tsi.injectCheckpoint( checkpoint );
+		checkpoint.seStatus( ResultStatus.STARTED );
+		logger.debug( "new checkpoint created -> {}", checkpoint.toString() );
 	}
 
 	@Override
-	public void onCheckPointSuccess( final String id )
+	public void onCheckPointSuccess( final Checkpoint checkpoint )
 	{
-
+		checkpoint.seStatus( ResultStatus.SUCCESS );
 	}
 
 	@Override
-	public void onCheckpointFailed()
+	public void onCheckpointFailed( final JAssertion assertion, final Checkpoint checkpoint )
 	{
-
+		checkpoint.seStatus( ResultStatus.FAILURE );
+		checkpoint.setAssertionError( assertion.getAssertionError() );
+		if( assertion.getSnapshot().isPresent() )
+		{
+			checkpoint.setScreenshot( assertion.getSnapshot().get() );
+		}
+		logger.debug( "checkpoint result -> {}", checkpoint.toString( LogStringStyle.LOG_MULTI_LINE_STYLE ) );
 	}
 
 	private Optional<Steps> determineStepAnnotations( ITestResult itr )
