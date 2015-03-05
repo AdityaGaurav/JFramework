@@ -137,11 +137,6 @@ public final class JMatchers extends org.hamcrest.Matchers
 		return ContainsPattern.matchesPattern( regex );
 	}
 
-	public static org.hamcrest.Matcher<String> xmlDocumentIsSimilarTo( final String expectedDocument, String... excludedNodes )
-	{
-		return XmlDocumentMatcher.isSimilarTo( expectedDocument, excludedNodes );
-	}
-
 	public static <T extends java.lang.Comparable<T>> org.hamcrest.Matcher<T> isExplicitlyBetween( T value1, T value2 )
 	{
 		String format = "a value is between %0 and %1";
