@@ -17,6 +17,7 @@ package com.framework.driver.event;
 
 public interface WebDriverListener
 {
+
 	void onNavigateTo( WebDriverEvent event );
 
 	void onClose( WebDriverEvent event );
@@ -51,5 +52,11 @@ public interface WebDriverListener
 
 	void onSendKeys( WebDriverEvent event );
 
-	void onGetText(  WebDriverEvent event );
+	void onGetText( WebDriverEvent event );
+
+	void onGetAttribute( WebDriverEvent event );
+
+	void onIsDisplayed( WebDriverEvent event );
+
+	void onGetCssProperty( WebDriverEvent event );
 }

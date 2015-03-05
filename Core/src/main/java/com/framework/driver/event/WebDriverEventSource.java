@@ -78,6 +78,7 @@ public class WebDriverEventSource implements EventTypes
 			}
 			case EVENT_CLICK:
 			case EVENT_SUBMIT:
+			case EVENT_JS_CLICK:
 			{
 				listener.onClick( event );
 				break;
@@ -95,6 +96,21 @@ public class WebDriverEventSource implements EventTypes
 			case EVENT_GET_TEXT:
 			{
 				listener.onGetText( event );
+				break;
+			}
+			case EVENT_GET_ATTRIBUTE:
+			{
+				listener.onGetAttribute( event );
+				break;
+			}
+			case EVENT_IS_DISPLAYED:
+			{
+				listener.onIsDisplayed( event );
+				break;
+			}
+			case EVENT_GET_CSS_PROPERTY:
+			{
+				listener.onGetCssProperty( event );
 				break;
 			}
 		}

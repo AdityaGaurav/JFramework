@@ -6,6 +6,7 @@ import com.framework.driver.utils.ui.HighlightStyleBackup;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.datetime.Sleeper;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -425,74 +426,88 @@ public class WebDriverListenerAdapter implements WebDriverListener
 	@Override
 	public void onHover( final WebDriverEvent event )
 	{
-		if( event.isBefore() )
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		final String locator = element.getLocator();
+		if( event.getType() == WebDriverEventSource.EVENT_HOVER )
 		{
-			this.dateTime = DateTime.now();
-			final String locator = ( String ) event.getArguments()[0];
-
-			if( event.getType() == WebDriverEventSource.EVENT_HOVER )
+			final String MSG_FORMAT = "Hovering on web element [{}]";
+			logger.debug( MSG_FORMAT, locator );
+			if( isBlinking() )
 			{
-				HtmlElement element = ( HtmlElement ) event.getSource();
-				final String MSG_FORMAT1 = "Hovering on web element < {} >";
-				logger.debug( MSG_FORMAT1, locator );
-				if( isBlinking() )
-				{
-					element.blink();
-				}
+				element.blink();
 			}
-		}
-		else
-		{
-			final String locator = ( String ) event.getArguments()[0];
-			Duration duration = new Duration( this.dateTime, DateTime.now() );
-			String durationName = DateTimeUtils.getFormattedPeriod( duration );
-			logger.debug( "Successfully hovered over element < {} >.  ( duration: {} )", locator, durationName );
 		}
 	}
 
 	@Override
 	public void onClick( final WebDriverEvent event )
 	{
-		if( event.isBefore() )
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		if( event.getType() == WebDriverEventSource.EVENT_CLICK )
 		{
-			this.dateTime = DateTime.now();
-			HtmlElement element = ( HtmlElement ) event.getSource();
-			if( event.getType() == WebDriverEventSource.EVENT_CLICK )
+			final String MSG_FORMAT = "clicking on web element [{}]";
+			logger.info( MSG_FORMAT, element.getLocator() );
+			if ( isMarking() )
 			{
-				final String MSG_FORMAT1 = "clicking on web element < {} >";
-				logger.debug( MSG_FORMAT1, element.getLocator() );
-				if ( isMarking() )
-				{
-					mark( element.getWrappedHtmlDriver(), element, HighlightStyle.ELEMENT_STYLES[ 1 ] );
-				}
+				mark( element.getWrappedHtmlDriver(), element, HighlightStyle.ELEMENT_STYLES[ 1 ] );
 			}
 		}
-		else
+		if( event.getType() == WebDriverEventSource.EVENT_SUBMIT )
 		{
-			HtmlElement element = ( HtmlElement ) event.getSource();
-			Duration duration = new Duration( this.dateTime, DateTime.now() );
-			String durationName = DateTimeUtils.getFormattedPeriod( duration );
-			logger.debug( "Successfully hovered over element < {} >.  ( duration: {} )", element.getLocator(), durationName );
+			final String MSG_FORMAT = "clicking and submitting web element [{}]";
+			logger.info( MSG_FORMAT, element.getLocator() );
+			if ( isMarking() )
+			{
+				mark( element.getWrappedHtmlDriver(), element, HighlightStyle.ELEMENT_STYLES[ 1 ] );
+			}
+		}
+		else if( event.getType() == WebDriverEventSource.EVENT_JS_CLICK )
+		{
+			final String MSG_FORMAT = "javascript click on web element [{}]";
+			logger.info( MSG_FORMAT, element.getLocator() );
 		}
 	}
 
 	@Override
 	public void onGetText( final WebDriverEvent event )
 	{
-		if( event.isBefore() )
-		{
-			this.dateTime = DateTime.now();
-			final String locator = ( String ) event.getArguments()[ 0 ];
-			final String MSG_FORMAT1 = "reading TEXT from web element < {} >";
-			logger.debug( MSG_FORMAT1, locator );
-		}
-		else
-		{
-			Duration duration = new Duration( this.dateTime, DateTime.now() );
-			String durationName = DateTimeUtils.getFormattedPeriod( duration );
-			final String text = ( String ) event.getArguments()[ 0 ];
-			logger.debug( "TEXT value is < {} >.  ( duration: {} )", text, durationName );
-		}
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		final String locator = element.getLocator();
+		final String MSG_FORMAT = "reading TEXT from web element [{}]. TEXT value is < {} >";
+		final String text = ( String ) event.getArguments()[ 0 ];
+		logger.info( MSG_FORMAT, locator, text );
+	}
+
+	@Override
+	public void onGetCssProperty( final WebDriverEvent event )
+	{
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		final String locator = element.getLocator();
+		final String MSG_FORMAT = "reading CSS PROPERTY <\"{}\"> from web element [{}]. PROPERTY value is < {} >";
+		final String propertyName = ( String ) event.getArguments()[ 0 ];
+		final String propertyValue = ( String ) event.getArguments()[ 1 ];
+		logger.info( MSG_FORMAT, propertyName, locator, propertyValue );
+	}
+
+	@Override
+	public void onGetAttribute( final WebDriverEvent event )
+	{
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		final String locator = element.getLocator();
+		final String MSG_FORMAT = "reading ATTRIBUTE <\"{}\"> from web element [{}]. ATTRIBUTE value is < {} >";
+		final String attributeName = ( String ) event.getArguments()[ 0 ];
+		final String attributeValue = ( String ) event.getArguments()[ 1 ];
+		logger.info( MSG_FORMAT, attributeName, locator, attributeValue );
+	}
+
+	@Override
+	public void onIsDisplayed( final WebDriverEvent event )
+	{
+		HtmlElement element = ( HtmlElement ) event.getSource();
+		final String locator = element.getLocator();
+		final String MSG_FORMAT = "determine web element [{}] is DISPLAYED  < {} >";
+		final Boolean displayed = ( Boolean ) event.getArguments()[ 0 ];
+		logger.info( MSG_FORMAT, locator, BooleanUtils.toStringYesNo( displayed ) );
 	}
 
 	@Override
