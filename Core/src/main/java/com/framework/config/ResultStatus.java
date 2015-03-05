@@ -51,12 +51,9 @@ public enum ResultStatus
 
 	SUCCESS_PERCENTAGE_FAILURE( 4 ),
 
-	/**
-	 * A pending test is one that has been specified but not yet implemented.
-	 * In a JUnit test case, you can use the (Thucydides) @Pending annotation to mark this.
-	 * A pending test case is a test case that has at least one pending test.
-	 */
-	PENDING( 5 );
+	PENDING( 8 ),
+
+	ENDED( 64 );
 
 	private final int status;
 
@@ -75,7 +72,7 @@ public enum ResultStatus
 		return name().replace( "_", "" );
 	}
 
-	public static ResultStatus getStatus( int status )
+	public static ResultStatus valueOf( int status )
 	{
 		ResultStatus finalValue = ResultStatus.UNDEFINED;
 		for( ResultStatus value : values() )

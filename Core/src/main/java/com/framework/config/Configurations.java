@@ -3,7 +3,6 @@ package com.framework.config;
 import com.framework.driver.exceptions.UnsupportedDriverException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.driver.factory.WebDriverMetadata;
-import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.LogStringStyle;
 import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.Configuration;
@@ -18,7 +17,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.joda.time.DateTime;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.BrowserType;
 import org.slf4j.Logger;
@@ -28,22 +26,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.SuiteRunner;
 import org.testng.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import static com.framework.config.FrameworkProperty.*;
-import static com.framework.config.ResultStatus.*;
 
 
 /**
@@ -112,10 +106,6 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	 */
 	private static final String SITE_PROPERTIES = "site.properties";
 
-	/**
-	 * a constant that defines the locations of the springframework bean.xml
-	 */
-	//private static final String[] DRIVERS_BEAN_XML = new String[] { "/site.settings.xml","/config/drivers.xml" }; // todo: temporary
 
 	/**
 	 * Constant for the default locale country code
@@ -125,8 +115,6 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	// ------------------------------------------------ MEMBERS --------------------------------------------------------
 
 	private String locale = DEFAULT_LOCALE_COUNTRY;
-
-	private String testEnvironment = DEFAULT_TEST_ENVIRONMENT_CODE;
 
 	private String currentBrowser = DEFAULT_BROWSER;
 
@@ -139,7 +127,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	 *
 	 * @see org.testng.ISuite
 	 */
-	private ISuite suite;
+	//private ISuite suite;
 
 	/**
 	 * The testng test context to be executed.
@@ -151,10 +139,6 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	ApplicationContext applicationContext = null;
 
 	//private EventWebDriver eventWebDriver;
-
-	private ResultStatus suiteStatus = ResultStatus.PENDING;
-
-	private ResultStatus configurationStatus = ResultStatus.PENDING;
 
 	private WebDriverFactory webDriverFactory;
 
@@ -200,19 +184,27 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		PropertiesConfiguration defaults = addDefaultConfiguration();
 		defaults.addConfigurationListener( listener );
 		defaults.addErrorListener( listener );
+		createFolders( defaults );
+
+		// loading site properties
+
+		PropertiesConfiguration siteProps = ( PropertiesConfiguration ) addSiteProperties();
+		siteProps.addConfigurationListener( listener );
+		siteProps.addErrorListener( listener );
 
 		// reading local preferences
 
 		PropertiesConfiguration preferences = ( PropertiesConfiguration ) addLocalPreferences();
 		if( null != preferences )
 		{
-			Configuration combined = combineConfigurations( defaults, preferences );
+			Configuration combined = combineConfigurations( defaults, siteProps, preferences );
 			addConfiguration( combined );
 			logger.debug( "Configuration < 'CombinedConfiguration' > added. NumberOfConfigurations: < } >", super.getNumberOfConfigurations() );
 		}
 		else
 		{
 			addConfiguration( defaults, true );
+			addConfiguration( siteProps );
 			logger.debug( "Configuration < 'PropertiesConfiguration' > added. NumberOfConfigurations: < } >", super.getNumberOfConfigurations() );
 		}
 
@@ -228,6 +220,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 				.append( "startup date", applicationContext.getStartupDate() );
 
 		logger.debug( "context was loaded {}", tsb.toString() );
+
 	}
 
 	//endregion
@@ -281,19 +274,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		}
 
 		locale = null;
-		testEnvironment = currentBrowser = baseUrl = driverId = null;
-	}
-
-	public ResultStatus getConfigurationStatus()
-	{
-		return configurationStatus;
-	}
-
-	public void setConfigurationStatus( final ResultStatus configurationStatus )
-	{
-		logger.debug( "Configuration status was changed from '{}' to -> '{}",
-				getConfigurationStatus().getStatusName(), configurationStatus.getStatusName() );
-		this.configurationStatus = configurationStatus;
+		currentBrowser = baseUrl = driverId = null;
 	}
 
 	//endregion
@@ -533,105 +514,38 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 
 	//region Configurations - Member Getters and Setters Section
 
-	@Override
-	public ISuite currentSuite()
-	{
-		return suite;
-	}
-
-	public void setEndSuite( final ISuite suite )
-	{
-		//
-	}
-
-	public void setStartSuite( final ISuite suite )
-	{
-		PreConditions.checkNotNull( this.applicationContext, "ApplicationContext cannot be null." );
-
-		this.suite = suite;
-		Configuration props = addSiteProperties();
-
-		setTestEnvironment( props.getString( "current.environment.id", DEFAULT_TEST_ENVIRONMENT_CODE ) );
-		super.addConfiguration( props, true );
-		logger.debug( "Configuration < 'PropertiesConfiguration' > added. NumberOfConfigurations: < {} >",
-				super.getNumberOfConfigurations() );
-
-		( ( SuiteRunner ) suite ).setReportResults( false );
-		try
-		{
-			String host = InetAddress.getLocalHost().getHostName();
-			( ( SuiteRunner ) suite ).setHost( host );
-		}
-		catch ( UnknownHostException e )
-		{
-			//
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//		this.driverId = props.getString( "current.driver.id", DEFAULT_DRIVER_ID );
+//	@Override
+//	public ISuite currentSuite()
+//	{
+//		return suite;
+//	}
 //
-//		// loading bean xml using springframework classes
-//
-//		WebDriverMetadata metadata = ( WebDriverMetadata ) this.applicationContext.getBean( this.driverId );
-//		this.currentBrowser = metadata.browserType();
-//		validateBrowserSupportedByCurrentPlatform();
-//		killExistingBrowsersOpenedByWebDriver();
-//
+//	@Override
+//	public ITestContext currentTestContext()
+//	{
+//		return testContext;
+//	}
 
-	}
-
-	@Override
-	public ITestContext currentTestContext()
-	{
-		return testContext;
-	}
-
-	@SuppressWarnings ( "ResultOfMethodCallIgnored" )
-	private String generateOutputDirectoryName()
-	{
-		String defaultOutputDirectory = "";//suite.getOutputDirectory();  //todo: temporary
-
-		File reports = new File( getString( JFRAMEWORK_BASE_REPORTS_DIRECTORY, defaultOutputDirectory ) );
-		if( ! reports.exists() )
-		{
-			reports.mkdirs();
-		}
-
-		String pattern = getString( REPORT_DIRECTORY_PATTERN, "MMddyyyHHmmss" );
-		File timestamped = new File( reports, new DateTime().toString( pattern ) );
-		outputDirectory = "/Users/solmarkn/output/reports/lastReport";//timestamped.getAbsolutePath();  //todo: temporary
-		return outputDirectory;
-	}
-
-	public void setTestContext( final ITestContext testContext )
+	public void init( final ISuite suite )
 	{
 		this.testContext = testContext;
 
-		setDriverId( testContext.getCurrentXmlTest().getParameter( "driver-id" ) );
+		String driverId = suite.getXmlSuite().getParameter( "driver-id" );
+		if( null != driverId )
+		{
+			setDriverId( driverId );
 
-		// loading bean xml using springframework classes
-		setDriverMetadata( ( WebDriverMetadata ) this.applicationContext.getBean( this.driverId ) );
-		setCurrentBrowser( getDriverMetadata().getBrowserType() );
-		validateBrowserSupportedByCurrentPlatform();
+			// loading bean xml using springframework classes
+			setDriverMetadata( ( WebDriverMetadata ) this.applicationContext.getBean( this.driverId ) );
+			setCurrentBrowser( getDriverMetadata().getBrowserType() );
+			validateBrowserSupportedByCurrentPlatform();
 
-		// define current locale
-		addCurrentLocale();
+			// define current locale
+			addCurrentLocale( suite );
 
-		// define base url
-		addBaseUrl();
+			// define base url
+			addBaseUrl();
+		}
 	}
 
 	public Locale getLocale()
@@ -642,7 +556,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 
 	public String getTestEnvironment()
 	{
-		return testEnvironment;
+		return 	getString( "current.environment.id", DEFAULT_TEST_ENVIRONMENT_CODE );
 	}
 
 	@Override
@@ -660,33 +574,12 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	@Override
 	public String getOutputDirectory()
 	{
-		if( null != outputDirectory )
-		{
-			return outputDirectory;
-		}
-		return generateOutputDirectoryName();
+		return outputDirectory;
 	}
 
-	@Override
-	public boolean isSuiteFailed()
+	public void setOutputDirectory( final String outputDirectory )
 	{
-		return suiteStatus.equals( ResultStatus.FAILURE );
-	}
-
-	@Override
-	public void setSuiteStatus( final ResultStatus suiteStatus )
-	{
-		logger.debug( "Trying to set suite status to < '{}' >", suiteStatus.getStatusName() );
-
-		if( groupResultOverridesChildren() )
-		{
-			logger.info( "Suite status was changed from '{}' to '{}'", this.suiteStatus.getStatusName(), suiteStatus.getStatusName() );
-			this.suiteStatus = suiteStatus;
-		}
-		else
-		{
-			logger.debug( "Status change was ignored. current status remains < '{}' >", this.suiteStatus.getStatusName() );
-		}
+		this.outputDirectory = outputDirectory;
 	}
 
 	@Override
@@ -705,12 +598,6 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	public String driverId()
 	{
 		return driverId;
-	}
-
-	private void setTestEnvironment( final String testEnvironment )
-	{
-		logger.debug( "Test Environment was set to < '{}' >", testEnvironment );
-		this.testEnvironment = testEnvironment;
 	}
 
 	private void setDriverId( final String driverId )
@@ -742,10 +629,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		this.currentBrowser = currentBrowser;
 	}
 
-	public List<String> getRegisteredSuiteListeners()
-	{
-		return this.suite.getXmlSuite().getListeners();
-	}
+//	public List<String> getRegisteredSuiteListeners()
+//	{
+//		return this.suite.getXmlSuite().getListeners();
+//	}
 
 	public WebDriverFactory getWebDriverFactory()
 	{
@@ -823,7 +710,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		}
 	}
 
-	private Configuration combineConfigurations( PropertiesConfiguration defaults, PropertiesConfiguration preferences )
+	private Configuration combineConfigurations( PropertiesConfiguration... configs)
 	{
 		NodeCombiner combiner = new OverrideCombiner();
 
@@ -831,8 +718,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		combinedConfiguration.setDetailEvents( true );
 		combinedConfiguration.setForceReloadCheck( false );
 		combinedConfiguration.setForceReloadCheck( false );
-		combinedConfiguration.addConfiguration( defaults, "default" );
-		combinedConfiguration.addConfiguration( preferences, "preferences" );
+		for( PropertiesConfiguration c : configs )
+		{
+			combinedConfiguration.addConfiguration( c );
+		}
 
 		return combinedConfiguration;
 	}
@@ -882,9 +771,9 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		}
 	}
 
-	private void addCurrentLocale()
+	private void addCurrentLocale( ISuite suite )
 	{
-		List<String> groups = testContext.getCurrentXmlTest().getIncludedGroups();
+		List<String> groups = suite.getXmlSuite().getIncludedGroups();
 		List<Object> supportedLocales = getList( "supported.locales" );
 		String locale = null;
 
@@ -901,10 +790,26 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 
 	private void addBaseUrl()
 	{
-		String key = String.format( "%s.%s.url", locale.toLowerCase(), this.testEnvironment.toLowerCase() );
+		String key = String.format( "%s.%s.url", locale.toLowerCase(), getTestEnvironment().toLowerCase() );
 		setBaseUrl( getString( key, DEFAULT_BASE_URL ) );
 	}
 
+	@SuppressWarnings ( "ResultOfMethodCallIgnored" )
+	private void createFolders( PropertiesConfiguration def )
+	{
+		String folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_LAST_REPORT_DIRECTORY.getPropertyName() );
+		File f = new File( folder );
+		if( ! f.exists() ) f.mkdirs();
+		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_LOGS_DIRECTORY.getPropertyName()  );
+		f = new File( folder );
+		if( ! f.exists() ) f.mkdirs();
+		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_SCREENSHOTS_DIRECTORY.getPropertyName()  );
+		f = new File( folder );
+		if( ! f.exists() ) f.mkdirs();
+		folder = def.getString( FrameworkProperty.JFRAMEWORK_DATA_DIR.getPropertyName() );
+		f = new File( folder );
+		if( ! f.exists() ) f.mkdirs();
+	}
 
 	//endregion
 
@@ -913,7 +818,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	{
 		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
 				.append( "locale", locale )
-				.append( "testEnvironment", testEnvironment )
+				.append( "testEnvironment", getTestEnvironment() )
 				.append( "currentBrowser", currentBrowser )
 				.append( "baseUrl", baseUrl )
 				.append( "driverId", driverId )
@@ -924,18 +829,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	{
 		return new ToStringBuilder( this, style )
 				.append( "locale", locale )
-				.append( "testEnvironment", testEnvironment )
+				.append( "testEnvironment", getTestEnvironment() )
 				.append( "currentBrowser", currentBrowser )
 				.append( "baseUrl", baseUrl )
 				.append( "driverId", driverId )
 				.toString();
-	}
-
-	private boolean groupResultOverridesChildren()
-	{
-		return ( ( suiteStatus == UNDEFINED )
-				|| ( suiteStatus == SUCCESS )
-				|| ( suiteStatus == STARTED )
-				|| ( suiteStatus == PENDING ) );
 	}
 }

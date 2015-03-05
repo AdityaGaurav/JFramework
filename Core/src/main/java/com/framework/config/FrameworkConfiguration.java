@@ -4,8 +4,6 @@ import com.framework.driver.factory.WebDriverFactory;
 import com.framework.driver.factory.WebDriverMetadata;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.testng.ISuite;
-import org.testng.ITestContext;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -94,10 +92,6 @@ public interface FrameworkConfiguration extends Configuration
 
 	List<Object> getList( final Enum<?> property, List<?> defaultValue );
 
-	ISuite currentSuite();
-
-	ITestContext currentTestContext();
-
 	String driverId();
 
 	URL baseUrl();
@@ -108,43 +102,17 @@ public interface FrameworkConfiguration extends Configuration
 
 	String getOutputDirectory();
 
-	boolean isSuiteFailed();
-
-	void setSuiteStatus( ResultStatus status );
-
-	//long getCurrentImplicitlyWait();
-
 	long defaultImplicitlyWait();
 
 	boolean maximizeAtStartUp();
 
 	boolean cleanAllCookiesOnStartUp();
 
-	//void setImplicitlyWait( final long millis );
-
-	//long getCurrentPageLoadTimeout();
-
 	long defaultPageLoadTimeout();
-
-	//void setPageLoadTimeout( final long millis );
-
-	//long getCurrentScriptTimeout();
 
 	long defaultScriptTimeout();
 
-	//void setScriptTimeout( final long millis );
-
-	//void restoreImplicitlyWait();
-
-	//void restorePageLoadTimeout();
-
-	//void restoreScriptExecutionTimeout();
-
 	String report( ToStringStyle style );
-
-	ResultStatus getConfigurationStatus();
-
-	void setConfigurationStatus( final ResultStatus configurationStatus );
 
 	WebDriverMetadata getDriverMetadata();
 
