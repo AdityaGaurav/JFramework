@@ -9,10 +9,12 @@ import com.framework.driver.event.HtmlDriver;
 import com.framework.site.data.TestEnvironment;
 import com.framework.site.pages.core.HomePage;
 import com.framework.utils.error.PreConditions;
+import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Keyboard;
 import org.openqa.selenium.interactions.Mouse;
 import org.openqa.selenium.logging.Logs;
@@ -134,8 +136,6 @@ public class SiteSessionManager
 
 	public void startSession()
 	{
-		//todo: evaluation to not start another driver
-		//todo: throw this -
 		if( null == webDriver )
 		{
 			setWebDriver( Configurations.getInstance().getWebDriverFactory().createWebDriver( configuration ) );
@@ -159,7 +159,14 @@ public class SiteSessionManager
 
 			if ( configuration.maximizeAtStartUp() )
 			{
-				this.window().maximize();
+				if( getDriver().getWrappedDriver() instanceof ChromeDriver )
+				{
+					getDriver().executeScript( "window.resizeTo( 1024, 768);" );
+				}
+				else
+				{
+					this.window().maximize();
+				}
 			}
 		}
 		else
@@ -181,25 +188,6 @@ public class SiteSessionManager
 	{
 		return new CheckpointAssert( getDriver(), id, collector );
 	}
-//
-//	public BaseCarnivalPage startSession( Class<? extends BaseCarnivalPage> classPage )
-//	{
-//		WebDriverFactory factory = new WebDriverFactory( configuration.driverId() );
-//		Configurations.getInstance().setEventWebDriver( factory.create( Configurations.getInstance() ) );
-//		this.driver = configuration.getWebDriver();
-//		if( null == classPage )
-//		{
-//			return new HomePage( driver );
-//		}
-//
-//		return null; // todo: reflection init of page + navigate
-//	}
-
-//	public BaseCarnivalPage restartBrowser( Class<? extends BaseCarnivalPage> classPage )
-//	{
-//		endSession();
-//		return startSession( classPage );
-//	}
 
 
 	public FrameworkConfiguration getConfiguration()
@@ -305,6 +293,21 @@ public class SiteSessionManager
 	public Locale getCurrentLocale()
 	{
 		return Configurations.getInstance().getLocale();
+	}
+
+	public URL getCurrentUrl()
+	{
+		return PropertyConverter.toURL( getDriver().getCurrentUrl() );
+	}
+
+	public boolean isHomePage()
+	{
+		return getCurrentUrl().equals( getBaseUrl() );
+	}
+
+	public boolean isSessionRunning()
+	{
+		return null != getDriver();
 	}
 
 	public TestEnvironment getTestingEnvironment()
