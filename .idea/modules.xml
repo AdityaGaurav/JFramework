@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Core/framework-core.iml" filepath="$PROJECT_DIR$/Core/framework-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/framework-parent.iml" filepath="$PROJECT_DIR$/framework-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestingWebSite/framework-site.iml" filepath="$PROJECT_DIR$/TestingWebSite/framework-site.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Utilities/framework-utils.iml" filepath="$PROJECT_DIR$/Utilities/framework-utils.iml" />
+    </modules>
+  </component>
+</project>
+
