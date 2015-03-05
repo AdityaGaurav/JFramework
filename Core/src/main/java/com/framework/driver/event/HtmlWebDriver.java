@@ -433,9 +433,9 @@ public class HtmlWebDriver extends WebDriverEventSource implements HtmlDriver
 		{
 			htmlObject.setParent( parent );
 		}
-		htmlObject.setFoundBy( context, locator );
+		htmlObject.setFoundBy( locator );
 		htmlObject.setId( ( ( RemoteWebElement ) e ).getId() );
-		logger.info( "Created a new HtmlElement -> {}", htmlObject.toString() );
+		logger.debug( "Created a new HtmlElement -> {}", htmlObject.toString() );
 		return htmlObject;
 	}
 

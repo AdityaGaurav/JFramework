@@ -2,7 +2,7 @@ package com.framework.driver.event;
 
 import com.framework.asserts.JAssertion;
 import com.framework.driver.utils.ui.HighlightStyle;
-import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
+import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.google.common.base.Optional;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
@@ -12,7 +12,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.Locatable;
 import org.openqa.selenium.internal.WrapsElement;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -67,7 +66,7 @@ public interface HtmlElement extends WrapsElement, WrapsHtmlDriver, Locatable
 
 	void blur();
 
-	Optional<ScreenshotAndHtmlSource> captureBitmap() throws IOException;
+	Optional<ScreenshotAndHtmlSource> captureBitmap();
 
 	void contextClick();
 
@@ -103,6 +102,8 @@ public interface HtmlElement extends WrapsElement, WrapsHtmlDriver, Locatable
 	public void mark( HighlightStyle style );
 
 	void scrollIntoView();
+
+	void scrollIntoView( boolean alignToTop );
 
 	/**
 	 * The scrollBy() method scrolls the document by the specified number of pixels.

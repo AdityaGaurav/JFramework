@@ -7,11 +7,14 @@ import com.framework.config.Configurations;
 import com.framework.driver.objects.RadioButton;
 import com.framework.driver.utils.ui.HighlightStyle;
 import com.framework.driver.utils.ui.HighlightStyleBackup;
-import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
+import com.framework.driver.utils.ui.screenshots.Photographer;
+import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.framework.utils.datetime.Sleeper;
 import com.framework.utils.string.LogStringStyle;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -23,7 +26,6 @@ import org.openqa.selenium.remote.RemoteWebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -95,15 +97,13 @@ public class HtmlObject implements HtmlElement, EventTypes
 
 		try
 		{
-
 			drv.fireEvent( this, EVENT_CLICK, drv.getWrappedDriver(), true );
 			baseElement.click();
-			drv.fireEvent( this, EVENT_CLICK, drv.getWrappedDriver(), false );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
 			drv.fireError( this, EVENT_CLICK, drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			throw e;
 		}
 	}
 
@@ -113,14 +113,13 @@ public class HtmlObject implements HtmlElement, EventTypes
 		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
 		try
 		{
-			drv.fireEvent( this, EVENT_SUBMIT, drv.getWrappedDriver(), true, getLocator() );
+			drv.fireEvent( this, EVENT_SUBMIT, drv.getWrappedDriver(), true );
 			baseElement.submit();
-			drv.fireEvent( this, EVENT_SUBMIT, drv.getWrappedDriver(), false, getLocator() );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
 			drv.fireError( this, EVENT_SUBMIT, drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			throw e;
 		}
 	}
 
@@ -136,10 +135,10 @@ public class HtmlObject implements HtmlElement, EventTypes
 			baseElement.clear();
 			drv.fireEvent( this, EVENT_CLEAR, drv.getWrappedDriver(), false, getLocator() );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
 			drv.fireError( this, EVENT_CLEAR, drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			throw e;
 		}
 	}
 
@@ -152,7 +151,18 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public String getAttribute( final String name )
 	{
-		return baseElement.getAttribute( name );
+		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
+		try
+		{
+			String value = baseElement.getAttribute( name );
+			drv.fireEvent( this, EVENT_GET_ATTRIBUTE, drv.getWrappedDriver(), false, name, value );
+			return value;
+		}
+		catch ( WebDriverException e )
+		{
+			drv.fireError( this, EVENT_GET_ATTRIBUTE, drv.getWrappedDriver(), e );
+			throw e;
+		}
 	}
 
 	@Override
@@ -173,25 +183,32 @@ public class HtmlObject implements HtmlElement, EventTypes
 		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
 		try
 		{
-			drv.fireEvent( this, EVENT_GET_TEXT, drv.getWrappedDriver(), true, getLocator() );
-
 			String text = baseElement.getText();
-
 			drv.fireEvent( this, EVENT_GET_TEXT, drv.getWrappedDriver(), false, text );
-
 			return text;
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
 			drv.fireError( this, EVENT_GET_TEXT, drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			throw e;
 		}
 	}
 
 	@Override
 	public boolean isDisplayed()
 	{
-		return baseElement.isDisplayed();
+		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
+		try
+		{
+			boolean displayed = baseElement.isDisplayed();
+			drv.fireEvent( this, EVENT_IS_DISPLAYED, drv.getWrappedDriver(), true, displayed );
+			return displayed;
+		}
+		catch ( WebDriverException e )
+		{
+			drv.fireError( this, EVENT_IS_DISPLAYED, drv.getWrappedDriver(), e );
+			throw e;
+		}
 	}
 
 	@Override
@@ -209,7 +226,18 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public String getCssValue( final String propertyName )
 	{
-		return baseElement.getCssValue( propertyName );
+		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
+		try
+		{
+			String value = baseElement.getCssValue( propertyName );
+			drv.fireEvent( this, EVENT_GET_CSS_PROPERTY, drv.getWrappedDriver(), false, propertyName, value );
+			return value;
+		}
+		catch ( WebDriverException e )
+		{
+			drv.fireError( this, EVENT_GET_CSS_PROPERTY, drv.getWrappedDriver(), e );
+			throw e;
+		}
 	}
 
 	@Override
@@ -239,7 +267,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 			// returns an empty list
 			return Lists.newArrayListWithExpectedSize( 0 );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
 			drv.fireError( this, type, drv.getWrappedDriver(), e );
 			throw new WebDriverException( e );
@@ -261,7 +289,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 		}
 		catch ( NoSuchElementException | StaleElementReferenceException e )
 		{
-			drv.fireError( this, type,drv.getWrappedDriver(), e );
+			drv.fireError( this, type, drv.getWrappedDriver(), e );
 			throw e;
 		}
 	}
@@ -275,9 +303,9 @@ public class HtmlObject implements HtmlElement, EventTypes
 
 		try
 		{
-			drv.fireEvent( this, type, drv.getWrappedDriver(), true, keysToSend );
+			drv.fireEvent( this, type, drv.getWrappedDriver(), true, Joiner.on( "," ).join( keysToSend ) );
 			baseElement.sendKeys( keysToSend );
-			drv.fireEvent( this, type, drv.getWrappedDriver(), false, keysToSend );
+			drv.fireEvent( this, type, drv.getWrappedDriver(), false, Joiner.on( "," ).join( keysToSend ) );
 		}
 		catch ( NoSuchElementException | StaleElementReferenceException e )
 		{
@@ -291,9 +319,9 @@ public class HtmlObject implements HtmlElement, EventTypes
 
 	//region HtmlObject - Service Methods Section
 
-	protected void setFoundBy( SearchContext foundFrom, By locator )
+	protected void setFoundBy( By locator )
 	{
-		this.foundBy = String.format( "[%s] -> %s", foundFrom.getClass().getSimpleName(), locator );
+		this.foundBy = locator.toString();
 	}
 
 	protected void setId( String id )
@@ -348,7 +376,21 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public Coordinates getCoordinates()
 	{
-		return null;
+		return ( ( RemoteWebElement ) baseElement ).getCoordinates();
+	}
+
+	@Override
+	public Optional<ScreenshotAndHtmlSource> captureBitmap()
+	{
+		Photographer photographer = new Photographer( this );
+		photographer.setStoreHtmlSourceCode( false );
+		return photographer.grabScreenshot();
+	}
+
+	@Override
+	public JAssertion createAssertion()
+	{
+		return new JAssertion( getWrappedHtmlDriver() );
 	}
 
 	@Override
@@ -357,7 +399,6 @@ public class HtmlObject implements HtmlElement, EventTypes
 		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
 				.append( "qualifier", qualifier )
 				.append( "locator", foundBy )
-				.append( "element id", id )
 				.toString();
 	}
 
@@ -369,14 +410,28 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public void scrollIntoView()
 	{
-		Point p = ( ( RemoteWebElement ) baseElement ).getCoordinates().inViewPort();
+		( ( RemoteWebElement ) baseElement ).getCoordinates().inViewPort();
 		Sleeper.pauseFor( 200 );
+	}
+
+	@Override
+	public void scrollIntoView( final boolean alignToTop )
+	{
+		String SCRIPT = "arguments[0].scrollIntoView( arguments[1] )";
+		getWrappedHtmlDriver().executeScript( SCRIPT, this, alignToTop );
 	}
 
 	@Override
 	public void mark( final HighlightStyle style )
 	{
-		style.doHighlight( getWrappedHtmlDriver(), this );
+		try
+		{
+			style.doHighlight( getWrappedHtmlDriver(), this );
+		}
+		catch ( Exception e )
+		{
+			logger.warn( "Exception while marking object -> {}", ExceptionUtils.getRootCauseMessage( e ) );
+		}
 	}
 
 	@Override
@@ -399,16 +454,36 @@ public class HtmlObject implements HtmlElement, EventTypes
 
 		try
 		{
-			drv.fireEvent( this, EVENT_CLICK, drv.getWrappedDriver(), true );
+			drv.fireEvent( this, EVENT_JS_CLICK, drv.getWrappedDriver(), true );
 			final String SCRIPT = "$( arguments[0] ).trigger( \"click\" );";
 			drv.executeScript( SCRIPT, baseElement );
-			drv.fireEvent( this, EVENT_CLICK, getWrappedHtmlDriver().getWrappedDriver(), false );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
-			drv.fireError( this, EVENT_CLICK, drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			drv.fireError( this, EVENT_JS_CLICK, drv.getWrappedDriver(), e );
+			throw e;
 		}
+	}
+
+	@Override
+	public void focus()
+	{
+		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
+
+			final String SCRIPT = "arguments[0].focus()";
+			drv.executeScript( SCRIPT, baseElement );
+
+	}
+
+	@Override
+	public void blur()
+	{
+		HtmlWebDriver drv = ( HtmlWebDriver ) getWrappedHtmlDriver();
+
+
+			final String SCRIPT = "arguments[0].blur()";
+			drv.executeScript( SCRIPT, baseElement );
+
 	}
 
 	//endregion
@@ -597,45 +672,20 @@ public class HtmlObject implements HtmlElement, EventTypes
 		{
 			drv.fireEvent( this, EVENT_HOVER, drv.getWrappedDriver(), true, getLocator() );
 			new Actions( drv.getWrappedDriver() ).moveToElement( getWrappedElement() ).build().perform();
-			drv.fireEvent( this, EVENT_HOVER, drv.getWrappedDriver(), false, getLocator() );
 		}
-		catch ( Exception e )
+		catch ( WebDriverException e )
 		{
-			drv.fireError( this, EVENT_HOVER,drv.getWrappedDriver(), e );
-			throw new WebDriverException( e );
+			drv.fireError( this, EVENT_HOVER, drv.getWrappedDriver(), e );
+			throw e;
 		}
 	}
 
 	//endregion
 
 
-	@Override
-	public void blur()
-	{
-
-	}
-
-	@Override
-	public Optional<ScreenshotAndHtmlSource> captureBitmap() throws IOException
-	{
-		return null;
-	}
 
 
 
-
-	@Override
-	public void focus()
-	{
-
-	}
-
-
-	@Override
-	public JAssertion createAssertion()
-	{
-		return new JAssertion( getWrappedHtmlDriver() );
-	}
 
 
 
