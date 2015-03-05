@@ -1,5 +1,6 @@
 package com.framework.site.objects.header;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
@@ -44,9 +45,8 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 
 	private static final Logger logger = LoggerFactory.getLogger( NavigationAdditionalObject.class );
 
-
 	// ------------------------------------------------------------------------|
-	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
 	// ------------------------------------------------------------------------|
 
 	private HtmlElement flyouts;
@@ -80,7 +80,7 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+		logger.info( "validating static elements for web object id: < {} >, name:< {} >...",
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
@@ -139,10 +139,9 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	@Override
 	public PageObject clickOnMenuItem( final LevelOneMenuItem level1, final MenuItems level2 )
 	{
-		logger.info( "Clicking on menu item < '{}';'{}' >", level1.getTitle(), level2.getTitle() );
-
 		PreConditions.checkState( isDisplayed(), "The NaNavigationAdditional section is not displayed." );
 
+		logger.info( "Clicking on menu item < '{}';'{}' >", level1.getTitle(), level2.getTitle() );
 		Link link = new Link( findMenuItemAnchor( level1, level2 ) );
 		return clickOnMenuItem( link, level2 );
 	}
@@ -150,8 +149,10 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	@Override
 	public PageObject clickOnMenuItem( final Link link, final MenuItems level2 )
 	{
-		PreConditions.checkState( isDisplayed(), "The NavigationAdditional section is not displayed." );
+
+		logger.info( "clicking on menu item < {} >", level2.name() );
 		link.click();
+		Locale locale = SiteSessionManager.get().getCurrentLocale();
 
 		switch( level2 )
 		{
@@ -162,9 +163,16 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 			case HELP_ME_DECIDE 	: 	return new VacationPlannerPage();
 			case DESTINATIONS		:
 			{
-				Locale locale = SiteSessionManager.get().getCurrentLocale();
-				if( locale.equals( Locale.UK ) ) return new BeginnersGuidePage();
-				if( locale.equals( Locale.US ) ) return new CruiseToPage();
+				if( locale.equals( Locale.UK ) )
+				{
+					logger.info( "current locale is < {} > returning new instance of BeginnersGuidePage", locale.getDisplayCountry() );
+					return new BeginnersGuidePage();
+				}
+				if( locale.equals( Locale.US ) )
+				{
+					logger.info( "current locale is < {} > returning new instance of CruiseToPage", locale.getDisplayCountry() );
+					return new CruiseToPage();
+				}
 			}
 			case FIND_A_CRUISE		:   return new FindACruisePage();
 			case FIND_A_PORT		: 	return new CloseToHomePage();
@@ -177,15 +185,31 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 			case ONBOARD_ACTIVITIES : 	return new OnboardActivitiesPage();
 			case DINING				: 	return new DiningPage();
 			case ACCOMMODATIONS 	: 	return new StateRoomsPage();
-			case OUR_SHIPS			: 	return new CruiseShipsPage();
+			case OUR_SHIPS          :
+			{
+				if( locale.equals( HomePage.AU ) )
+				{
+					logger.info( "current locale is < {} > returning new instance of CruiseToPage", locale.getDisplayCountry() );
+					return new BaseCruiseShipsPage();
+				}
+				logger.info( "current locale is < {} > returning new instance of CruiseShipsPage", locale.getDisplayCountry() );
+				return new CruiseShipsPage();
+			}
 			case CARIBBEAN			: 	return new UKCaribbeanPage();
 			case WHATS_INCLUDED 	:
 			case ON_THE_SHIP		:	return new BeginnersGuidePage();
 			case SHORE_EXCURSIONS 	:
 			{
-				Locale locale = SiteSessionManager.get().getCurrentLocale();
-				if( locale.equals( Locale.UK ) )  		return new BeginnersGuidePage();
-				else if( locale.equals( Locale.US ) ) 	return new ActivitiesPage();
+				if( locale.equals( Locale.UK ) )
+				{
+					logger.info( "current locale is < {} > returning new instance of BeginnersGuidePage", locale.getDisplayCountry() );
+					return new BeginnersGuidePage();
+				}
+				else if( locale.equals( Locale.US ) )
+				{
+					logger.info( "current locale is < {} > returning new instance of ActivitiesPage", locale.getDisplayCountry() );
+					return new ActivitiesPage();
+				}
 			}
 			case IN_ROOM_GIFTS_AND_SHOPPING : return new FunShopsPage();
 			default:
@@ -254,7 +278,9 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	@Override
 	public HtmlElement getImage( final Link link )
 	{
-		return link.getHtmlElement().findElement( By.tagName( "img" ) );
+		HtmlElement img = link.getHtmlElement().findElement( By.tagName( "img" ) );
+		logger.info( "returning img object with src < {} >", img.getAttribute( "src" ) );
+		return img;
 	}
 
 	@Override
@@ -268,7 +294,9 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	{
 		HtmlElement img = findMenuItemImg( link );
 		String value = img.getAttribute( "data-default" );
-		return FilenameUtils.getName( value );
+		String def = FilenameUtils.getName( value );
+		logger.info( "Returning data default for img < {} >", def );
+		return def;
 	}
 
 	@Override
@@ -276,69 +304,18 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 	{
 		HtmlElement img = findMenuItemImg( link );
 		String value = img.getAttribute( "data-hover" );
-		return FilenameUtils.getName( value );
+		String hover = FilenameUtils.getName( value );
+		logger.info( "Returning data hover for img < {} >", hover );
+		return hover;
 	}
 
 	@Override
 	public List<String> getChildMenuItemsNames( LevelOneMenuItem level1 )
 	{
 		List<HtmlElement> elements = findMenuItemsAnchors( level1 );
-		return HtmlObject.extractAttribute( elements, "textContent" );
-	}
-
-	public PageObject selectMenuItem( List<Link> links, final MenuItems menuItem )
-	{
-		logger.info( "Selecting menu item <'{}'>. link argument is -> Link.size = {}", menuItem.getTitle(), links.size() );
-
-
-
-			switch( menuItem )
-			{
-//				case WHY_CARNIVAL   	: return new CruisingPage( getDriver() );
-//				case WHATS_IT_LIKE  	: return new What2ExpectPage( getDriver() );
-//				case WHERE_CAN_I_GO 	: return new CruiseDestinationsAndPortsPage( getDriver() );
-//				case HOW_MUCH_IS_IT 	: return new CruiseCostPage( getDriver() );
-//				case HELP_ME_DECIDE 	: return new VacationPlannerPage( getDriver() );
-//				case CARIBBEAN			: return new UKCaribbeanPage( getDriver() );
-//				case WHATS_INCLUDED 	:
-//				case ON_THE_SHIP		:
-//				case DESTINATIONS		:
-//				{
-//					Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
-//					if( locale.equals( Locale.UK ) ) return new BeginnersGuidePage( getDriver() );
-//					if( locale.equals( Locale.US ) ) return new CruiseToPage( getDriver() );
-//				}
-//				case ONBOARD_ACTIVITIES : return new OnboardActivitiesPage( getDriver() );
-//				case DINING				: return new DiningPage( getDriver() );
-//				case ACCOMMODATIONS 	: return new StateRoomsPage( getDriver() );
-//				case OUR_SHIPS			: return new CruiseShipsPage( getDriver() );
-//				case MY_BOOKING			:
-//				case CHECK_IN			:
-//				case PLAN_ACTIVITIES	: return new BookedGuestLogonPage( getDriver() );
-//				case VIFP_CLUB			: return new VifpClubPage( getDriver() );
-//				case FIND_A_CRUISE		: return new FindACruisePage( getDriver() );
-//				case FIND_A_PORT		: return new CloseToHomePage( getDriver() );
-//				case FAQ_S				: return new FaqPage( getDriver() );
-//				case FORUMS				: return new ForumsPage( getDriver() );
-//				case SHORE_EXCURSIONS 	:
-//				{
-//					Locale locale = ( Locale ) InitialPage.getRuntimeProperties().getRuntimePropertyValue( "locale" );
-//					if( locale.equals( Locale.UK ) )
-//					{
-//						return new BeginnersGuidePage( getDriver() );
-//					}
-//					else if( locale.equals( Locale.US ) )
-//					{
-//						return new ActivitiesPage( getDriver() );
-//					}
-//				}
-//				case IN_ROOM_GIFTS_AND_SHOPPING: return new FunShopsPage( getDriver() );
-//				default:
-//				{
-//					throw new ApplicationException( getDriver(), "The menu item <'{" + menuItem.getTitle() + "}'> was not found"  );
-//				}
-			}
-		    return null;
+		List<String> list = HtmlObject.extractAttribute( elements, "textContent" );
+		logger.info( "return a list of child-menu items names < {} >", Lambda.join( list, ", " ) );
+		return list;
 	}
 
 	//endregion
@@ -476,7 +453,6 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 
 	private HtmlElement findMenuItemAnchor( LevelOneMenuItem menuItem, MenuItems item )
 	{
-
 		final By findBy = By.xpath( String.format( ".//span[@class=\"title\" and normalize-space(.)=\"%s\"]/..", item.getTitle() ) );
 		return findDataCclFlyoutLevelOneItem( menuItem ).findElement( findBy );
 	}
