@@ -2,12 +2,12 @@ package com.framework.driver.exceptions;
 
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlElement;
-import com.framework.testing.steping.screenshots.ScreenshotAndHtmlSource;
+import com.framework.driver.utils.ui.screenshots.Photographer;
+import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.openqa.selenium.internal.BuildInfo;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -90,8 +90,8 @@ public class ApplicationException extends RuntimeException
 	public ApplicationException( HtmlDriver driver, final String message, Throwable cause )
 	{
 		super( message, cause );
-		takeScreenshot( driver );
 		this.driver = driver;
+		takeScreenshot( driver );
 	}
 
 	/**
@@ -103,8 +103,8 @@ public class ApplicationException extends RuntimeException
 	public ApplicationException( HtmlDriver driver, Throwable cause )
 	{
 		super( cause );
-		takeScreenshot( driver );
 		this.driver = driver;
+		takeScreenshot( driver );
 	}
 
 
@@ -117,23 +117,8 @@ public class ApplicationException extends RuntimeException
 	public ApplicationException( HtmlElement element, final String message )
 	{
 		super( message );
-		try
-		{
-			Optional<ScreenshotAndHtmlSource> screenshot = element.captureBitmap();
-			if( screenshot.isPresent() )
-			{
-				addInfo( "screenshot name", screenshot.get().getScreenshotName() );
-				if( screenshot.get().getHtmlSource().isPresent() )
-				{
-					addInfo( "html source name", screenshot.get().getHtmlSourceName() );
-				}
-			}
-			this.driver = element.getWrappedHtmlDriver();
-		}
-		catch ( IOException e )
-		{
-			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
-		}
+		takeScreenshot( element );
+		this.driver = element.getWrappedHtmlDriver();
 	}
 
 	/**
@@ -145,15 +130,8 @@ public class ApplicationException extends RuntimeException
 	public ApplicationException( HtmlElement element, Throwable cause )
 	{
 		super( cause );
-		try
-		{
-			element.captureBitmap();
-			this.driver = element.getWrappedHtmlDriver();
-		}
-		catch ( IOException e )
-		{
-			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
-		}
+		takeScreenshot( element );
+		this.driver = element.getWrappedHtmlDriver();
 	}
 
 	/**
@@ -166,15 +144,8 @@ public class ApplicationException extends RuntimeException
 	public ApplicationException( HtmlElement element, final String message, Throwable cause )
 	{
 		super( message, cause );
-		try
-		{
-			element.captureBitmap();
-			this.driver = element.getWrappedHtmlDriver();
-		}
-		catch ( IOException e )
-		{
-			addInfo( "screenshot", "could not capture screenshot due an error -> " + e.getMessage() );
-		}
+		takeScreenshot( element );
+		this.driver = element.getWrappedHtmlDriver();
 	}
 
 	private String createMessage( String originalMessageString )
@@ -215,10 +186,32 @@ public class ApplicationException extends RuntimeException
 
 	private void takeScreenshot( HtmlDriver driver )
 	{
-		// System.getProperty( "output.directory" )
-		//Screenshot screenshot = new Screenshot( driver, "/Users/solmarkn/IdeaProjects/WebDriverTestNg/Screenshots" );
-		//String outputFile = screenshot.takeScreenshot();
-		//super.addInfo( "screenshot file", outputFile );
+		Photographer photographer = new Photographer( driver );
+		Optional<ScreenshotAndHtmlSource> src = photographer.grabScreenshot();
+		if( src.isPresent() )
+		{
+			if( src.get().wasTaken() )
+			{
+				addInfo( "screenshot name", src.get().getScreenshotName() );
+				addInfo( "screenshot path", src.get().getScreenshotFile().getAbsolutePath() );
+				if( src.get().getHtmlSource().isPresent() )
+				{
+					addInfo( "html source", src.get().getHtmlSourceName() );
+				}
+			}
+		}
+	}
+
+	private void takeScreenshot( HtmlElement element )
+	{
+		Optional<ScreenshotAndHtmlSource> src = element.captureBitmap();
+		if( src.isPresent() )
+		{
+			if( src.get().wasTaken() )
+			{
+				addInfo( "screenshot file", src.get().getScreenshotName() );
+			}
+		}
 	}
 
 	public void addInfo( String key, String value )
