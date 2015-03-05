@@ -19,46 +19,49 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum DeparturePorts
 {
+	BALTIMORE( "MD", "BWI", "baltimore" ),
 
-	BALTIMORE( "MD", "BWI" ),
+	BARBADOS( StringUtils.EMPTY, "BDS", "barbados" ),
 
-	BARBADOS( StringUtils.EMPTY, "BDS" ),
+	CHARLESTON( "SC", "CHS", "charleston" ),
 
-	CHARLESTON( "SC", "CHS" ),
+	FORT_LAUDERDALE( "FL", "FLL", "ft-lauderdale" ),
 
-	FORT_LAUDERDALE( "FL", "FLL" ),
+	GALVESTON( "TX", "GAL", "galveston" ),
 
-	GALVESTON( "TX", "GAL" ),
+	HONOLULU( "HI", "HNL", "honolulu" ),
 
-	HONOLULU( "HI", "HNL" ),
+	JACKSONVILLE( "FL", "JAX", "jacksonville" ),
 
-	JACKSONVILLE( "FL", "JAX" ),
+	LOS_ANGELES( "CA", "LAX", "los-angeles" ),
 
-	LOS_ANGELES( "CA", "LAX" ),
+	MIAMI( "FL", "MIA", "miami" ),
 
-	MIAMI( "FL", "MIA" ),
+	NEW_ORLEANS( "LA", "MSY", "new-orleans" ),
 
-	NEW_ORLEANS( "LA", "MSY" ),
+	NEW_YORK( "NY", "NYC", "new-york" ),
 
-	NEW_YORK( "NY", "NYC" ),
+	NORFOLK( "VA", "ORF", "norfolk" ),
 
-	NORFOLK( "VA", "ORF" ),
+	PORT_CANAVERAL( "Port Canaveral (Orlando)", "FL", "PCV", "port-canaveral" ),
 
-	PORT_CANAVERAL( "Port Canaveral (Orlando)", "FL", "PCV" ),
+	SAN_JUAN( "Puerto Rico", "SJU", "san-juan" ),
 
-	SAN_JUAN( "Puerto Rico", "SJU" ),
+	SEATTLE( "WA", "SEA", "seattle" ),
 
-	SEATTLE( "WA", "SEA" ),
+	TAMPA( "FL", "TPA", "tampa" ),
 
-	TAMPA( "FL", "TPA" ),
+	VANCOUVER( "BC, Canada", "YVR", "vancouver" ),
 
-	VANCOUVER( "BC, Canada", "YVR" ),
+	TRIESTE( "Italy", "TRS", "trieste" ),
 
-	TRIESTE( "Italy", "TRS" ),
+	ATHENS( "Greece", "", "athens" ),
 
-	ATHENS( "Greece", "" ),
+	BARCELONA( "Spain", "", "barcelona" ),
 
-	BARCELONA( "Spain", "" );
+	SIDNEY( "", "", "sidney" ),
+
+	SINGAPORE( "", "", "singapore" );
 
 	// ------------------------------------------------------------------------------------------ //
 
@@ -68,21 +71,27 @@ public enum DeparturePorts
 
 	private final String departurePort;
 
+	private final String href;
+
+
+
 	//endregion
 
 
 	//region DeparturePorts - Enumeration constructors
 
-	private DeparturePorts( final String stateCountry, final String id )
+	private DeparturePorts( final String stateCountry, final String id, final String href )
 	{
 		this.id = id;
+		this.href = href;
 		String city =  StringUtils.capitalize( name().replaceAll( "_", " " ).toLowerCase() );
 		this.departurePort = ( StringUtils.isEmpty( stateCountry ) ) ? city + ", " + stateCountry : city;
 	}
 
-	private DeparturePorts( final String port, final String stateCountry, final String id )
+	private DeparturePorts( final String port, final String stateCountry, final String id, final String href )
 	{
 		this.id = id;
+		this.href = href;
 		this.departurePort = ( StringUtils.isEmpty( stateCountry ) ) ? port + ", " + stateCountry : port;
 	}
 
@@ -101,16 +110,21 @@ public enum DeparturePorts
 		return id;
 	}
 
+	public String getHref()
+	{
+		return href;
+	}
+
 	//endregion
 
 
 	//region DeparturePorts - Search
 
-	public static DeparturePorts valueByName( String name )
+	public static DeparturePorts valueByHRef( String href )
 	{
 		for ( DeparturePorts e : values() )
 		{
-			if ( e.toString().toLowerCase().contains( name.toLowerCase() ) )
+			if ( href.contains( e.getHref() ) )
 			{
 				return e;
 			}

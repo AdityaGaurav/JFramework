@@ -83,7 +83,7 @@ public class SmartRandomShipCard
 		logger.debug( "searching file < {} >", fileName );
 		Path startingDir = Paths.get( SystemUtils.USER_DIR );
 
-		FileFinder finder = new FileFinder( "compare.random.ships.xml" );
+		FileFinder finder = new FileFinder( fileName );
 		Files.walkFileTree( startingDir, finder );
 		Set<String> files = finder.getFiles();
 		for( String path : files )

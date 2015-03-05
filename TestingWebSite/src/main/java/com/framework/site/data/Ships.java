@@ -67,7 +67,10 @@ public enum Ships
 
 	VISTA( "VS" ),
 
-	PARADISE( "PA" );
+	PARADISE( "PA" ),
+
+	/** Valid only for australia */
+	SPIRIT( "SP" );
 
 	// ------------------------------------------------------------------------------------------ //
 

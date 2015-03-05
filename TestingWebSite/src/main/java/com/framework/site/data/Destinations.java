@@ -1,8 +1,5 @@
 package com.framework.site.data;
 
-import org.apache.commons.lang3.StringUtils;
-
-
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -19,25 +16,31 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum Destinations
 {
-	ALASKA( "A" ),
+	ALASKA( "A", "alaska-cruises" ),
 
-	BAHAMAS( "BH" ),
+	BAHAMAS( "BH", "bahamas-cruises" ),
 
-	BERMUDA( "BM" ),
+	BERMUDA( "BM", "bermuda-cruises" ),
 
-	CANADA_NEW_ENGLAND( "Canada/New England", "NN" ),
+	CANADA_NEW_ENGLAND( "NN", "canada-new-england-cruises" ),
 
-	CARIBBEAN( "C" ),
+	CARIBBEAN( "C", "caribbean-cruises" ),
 
-	CRUISE_TO_NOWHERE( "CN" ),
+	CRUISE_TO_NOWHERE( "CN", "cruise-to-nowhere" ),
 
-	HAWAII( "H" ),
+	HAWAII( "H", "hawaii-cruises" ),
 
-	MEXICO( "M" ),
+	MEXICO( "M", "mexico-cruises" ),
 
-	EUROPE( "E" ),
+	EUROPE( "E", "europe-cruises" ),
 
-	TRANSATLANTIC( "?" );
+	TRANSATLANTIC( "?", "transatlantic-cruises" ),
+
+	AUSTRALIA_CRUISES( "Australia Cruises", "australia" ),
+
+	LONG_CRUISES( "Long Cruises", "long-cruises" ),
+
+	PACIFIC_ISLANDS( "Pacific Islands", "pacific-islands" );
 
 	// ------------------------------------------------------------------------------------------ //
 
@@ -45,23 +48,17 @@ public enum Destinations
 
 	private final String id;
 
-	private final String destination;
+	private final String href;
 
 	//endregion
 
 
 	//region Destinations - Enumeration constructors
 
-	private Destinations( final String destination, final String id )
+	private Destinations( final String id, final String href )
 	{
 		this.id = id;
-		this.destination = destination;
-	}
-
-	private Destinations( final String id )
-	{
-		this.id = id;
-		this.destination = StringUtils.capitalize( name().replaceAll( "_", " " ).toLowerCase() );
+		this.href = href;
 	}
 
 	//endregion
@@ -69,19 +66,14 @@ public enum Destinations
 
 	//region Destinations getters
 
-	public String getDestination()
-	{
-		return destination;
-	}
-
 	public String getId()
 	{
 		return id;
 	}
 
-	public String getCapitalized()
+	public String getHref()
 	{
-		return StringUtils.capitalize( name().toLowerCase() );
+		return href;
 	}
 
 	//endregion
@@ -89,11 +81,11 @@ public enum Destinations
 
 	//region Destinations - Search
 
-	public static Destinations valueByName( String name )
+	public static Destinations valueByHRef( String href )
 	{
 		for ( Destinations e : values() )
 		{
-			if ( e.toString().toLowerCase().contains( name.toLowerCase() ) )
+			if( href.contains( e.getHref() ) )
 			{
 				return e;
 			}
@@ -121,7 +113,7 @@ public enum Destinations
 	@Override
 	public String toString()
 	{
-		return destination;
+		return name().replace( "_", " " );
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.framework.site.data;
 
-import com.google.common.base.MoreObjects;
+import com.framework.site.config.SiteSessionManager;
+import com.framework.site.pages.core.HomePage;
 
 
 /**
@@ -19,12 +20,11 @@ import com.google.common.base.MoreObjects;
 
 public enum TripDurations
 {
-	TWO_FIVE_DAYS( "2-5 Days", "D1"),
+	TWO_FIVE_DAYS( SiteSessionManager.get().getCurrentLocale().equals( HomePage.AU ) ? "2 – 5 Days" : "2-5 Days", "D1"),
 
-	SIX_NINE_DAYS( "6-9 Days", "D2" ),
+	SIX_NINE_DAYS( SiteSessionManager.get().getCurrentLocale().equals( HomePage.AU ) ? "6 – 9 Days" : "6-9 Days", "D2" ),
 
 	TEN_PLUS_DAYS( "10+ Days", "D3" );
-
 
 	private final String title;
 
@@ -50,7 +50,7 @@ public enum TripDurations
 	{
 		for ( TripDurations e : values() )
 		{
-			if ( e.getTitle().toLowerCase().equals( name.toLowerCase() ) )
+			if ( e.getTitle().equalsIgnoreCase( name ) )
 			{
 				return e;
 			}
@@ -73,9 +73,6 @@ public enum TripDurations
 	@Override
 	public String toString()
 	{
-		return MoreObjects.toStringHelper( this )
-				.add( "title", title )
-				.omitNullValues()
-				.toString();
+		return title;
 	}
 }
