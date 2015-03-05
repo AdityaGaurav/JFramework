@@ -36,7 +36,6 @@ import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.web.CSS2Properties;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
@@ -475,7 +474,7 @@ public class ShipsLandingPageTest extends BaseTest
 	}
 
 	@UserStory ( "PBI-52423" )
-	@TestCasesIds ( ids = { 59442, 66901 } )
+	@TestCasesIds ( ids = { 66901 } )
 	@Steps ( steps = {
 			@Step ( number = 1, description = "GIVEN that the user is in Ships Landing page /cruise-ships.aspx" ),
 			@Step ( number = 2, description = "WHEN user select a single departure port filter",
@@ -590,7 +589,8 @@ public class ShipsLandingPageTest extends BaseTest
 		}
 	}
 
-	@UserStory ( "Self" )
+	@UserStory ( "PBI-52423" )
+	@TestCaseId ( id = 66901 )
 	@Steps ( steps = {
 			@Step ( number = 1, description = "GIVEN that the user is in Ships Landing page /cruise-ships.aspx" ),
 			@Step ( number = 2, description = "WHEN user select a single destination filter",
@@ -1065,7 +1065,7 @@ public class ShipsLandingPageTest extends BaseTest
 				{
 					context.setAttribute( "tileDestinations", 0 );
 				}
-				int rnd = PropertyConverter.toInteger( context.getAttribute( "tileDestinations" ) );
+				int rnd = Integer.valueOf( context.getAttribute( "tileDestinations" ).toString() );
 				if( rnd == 0 )
 				{
 					shipCard = cruiseShipsPage.selectShip( ships[ 0 ] );
@@ -1100,15 +1100,7 @@ public class ShipsLandingPageTest extends BaseTest
 				CruiseToDestinationPage cruiseToDestinationPage = ( CruiseToDestinationPage ) page;
 				String REASON = "Validates Departure port url " + selected.name().toLowerCase();
 				String ACTUAL_STR = cruiseToDestinationPage.getCurrentUrl();
-				String expected;
-				if( SiteSessionManager.get().getCurrentLocale().equals( HomePage.AU ) )
-				{
-					expected = selected.getHref() + ".aspx";
-				}
-				else
-				{
-					expected = selected.getHref() + "-cruises.aspx";
-				}
+				String expected = selected.getHref() + ".aspx";
 				Matcher<String> EXPECTED_OF_STR = JMatchers.endsWithIgnoreCase( expected );
 				SiteSessionManager.get().createCheckPoint( "PORT_URL_" + selected.name() )
 						.assertThat( REASON, ACTUAL_STR, EXPECTED_OF_STR );
@@ -1269,13 +1261,13 @@ public class ShipsLandingPageTest extends BaseTest
 			String REASON = "Validate Australia have only X ships.";
 			Object o = SiteProperty.SHIPS_COUNT.fromContext();
 			int ACTUAL_INT = cruiseShipsPage.getShipCardsCount();
-			Matcher<Integer> EXPECTED_OF_INT = JMatchers.is( PropertyConverter.toInteger( o ) );
+			Matcher<Integer> EXPECTED_OF_INT = JMatchers.is( Integer.valueOf( o.toString() ));
 			SiteSessionManager.get().createCheckPoint( "SHIPS_COUNT" )
 					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
 
 			REASON = "Validate counter for X ships.";
 			ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			EXPECTED_OF_INT = JMatchers.is( PropertyConverter.toInteger( o ) );
+			EXPECTED_OF_INT = JMatchers.is( Integer.valueOf( o.toString() ) );
 			SiteSessionManager.get().createCheckPoint( "SHIPS_DISPLAY_COUNTER" )
 					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
 
