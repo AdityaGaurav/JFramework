@@ -410,7 +410,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			Matcher<Boolean> EXPECTED_OF_BOOL = JMatchers.is( true );
 			getDriver().assertThat( REASON, ACTUAL, EXPECTED_OF_BOOL );
 		}
-		compareAnchor.jsClick();
+		compareAnchor.click();
 	}
 
 	@Override
