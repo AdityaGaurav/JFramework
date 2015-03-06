@@ -1,123 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ships>
-    <ship id="PR" desc="Carnival Pride">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="FD" desc="Carnival Freedom">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="SH" desc="Carnival Sunshine">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="BR" desc="Carnival Breeze">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="MC" desc="Carnival Magic">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="TI" desc="Carnival Triumph">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="GL" desc="Carnival Glory">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="CQ" desc="Carnival Conquest">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="DR" desc="Carnival Dream">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="EC" desc="Carnival Ecstasy">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="SL" desc="Carnival Splendor">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="VA" desc="Carnival Valor">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="LE" desc="Carnival Legend">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="LI" desc="Carnival Liberty">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="EL" desc="Carnival Elation">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="VI" desc="Carnival Victory">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="MI" desc="Carnival Miracle">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="FS" desc="Carnival Fascination">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="FA" desc="Carnival Fantasy">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="SE" desc="Carnival Sensation">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="IS" desc="Carnival Inspiration">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="IM" desc="Carnival Imagination">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="VS" desc="Carnival Vista">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-    <ship id="PA" desc="Carnival Paradise">
-        <validFor>US</validFor>
-        <selections>0</selections>
-        <lastSelected>null</lastSelected>
-    </ship>
-</ships>
+
+<!-- dates format must be in yyyy-MMM-dd HH:mm:ss format e.e 2014-Jun-14 10:22:30 -->
+<ship-selector> 
+  <last-updated>2015-Mar-03 18:47:27</last-updated>  
+  <updater-user>solmarkn</updater-user>  
+  <updater-host>Dani-Vainsteins-MacBook-Pro.local/192.168.0.2</updater-host>  
+  <ships> 
+    <ship ID="PR" desc="Carnival Pride"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:25:03</last-selected> 
+    </ship>  
+    <ship ID="FD" desc="Carnival Freedom"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:25:07</last-selected> 
+    </ship>  
+    <ship ID="SH" desc="Carnival Sunshine"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:25:36</last-selected> 
+    </ship>  
+    <ship ID="BR" desc="Carnival Breeze"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:26:05</last-selected> 
+    </ship>  
+    <ship ID="MC" desc="Carnival Magic"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:26:34</last-selected> 
+    </ship>  
+    <ship ID="TI" desc="Carnival Triumph"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:27:31</last-selected> 
+    </ship>  
+    <ship ID="GL" desc="Carnival Glory"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:28:16</last-selected> 
+    </ship>  
+    <ship ID="CQ" desc="Carnival Conquest"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:28:57</last-selected> 
+    </ship>  
+    <ship ID="DR" desc="Carnival Dream"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:33:42</last-selected> 
+    </ship>  
+    <ship ID="EC" desc="Carnival Ecstasy"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:34:13</last-selected> 
+    </ship>  
+    <ship ID="SL" desc="Carnival Splendor"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:34:43</last-selected> 
+    </ship>  
+    <ship ID="VA" desc="Carnival Valor"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:38:21</last-selected> 
+    </ship>  
+    <ship ID="LE" desc="Carnival Legend"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:44:13</last-selected> 
+    </ship>  
+    <ship ID="LI" desc="Carnival Liberty"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:46:28</last-selected> 
+    </ship>  
+    <ship ID="EL" desc="Carnival Elation"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:46:57</last-selected> 
+    </ship>  
+    <ship ID="VI" desc="Carnival Victory"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>6</selections>  
+      <last-selected>2015-Mar-03 18:47:27</last-selected> 
+    </ship>  
+    <ship ID="MI" desc="Carnival Miracle"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:43:21</last-selected> 
+    </ship>  
+    <ship ID="FS" desc="Carnival Fascination"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:44:18</last-selected> 
+    </ship>  
+    <ship ID="FA" desc="Carnival Fantasy"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:45:12</last-selected> 
+    </ship>  
+    <ship ID="SE" desc="Carnival Sensation"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:46:09</last-selected> 
+    </ship>  
+    <ship ID="IS" desc="Carnival Inspiration"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:50:32</last-selected> 
+    </ship>  
+    <ship ID="IM" desc="Carnival Imagination"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:51:01</last-selected> 
+    </ship>  
+    <ship ID="VS" desc="Carnival Vista"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 17:51:19</last-selected> 
+    </ship>  
+    <ship ID="PA" desc="Carnival Paradise"> 
+      <valid-for>US,UK</valid-for>  
+      <selections>5</selections>  
+      <last-selected>2015-Mar-03 18:24:59</last-selected> 
+    </ship> 
+  </ships> 
+</ship-selector>
