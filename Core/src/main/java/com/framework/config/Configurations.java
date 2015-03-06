@@ -29,7 +29,6 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
@@ -703,7 +702,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 
 			return null;
 		}
-		catch ( IOException | ConfigurationException ioEx )
+		catch ( Exception ioEx )
 		{
 			logger.error( ioEx.getMessage() );
 			throw new com.framework.driver.exceptions.ConfigurationRuntimeException( ioEx );
@@ -740,7 +739,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 			logger.info( "Configuration file < '{}' > was loaded successfully!", props.getBasePath() );
 			return props;
 		}
-		catch ( ConfigurationException cEx )
+		catch ( Exception cEx )
 		{
 			logger.error( cEx.getMessage() );
 			throw new com.framework.driver.exceptions.ConfigurationRuntimeException( cEx );
