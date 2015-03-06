@@ -518,6 +518,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 	{
 		try
 		{
+			WebDriverEventSource.setIgnoreOnError( true );
 			HtmlCondition<HtmlElement> condition = ExpectedConditions.presenceOfChildBy( this, locator );
 			HtmlDriverWait wait = HtmlDriverWait.wait( getWrappedHtmlDriver(), timeoutMillis );
 			HtmlElement he = wait.ignoring( NoSuchElementException.class ).until( condition );
@@ -526,6 +527,10 @@ public class HtmlObject implements HtmlElement, EventTypes
 		catch ( TimeoutException e )
 		{
 			return Optional.absent();
+		}
+		finally
+		{
+			WebDriverEventSource.setIgnoreOnError( false );
 		}
 	}
 
