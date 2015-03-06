@@ -1,7 +1,6 @@
 package com.framework.site.objects.body;
 
 import com.framework.asserts.JAssertion;
-import com.framework.driver.event.ExtendedBy;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
 import com.framework.driver.objects.AbstractWebObject;
@@ -104,17 +103,17 @@ public class LinkToutsContainerObject extends AbstractWebObject implements LinkT
 
 	private HtmlElement getH4Span()
 	{
-		return getRoot().findElement( ExtendedBy.composite( By.tagName( "span" ), By.className( "h4" ) ) );
+		return getRoot().findElement( By.cssSelector( "span.h4" ) );
 	}
 
 	private HtmlElement getParaSpan()
 	{
-		return getRoot().findElement( ExtendedBy.composite( By.tagName( "span" ), By.className( "para" ) ) );
+		return getRoot().findElement( By.cssSelector( "span.para" ) );
 	}
 
 	private HtmlElement getLinkSpan()
 	{
-		return getRoot().findElement( ExtendedBy.composite( By.tagName( "span" ), By.className( "link" ) ) );
+		return getRoot().findElement( By.cssSelector( "span.link" ) );
 	}
 
 	//endregion
