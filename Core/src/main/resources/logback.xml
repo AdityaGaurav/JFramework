@@ -34,17 +34,17 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/Users/solmarkn/IdeaProjects/JFramework/APPENDER.txt</file>
-        <encoder>
-            <pattern>%-5level %class{0}.%M[%L] - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <!--<appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+        <!--<file>/Users/solmarkn/IdeaProjects/JFramework/APPENDER.txt</file>-->
+        <!--<encoder>-->
+            <!--<pattern>%-5level %class{0}.%M[%L] - %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
 
     <!--<logger name="com.framework.jreporter.log.ReporterFileAppender" level="TRACE" />-->
 
     <root level="info">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <!--<appender-ref ref="FILE" />-->
     </root>
 </configuration>
