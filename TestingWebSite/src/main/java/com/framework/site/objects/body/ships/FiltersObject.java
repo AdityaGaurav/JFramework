@@ -1,7 +1,10 @@
 package com.framework.site.objects.body.ships;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
-import com.framework.driver.event.*;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
@@ -9,13 +12,15 @@ import com.framework.site.data.TripDurations;
 import com.framework.site.objects.body.interfaces.FilterCategories;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
+import com.framework.utils.string.LogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -195,13 +200,13 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 	@Override
 	public List<DeparturePorts> getAvailableDeparturePorts()
 	{
-		logger.info( "Read a list of available departure ports on filter ..." );
 		if( null == departurePorts )
 		{
 			HtmlElement he = findFilterCategory( CATEGORY_PORT );
 			departurePorts = he.findElements( By.tagName( "li" ) );
 		}
 
+		logger.info( "Read a list of available departure ports on the filter tab. size < {} >", departurePorts.size() );
 		List<DeparturePorts> departurePortsList = Lists.newArrayList();
 		for( HtmlElement e : departurePorts )
 		{
@@ -216,13 +221,13 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 	@Override
 	public List<Destinations> getAvailableDestinations()
 	{
-		logger.info( "Read a list of available destinations on filter ..." );
 		if( null == destinations )
 		{
 			HtmlElement he = findFilterCategory( CATEGORY_DESTINATIONS );
 			destinations = he.findElements( By.tagName( "li" ) );
 		}
 
+		logger.info( "Read a list of available destinations on the filter tab. size < {} >", destinations.size() );
 		List<Destinations> destinationsList = Lists.newArrayList();
 		for( HtmlElement e : destinations )
 		{
@@ -240,9 +245,9 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		if( ! isExpanded() ) expand();
 
 		showMore( findFilterCategory( CATEGORY_DESTINATIONS ) );
+		logger.info( "Filtering ships by destinations ports < {} >", Joiner.on( "," ).join( destinations ) );
 		for( Destinations destination : destinations )
 		{
-			logger.info( "Filtering ships by destinations ports < {} >", Joiner.on( "," ).join( destinations ) );
 			String id = destination.getId();
 			HtmlElement dep = findItemLi( id );
 			dep.scrollIntoView();
@@ -261,33 +266,41 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 	@Override
 	public void filterByTripDurations( final TripDurations... ports )
 	{
-
+	   	throw new NotImplementedException();
 	}
 
 	@Override
 	public HtmlElement getFilterItem( final DeparturePorts port )
 	{
 		String id = port.getId();
-		return findItemLi( id );
+		HtmlElement he = findItemLi( id );
+		logger.info( "Returning the < {} > departure port filter item element: < {} >", port, he.getLocator() );
+		return he;
 	}
 
 	@Override
 	public HtmlElement getFilterItem( final Destinations destination )
 	{
 		String id = destination.getId();
-		return findItemLi( id );
+		HtmlElement he = findItemLi( id );
+		logger.info( "Returning the < {} > destination filter item element: < {} >", destination, he.getLocator() );
+		return he;
 	}
 
 	@Override
 	public List<HtmlElement> getCategories()
 	{
-		return findCategories();
+		List<HtmlElement> categories = findCategories();
+		logger.info( "Returning a list of categories. size : < {} >", categories.size() );
+		return categories;
 	}
 
 	@Override
 	public HtmlElement getModeToggle()
 	{
-		return findModeToggleAnchor();
+		HtmlElement he = findModeToggleAnchor();
+		logger.info( "Returning mode toggle element < {} >", he.getLocator() );
+		return he;
 	}
 
 	@Override
@@ -314,17 +327,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 	{
 		getClearAllFilters().click();
 		getCurrentFiltersSection().waitToBeDisplayed( false, TimeConstants.FIVE_SECONDS );
-
-		HtmlDriverWait.wait5( getDriver() ).until( new Predicate<HtmlDriver>()
-		{
-			@Override
-			public boolean apply( final HtmlDriver input )
-			{
-				int size = findAllFiltersAnchors().size();
-				logger.info( "Waiting for active filter count to be 0. current filters < {} >", size );
-				return size == 0;
-			}
-		} );
 	}
 
 	//endregion
@@ -442,7 +444,21 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return getDriver().findElements( findBy );
 	}
 
+	@Override
+	public String toString()
+	{
+		ToStringBuilder tsb = new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE );
+		if( departurePorts != null && departurePorts.size() > 0 )
+		{
+			tsb.append( "departurePorts", Lambda.join( departurePorts, "," ) );
+		}
+		if( destinations != null && destinations.size() > 0 )
+		{
+			tsb.append( "destinations", Lambda.join( destinations, "," ) );
+		}
 
+		return tsb.toString();
+	}
 	//endregion
 
 }
