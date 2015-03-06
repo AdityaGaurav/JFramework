@@ -589,24 +589,38 @@ public class WebDriverListenerAdapter implements WebDriverListener
 		HtmlDriver drv = Preconditions.checkNotNull( driver, "WebDriver driver should not be null" );
 		HtmlElement he = Preconditions.checkNotNull( elementFinder, "WebElement elementFinder should not be null" );
 
-		//List<Locator> selectedFrameLocators = elementFinder.getCurrentFrameLocators();
-		Map<String, String> prevStyles = style.doHighlight( drv, he );
-		if ( prevStyles == null )
+		try
 		{
-			return;
+			//List<Locator> selectedFrameLocators = elementFinder.getCurrentFrameLocators();
+			Map<String, String> prevStyles = style.doHighlight( drv, he );
+			if ( prevStyles == null )
+			{
+				return;
+			}
+			HighlightStyleBackup backup = new HighlightStyleBackup( prevStyles, he );
+			this.styleBackups.push( backup );
 		}
-		HighlightStyleBackup backup = new HighlightStyleBackup( prevStyles, he );
-		this.styleBackups.push( backup );
+		catch ( Exception e )
+		{
+			logger.warn( e.getMessage() );
+		}
 	}
 
 	private void unHighlight( final HtmlDriver driver )
 	{
 		HtmlDriver drv = Preconditions.checkNotNull( driver, "WebDriver driver should not be null" );
 
-		while ( ! this.styleBackups.isEmpty() )
+		try
 		{
-			HighlightStyleBackup backup = this.styleBackups.pop();
-			backup.restore( drv );
+			while ( ! this.styleBackups.isEmpty() )
+			{
+				HighlightStyleBackup backup = this.styleBackups.pop();
+				backup.restore( drv );
+			}
+		}
+		catch ( Exception e )
+		{
+			logger.warn( e.getMessage() );
 		}
 	}
 
@@ -614,7 +628,14 @@ public class WebDriverListenerAdapter implements WebDriverListener
 	{
 		if( null == driver || null == element ) return;
 
-		style.doHighlight( driver, element );
+		try
+		{
+			style.doHighlight( driver, element );
+		}
+		catch ( Exception e )
+		{
+			logger.warn( e.getMessage() );
+		}
 	}
 
 	public static void setLogger( final Logger logger )
