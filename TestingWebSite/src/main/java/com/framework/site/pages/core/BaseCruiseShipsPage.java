@@ -15,6 +15,7 @@ import com.framework.site.objects.body.ships.SortBarObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.matchers.JMatchers;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -174,7 +175,7 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 
 	public Set<Ships> getShipsMatching( DeparturePorts... ports )
 	{
-		logger.info( "Selecting a list of ships matching < {} >", ports );
+		logger.info( "Selecting a list of ships matching < {} >", Joiner.on( "," ) .join( ports ) );
 		Map<String,Ships> shipsMap = Maps.newHashMap();
 
 		for( DeparturePorts port : ports )

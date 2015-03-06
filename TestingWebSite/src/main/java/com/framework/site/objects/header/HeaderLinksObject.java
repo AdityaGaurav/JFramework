@@ -1,5 +1,6 @@
 package com.framework.site.objects.header;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
@@ -41,10 +42,13 @@ import static com.framework.utils.matchers.JMatchers.is;
 
 class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 {
-
 	//region HeaderLinksObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( HeaderLinksObject.class );
+
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
 
 	private HtmlElement ul_pull_left, ul_pull_right;
 
@@ -77,7 +81,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+		logger.info( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
@@ -141,7 +145,6 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 		{
 			throw new ApplicationException( e );
 		}
-
 	}
 
 	@Override
@@ -155,13 +158,14 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	{
 		List<HtmlElement> spans = fidItemsOrgSpans();
 		List<String> names = HtmlObject.extractAttribute( spans, "textContent" );
-		logger.info( "returning a list of top-level links names [ {} ] ...", names );
+		logger.info( "returning a list of top-level links names [ {} ] ...", Lambda.join( names, ", " ) );
 		return names.toArray( new String[ names.size() ] );
 	}
 
 	@Override
 	public BookedGuestLogonPage clickLogin()
 	{
+		logger.info( "clicking on login ..." );
 		Link login = new Link( findExpandLoginLinkAnchor() );
 		login.hover( true );
 		login.click();
@@ -171,6 +175,7 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	public String getGreeting()
 	{
+		logger.info( "reading greeting span element ..." );
 		HtmlElement greetingSpan = findGreetingSpan();
 		HtmlElement join = findJoinAnchor();
 		return greetingSpan.getText() + join.getText();
@@ -179,12 +184,14 @@ class HeaderLinksObject extends AbstractWebObject implements Header.HeaderLinks
 	@Override
 	public Link getGreetingLink()
 	{
+		logger.info( "reading greeting link ..." );
 		return new Link( findJoinAnchor() );
 	}
 
 	@Override
 	public Link getLoginLink()
 	{
+		logger.info( "reading login link ..." );
 		return new Link( findExpandLoginLinkAnchor() );
 	}
 

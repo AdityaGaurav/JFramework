@@ -31,7 +31,17 @@ public interface ContentBlockComparing
 
 	String getSectionName( int index );
 
-	List<CompareSection> getSections();
+	List<String> getSectionNames( final int index );
+
+	void collapseAll();
+
+	List<CompareSection> getExpandedSections();
+
+	List<CompareSection> getCollapsedSections();
+
+	CompareSection getSection( String name );
+
+	List<CompareSection> getComparisonSections();
 
 	interface CompareSection
 	{
@@ -54,6 +64,8 @@ public interface ContentBlockComparing
 		Map<String, Map.Entry<HtmlElement, Map<Ships, String>>> getRows();
 
 		boolean indicatorNotVisible( Map<Ships,String> values );
+
+		HtmlElement getTable();
 	}
 
 	interface QuickPreview

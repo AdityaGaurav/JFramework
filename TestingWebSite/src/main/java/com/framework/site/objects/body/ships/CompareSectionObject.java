@@ -1,11 +1,15 @@
 package com.framework.site.objects.body.ships;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
+import com.framework.config.Configurations;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
+import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
 import com.framework.site.objects.body.interfaces.ContentBlockComparing;
+import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -80,7 +84,7 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+		logger.info( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
@@ -91,7 +95,7 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		h2 = e.get();
 		this.sectionName = h2.getText();
 
-		e = getRoot().childExists( By.cssSelector( "table.comparison-table" ), ONE_SECOND );
+		e = getRoot().childExists( By.tagName( "table" ), ONE_SECOND );
 		assertion.assertThat( String.format( REASON, "h2" ), e.isPresent(), is( true ) );
 		table = e.get();
 	}
@@ -114,9 +118,10 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		return getBaseRootElement();
 	}
 
-	void populateTableData()
+	private void populateTableData()
 	{
 		List<HtmlElement> trs = table.findElements( By.tagName( "tr" ) );
+		logger.info( "parsing < {} > table rows ...", trs.size() );
 		for( HtmlElement tr : trs )
 		{
 			HtmlElement th =  tr.findElement( By.tagName( "th" ) );
@@ -126,25 +131,25 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 			for( int i = 0; i < values.size(); i ++ )
 			{
 				HtmlElement value = values.get( i );
+				String innerHtml = value.getAttribute( "innerHTML" );
 				if( sectionName.equalsIgnoreCase( "Ship Details" ) )
 				{
+					logger.info( "parsing section SHIP DETAILS ..." );
 					mapValues.put( shipsSections.get( i ), value.getText() );
 				}
-				else
+				else if( innerHtml.contains( "filter-soon" ) )
 				{
-					HtmlElement img = value.findElement( By.tagName( "img" ) );
-					if( img.getAttribute( "class" ).equals( "availableIcon" ) )
-					{
-						mapValues.put( shipsSections.get( i ), "AV" );
-					}
-					else if( img.getAttribute( "class" ).equals( "notAvailableIcon" ) )
-					{
-						mapValues.put( shipsSections.get( i ), "NA" );
-					}
-					else
-					{
-						mapValues.put( shipsSections.get( i ), "CS" );
-					}
+	  				String expectedText = SiteProperty.FILTER_SOON_TEXT.from( Configurations.getInstance(), "COMING SOON" );
+					new JAssertion( getDriver() ).assertThat( "Validate FILTER-SOON text", innerHtml, JMatchers.containsString( expectedText ) );
+					mapValues.put( shipsSections.get( i ), "CS" );
+				}
+				else if( innerHtml.contains( "availableIcon" ) )
+				{
+					mapValues.put( shipsSections.get( i ), "AV" );
+				}
+				else if( innerHtml.contains( "notAvailableIcon" ) )
+				{
+					mapValues.put( shipsSections.get( i ), "NA" );
 				}
 			}
 
@@ -153,13 +158,7 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		}
 	}
 
-	@Override
-	public List<Ships> getShipsSections()
-	{
-		return shipsSections;
-	}
-
-	public void setShipsSections( final List<Ships> shipsSections )
+	void setShipsSections( final List<Ships> shipsSections )
 	{
 		this.shipsSections = shipsSections;
 	}
@@ -170,10 +169,17 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	//region CompareSectionObject - Interface Implementation Section
 
 	@Override
+	public List<Ships> getShipsSections()
+	{
+		return shipsSections;
+	}
+
+	@Override
 	public void expand()
 	{
 		if( ! isExpanded() )
 		{
+			logger.info( "Expanding section < {} >", sectionName );
 			HtmlElement he = getRoot().findElement( By.className( "compare-items" ) );
 			he.scrollBy( 0, SCROLL_OFFSET );
 			findExpandCollapseI( h2 ).click();
@@ -187,6 +193,7 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	{
 		if( isExpanded() )
 		{
+			logger.info( "Collapsing section < {} >", sectionName );
 			HtmlElement he = findCompareItemsDiv();
 			findExpandCollapseI( h2 ).click();
 			he.waitToBeDisplayed( false, THREE_SECONDS );
@@ -196,19 +203,24 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	@Override
 	public boolean isExpanded()
 	{
-		return h2.getAttribute( "class" ).equals( "expanded" );
+		boolean expanded = h2.getAttribute( "class" ).equals( "expanded" );
+		logger.info( "determine if section < {} > currently expanded", sectionName );
+		return expanded;
 	}
 
 	@Override
 	public String getSectionName()
 	{
+		logger.info( "return the current section name < {} >", sectionName );
 		return sectionName;
 	}
 
 	@Override
 	public List<String> getParameters()
 	{
-		return Lists.newArrayList( rows.keySet() );
+		List<String> params = Lists.newArrayList( rows.keySet() );
+		logger.info( "return a list of parameters < {} >", Lambda.join( params, ", " ) );
+		return params;
 	}
 
 	@Override
@@ -218,9 +230,16 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	}
 
 	@Override
+	public HtmlElement getTable()
+	{
+		return findTable();
+	}
+
+	@Override
 	public boolean indicatorNotVisible( Map<Ships,String> values )
 	{
 		String valuesJoined = Joiner.on( "," ).join( ( ( HashMap ) values ).values() );
+		logger.info( "Examine comparison values < {} >", valuesJoined );
 		if ( valuesJoined.equals( "NA,NA,NA" ) || valuesJoined.equals( "NA,NA" ) || valuesJoined.equals( "NA" ) )
 		{
 			throw new ApplicationException( getDriver(), "All parameters are unavailable" );
@@ -249,6 +268,17 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 	{
 		final By findBy = By.tagName( "i" );
 		return he.findElement( findBy );
+	}
+
+	private HtmlElement findTable()
+	{
+		if( null == table )
+		{
+			final By findBy = By.tagName( "table" );
+			table = getRoot().findElement( findBy );
+		}
+
+		return table;
 	}
 
 	//endregion

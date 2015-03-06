@@ -69,7 +69,8 @@ public enum SiteProperty
 	COMPARE_CAPABILITY( "A boolean value that determines if the ships page has compare capability. AU is currently not" ),
 	MAX_MENU_SUB_ITEMS,
 	FILTER_SOON_TEXT,
-	SITE_CORE_SHIP_FEATURE_IDS
+	SITE_CORE_SHIP_FEATURE_IDS,
+	COMPARE_SHIPS_LEGEND_KEYS,
 
 	//endregion
 

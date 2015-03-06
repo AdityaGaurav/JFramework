@@ -1,10 +1,12 @@
 package com.framework.site.objects.body.ships;
 
+import ch.lambdaj.Lambda;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.Ships;
 import com.framework.site.objects.body.interfaces.ContentBlockComparing;
+import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -106,7 +108,7 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 	{
 		if( null == compareLabels )
 		{
-			compareLabels =  new CompareLabelsObject( getDriver().findElement( CompareLabels.ROOT_BY ) );
+			compareLabels = new CompareLabelsObject( getDriver().findElement( CompareLabels.ROOT_BY ) );
 		}
 
 		return compareLabels;
@@ -124,7 +126,66 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 	}
 
 	@Override
-	public List<CompareSection> getSections()
+	public List<String> getSectionNames( final int index )
+	{
+		List<HtmlElement> spans = findSectionsSpans();
+		List<String> names = Lambda.extractProperty( spans, "text" );
+		logger.info( "Return a list of section names < {} >", Lambda.join( names, ", " ) );
+		return names;
+	}
+
+	@Override
+	public List<CompareSection> getExpandedSections()
+	{
+		List<HtmlElement> expanded = findExpandedSectionsDivs();
+		logger.info( "current expanded sections: < {} >", expanded.size() );
+		List<CompareSection> sections = Lists.newArrayListWithExpectedSize( expanded.size() );
+		for( HtmlElement he : expanded )
+		{
+			CompareSectionObject cso = new CompareSectionObject( he );
+			sections.add( cso );
+		}
+
+		return sections;
+	}
+
+	@Override
+	public List<CompareSection> getCollapsedSections()
+	{
+		List<HtmlElement> collapsed = findCollapsedSectionsDivs();
+		logger.info( "current collapsed sections: < {} >", collapsed.size() );
+		List<CompareSection> sections = Lists.newArrayListWithExpectedSize( collapsed.size() );
+		for( HtmlElement he : collapsed )
+		{
+			CompareSectionObject cso = new CompareSectionObject( he );
+			sections.add( cso );
+		}
+
+		return sections;
+	}
+
+	@Override
+	public void collapseAll()
+	{
+		List<CompareSection> expanded = getExpandedSections();
+		for( CompareSection section : expanded )
+		{
+			section.collapse();
+		}
+
+	}
+
+	@Override
+	public CompareSection getSection( final String name )
+	{
+		PreConditions.checkNotNullNotBlankOrEmpty( name, "The section name is either null, empty or blank" );
+		logger.info( "Return section element < {} >", name );
+		HtmlElement he = findSectionDiv( name );
+		return new CompareSectionObject( he );
+	}
+
+	@Override
+	public List<CompareSection> getComparisonSections()
 	{
 		if( sections.size() == 0 )
 		{
@@ -140,7 +201,6 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 		return sections;
 	}
 
-
 	//endregion
 
 
@@ -149,6 +209,30 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 	private List<HtmlElement> findComparisonSections()
 	{
 		final By findBy = By.cssSelector( ".compare-section.comparison:not(.detailed-preview)" );
+		return getDriver().findElements( findBy );
+	}
+
+	private HtmlElement findSectionDiv( String name )
+	{
+		final By findBy = By.xpath( String.format( "//span[contains(.,'%s')]", name ) );
+		return getDriver().findElement( findBy );
+	}
+
+	private List<HtmlElement> findSectionsSpans()
+	{
+		final By findBy = By.cssSelector( ".compare-section.comparison h2 > span" );
+		return getDriver().findElements( findBy );
+	}
+
+	private List<HtmlElement> findExpandedSectionsDivs()
+	{
+		final By findBy = By.xpath( "//h2[@class='expanded']/.." );
+		return getDriver().findElements( findBy );
+	}
+
+	private List<HtmlElement> findCollapsedSectionsDivs()
+	{
+		final By findBy = By.xpath( "//div[contains(@class,'compare-section')]/h2[not(@class='expanded')]" );
 		return getDriver().findElements( findBy );
 	}
 

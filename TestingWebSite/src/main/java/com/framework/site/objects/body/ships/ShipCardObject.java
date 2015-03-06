@@ -1,5 +1,6 @@
 package com.framework.site.objects.body.ships;
 
+import ch.lambdaj.Lambda;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
 import com.framework.driver.exceptions.ApplicationException;
@@ -17,11 +18,14 @@ import com.framework.site.exceptions.NoSuchDestinationException;
 import com.framework.site.exceptions.NoSuchShipException;
 import com.framework.site.exceptions.NoSuchTripDurationException;
 import com.framework.site.objects.body.interfaces.ShipCard;
-import com.framework.site.pages.bookingengine.FindACruisePage;
+import com.framework.site.pages.BaseCarnivalPage;
+import com.framework.site.pages.bookingengine.CruiseSearchPage;
 import com.framework.site.pages.core.HomePage;
 import com.framework.site.pages.core.cruisefrom.CruiseFromPortPage;
 import com.framework.site.pages.core.cruiseships.CruiseShipsDetailsPage;
 import com.framework.site.pages.core.cruiseto.CruiseToDestinationPage;
+import com.framework.site.pages.core.cruiseto.CruiseToPage;
+import com.framework.site.pages.core.findacruise.SearchResultsPage;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -31,11 +35,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -150,7 +154,10 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			getRoot().mark( HighlightStyle.ELEMENT_STYLES[ 3 ] );
 			validateShip();
 			validateConnectionToShipPage();
-			validateImage();
+			if( ! SiteSessionManager.get().getCurrentLocale().equals( HomePage.AU ) )
+			{
+				validateImage();
+			}
 			validateTitle();
 			validateShipTravelInfo();
 			List<HtmlElement> nodes = findTextNodes();
@@ -185,7 +192,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	private void validateShip()
 	{
-		logger.info( "Validating ship name on card metadata ..." );
+		logger.info( "Validating ship name on card metadata, for data-name \"{}\"",getRoot().getAttribute( "data-name" ) );
 
 		getRoot().blink();
 
@@ -203,7 +210,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	private void validateShipTravelInfo()
 	{
-		logger.info( "Validating ship travel information structure ..." );
+		logger.info( "Validating ship travel information structure for ship \"{}\"", ship.getShipName() );
 
 		List<HtmlElement> list = findTextNodesStrong();
 		List<String> names = HtmlObject.extractText( list );
@@ -213,7 +220,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	private void validateDestinations( HtmlElement li )
 	{
-		logger.info( "Validating ship destinations ..." );
+		logger.info( "Validating ship destinations for ship \"{}\"", ship.getShipName()  );
 
 		li.blink();
 		List<HtmlElement> anchors = li.findElements( By.tagName( "a" ) );
@@ -223,16 +230,15 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		}
 		for( HtmlElement anchor : anchors )
 		{
-			String text = anchor.getText();
-			Destinations current;
+			String href = anchor.getAttribute( "href" );
+			Destinations current = Destinations.valueByHRef( href );
 			try
 			{
-				current = Destinations.valueByName( text );
-				getDriver().assertThat( "Validate \"Destinations\" value for " + text, current, JMatchers.not( JMatchers.nullValue() ) );
+				getDriver().assertThat( "Validate \"Destinations\" value for " + href, current, JMatchers.not( JMatchers.nullValue() ) );
 			}
 			catch ( AssertionError e )
 			{
-				throw new NoSuchDestinationException( getDriver(), "The destination code < " + text + " > does not exists" );
+				throw new NoSuchDestinationException( getDriver(), "The destination code < " + href + " > does not exists" );
 			}
 
 			this.destinations.add( current );
@@ -241,8 +247,10 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	private void validateDeparturePorts( HtmlElement li )
 	{
-		logger.info( "Validating ship departure ports ..." );
+		logger.info( "Validating ship departure ports for ship \"{}\"", ship.getShipName() );
 		li.blink();
+		if( SiteSessionManager.get().getCurrentLocale().equals( HomePage.AU ) ) return;
+
 		List<HtmlElement> anchors = li.findElements( By.tagName( "a" ) );
 		if( anchors.size() == 0 )
 		{
@@ -250,35 +258,23 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		}
 		for( HtmlElement anchor : anchors )
 		{
-			String text = anchor.getText();
-			DeparturePorts current;
+			String href = anchor.getAttribute( "href" );
 			try
 			{
-				int indexOf = text.indexOf( "," );
-				if( indexOf > 0 )
-				{
-					String subString = text.substring( 0, indexOf );
-					current = DeparturePorts.valueByName( subString );
-				}
-				else
-				{
-					current = DeparturePorts.valueByName( text );
-				}
-
-				getDriver().assertThat( "Validate \"Departure Ports\" value for " + text, current, JMatchers.not( JMatchers.nullValue() ) );
+				DeparturePorts current = DeparturePorts.valueByHRef( href );
+				getDriver().assertThat( "Validate \"Departure Ports\" value for " + href, current, JMatchers.not( JMatchers.nullValue() ) );
+				this.departurePorts.add( current );
 			}
 			catch ( AssertionError e )
 			{
-				throw new NoSuchDeparturePortException( getDriver(), "The departure port code < " + text + " > does not exists" );
+				throw new NoSuchDeparturePortException( getDriver(), "The departure port code < " + href + " > does not exists" );
 			}
-
-			this.departurePorts.add( current );
 		}
 	}
 
 	private void validateTripDurations( HtmlElement li )
 	{
-		logger.info( "Validating ship trip durations ..." );
+		logger.info( "Validating trip durations for ship \"{}\"", ship.getShipName() );
 		li.blink();
 
 		List<HtmlElement> anchors = li.findElements( By.tagName( "a" ) );
@@ -306,18 +302,22 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	private void validateImage()
 	{
+		logger.info( "Validating image for ship \"{}\"", ship.getShipName() );
 		HtmlElement he = findShipImageImg();
 		he.blink();
 		String src = he.getAttribute( "src" );
+		logger.debug( "image source to validate is < {} >", src );
 		this.expectedImagePath = substitutor.replace( IMG_FORMAT );
 		getDriver().assertThat( "Assert ship image", src, JMatchers.containsString( expectedImagePath ) );
 	}
 
 	private void validateTitle()
 	{
+		logger.info( "Validating title for ship \"{}\"", ship.getShipName() );
 	 	HtmlElement he = findTitleH2();
 		he.blink();
 		String text = he.getAttribute( "textContent" );
+		logger.debug( "Ship card title to validate is < {} >", text );
 		String expected = this.ship.getFullName();
 		getDriver().assertThat( "Assert ship Title", text, JMatchers.is( expected ) );
 	}
@@ -325,6 +325,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	private void validateConnectionToShipPage() throws UrlNotAvailableException
 	{
 		Link link = new Link( findUpperAnchor() );
+		logger.info( "Validating connection for ship \"{}\" href: < {} >", ship.getShipName(), link.getHReference() );
 		link.checkReference( 10000L );
 	}
 
@@ -428,19 +429,45 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public CruiseFromPortPage selectDeparturePort( final DeparturePorts departurePort )
 	{
-		return null;
+		CruiseFromPortPage.fromDeparturePort( departurePort );
+		String css = String.format( "li:nth-child(2) a[href*=\"%s\"]", departurePort.getHref() );
+		getRoot().findElement( By.cssSelector( css ) ).click();
+		return new CruiseFromPortPage();
 	}
 
 	@Override
-	public CruiseToDestinationPage selectDestination( final Destinations destination )
+	public BaseCarnivalPage selectDestination( final Destinations destination )
 	{
-		return null;
+		if( destination.equals( Destinations.CRUISE_TO_NOWHERE ) )
+		{
+			return new CruiseToPage();
+		}
+		CruiseToDestinationPage.forDestination( destination );
+		String css = String.format( "li:nth-child(1) a[href*=\"%s\"]", destination.getHref() );
+		getRoot().findElement( By.cssSelector( css ) ).click();
+		return new CruiseToDestinationPage();
 	}
 
 	@Override
-	public FindACruisePage selectTripDuration( final TripDurations tripDuration )
+	public BaseCarnivalPage selectTripDuration( final TripDurations tripDuration )
 	{
-		return null;
+		String css = String.format( "li:nth-child(3) a[href*=\"dur=%s\"]", tripDuration.getId() );
+		getRoot().findElement( By.cssSelector( css ) ).click();
+		if( SiteSessionManager.get().getCurrentLocale().equals( Locale.US )
+				|| SiteSessionManager.get().getCurrentLocale().equals( Locale.UK ) )
+		{
+			CruiseSearchPage cruiseSearchPage = new CruiseSearchPage();
+			cruiseSearchPage.setShip( ship );
+			cruiseSearchPage.setTripDurations( tripDuration );
+			return cruiseSearchPage;
+		}
+		else //AU
+		{
+			SearchResultsPage searchResultsPage = new SearchResultsPage();
+			searchResultsPage.setShip( ship );
+			searchResultsPage.setTripDurations( tripDuration );
+			return searchResultsPage;
+		}
 	}
 
 	@Override
@@ -458,19 +485,23 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public Set<String> getDeparturePortNames()
 	{
-		return null;
+
+		List<String> list = Lambda.extractString( departurePorts );
+		return Sets.newHashSet( list );
 	}
 
 	@Override
 	public Set<String> getDestinationNames()
 	{
-		return null;
+		List<String> list = Lambda.extractString( destinations );
+		return Sets.newHashSet( list );
 	}
 
 	@Override
 	public Set<String> getTripDurationNames()
 	{
-		return null;
+		List<String> list = Lambda.extractString( tripDurations );
+		return Sets.newHashSet( list );
 	}
 
 	@Override
@@ -555,13 +586,6 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 
 	//endregion
 
-
-
-//	//endregion
-//
-//
-//	//region ShipCardObject - Business Methods Section
-//
 //	@Override
 //	public Ships getShipName()
 //	{
@@ -743,45 +767,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 //	 * @throws {@inheritDoc}
 //	 */
 //	@Override
-//	public CruiseFromPortPage selectDeparturePort( final DeparturePorts departurePort )
-//	{
-//		logger.info( "Selecting ( clicking ) on departure port <\"{}\">", departurePort );
-//
-//		try
-//		{
-//			PreConditions.checkNotNull( departurePort, "DeparturePorts argument is null." );
-//
-//			/* Validates that requested departure port is available on current ship card */
-//
-//			if( ! departurePorts.contains( departurePort ) )
-//			{
-//				String names = Lambda.join( this.getDeparturePortNames(), " | " );
-//				final String MSG_FMT = "Invalid departure port: <\"%s\">. assigned departure ports for ship <\"%s\"> are <\"%s\"> only.";
-//				final String ERR_MSG = String.format( MSG_FMT, departurePort, names, ship );
-//				throw new NoSuchDeparturePortException( objectDriver, ERR_MSG );
-//			}
-//
-//			WebElement departurePortAnchor = findDeparturePortAnchor( departurePort );
-//			Link departurePortLink = new Link( departurePortAnchor );
-//			departurePortLink.hover( true );
-//			departurePortLink.click();
-//			return new CruiseFromPortPage( objectDriver, departurePort );
-//		}
-//		catch ( NullPointerException npEx )
-//		{
-//			logger.error( "throwing a new PreConditionException on {}#selectDeparturePort.", getClass().getSimpleName() );
-//			throw new PreConditionException( npEx.getMessage(), npEx );
-//		}
-//		catch ( Throwable t )
-//		{
-//			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-//			logger.error( "throwing a new ApplicationException on {}#selectDeparturePort.", getClass().getSimpleName() );
-//			ApplicationException appEx = new ApplicationException( objectDriver.getDriver(), t.getMessage(), t );
-//			appEx.addInfo( "business process", "failed to select departure port <\"{}\">." + departurePort );
-//			throw appEx;
-//		}
-//	}
-//
+
 //	/**
 //	 * {@inheritDoc}
 //	 * <p>
@@ -896,232 +882,6 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 //	 *
 //	 * @throws {@inheritDoc}
 //	 */
-//	@Override
-//	public FindACruisePage selectTripDuration( final TripDurations tripDuration )
-//	{
-//		logger.info( "Selecting ( clicking ) on trip duration <\"{}\">", tripDuration );
-//
-//		try
-//		{
-//			PreConditions.checkNotNull( tripDuration, "TripDurations argument is null." );
-//
-//			/* Validates that requested destination is available on current ship card */
-//
-//			if( ! tripDurations.contains( tripDuration ) )
-//			{
-//				String names = Lambda.join( this.getTripDurationNames(), " | " );
-//				final String MSG_FMT = "Invalid trip duration: <\"%s\">. assigned trip durations for ship <\"%s\"> are <\"%s\"> only.";
-//				final String ERR_MSG = String.format( MSG_FMT, tripDuration, names, ship );
-//				throw new NoSuchTripDurationException( objectDriver, ERR_MSG );
-//			}
-//
-//			WebElement tripDurationAnchor = findTripDurationAnchor( tripDuration );
-//			Link tripDurationLink = new Link( tripDurationAnchor );
-//			tripDurationLink.hover( true );
-//			tripDurationLink.click();
-//			return new FindACruisePage( objectDriver, tripDuration );
-//		}
-//		catch ( NullPointerException npEx )
-//		{
-//			logger.error( "throwing a new PreConditionException on {}#selectTripDuration.", getClass().getSimpleName() );
-//			throw new PreConditionException( npEx.getMessage(), npEx );
-//		}
-//		catch ( Throwable t )
-//		{
-//			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-//			logger.error( "throwing a new ApplicationException on {}#selectTripDuration.", getClass().getSimpleName() );
-//			ApplicationException appEx = new ApplicationException( objectDriver.getDriver(), t.getMessage(), t );
-//			appEx.addInfo( "business process", "failed to select trip duration <\"{}\">." + tripDuration );
-//			throw appEx;
-//		}
-//	}
-//
-//
-//	/**
-//	 * {@inheritDoc}
-//	 * <p>
-//	 *     Procedure Steps:
-//	 *     <ol>
-//	 *        <li>gets the a.upper and h2.title > a web-elements.</li>
-//	 *        <li>hovers on the h2.title > a web-element</li>
-//	 *        <li>validates that a.upper web-element is now a.upper.hover</li>
-//	 *     	  <li>clicks on h2.title > a web-element</li>
-//	 *     </ol>
-//	 *     Method usage:
-//	 *     <pre>
-//	 *        CruiseShipsDetailsPage shipDetailsPage = shipCard.clicksShipImage( true );
-//	 *     </pre>
-//	 * </p>
-//	 *
-//	 * @return {@inheritDoc}
-//	 */
-//	@Override
-//	public CruiseShipsDetailsPage clickShipTitle()
-//	{
-//		WebDriverWait wdw = WaitUtil.wait5( objectDriver );
-//		logger.info( "Clicking on <\"{}\"> ship title", ship );
-//
-//		try
-//		{
-//			WebElement upper = findUpperAnchor();
-//			Link imageTitleLink = new Link( findImageTitleAnchor() );
-//			imageTitleLink.hover();
-//			wdw.until( WaitUtil.elementAttributeToMatch( upper, "class", MatcherUtils.containsString( "hover" ) ) );
-//			imageTitleLink.click();
-//			return new CruiseShipsDetailsPage( objectDriver, this.ship );
-//		}
-//		catch ( Throwable t )
-//		{
-//			Throwables.propagateIfInstanceOf( t, ApplicationException.class );
-//			logger.error( "throwing a new ApplicationException on {}#clickShipTitle.", getClass().getSimpleName() );
-//			ApplicationException appEx = new ApplicationException( objectDriver.getDriver(), t.getMessage(), t );
-//			appEx.addInfo( "business process", "failed to click on <\"{}\"> title." + ship);
-//			throw appEx;
-//		}
-//	}
-//
-//	/**
-//	 * {@inheritDoc}
-//	 * <p>
-//	 *     Procedure Steps:
-//	 *     <ol>
-//	 *        <li>gets the a.upper and h2.title > a web-elements.</li>
-//	 *        <li>hovers on the a.upper web-element</li>
-//	 *        <li>validates that h2.title > a web-element is now h2.title > a.hover</li>
-//	 *     	  <li>clicks on a.upper web-element</li>
-//	 *     </ol>
-//	 *     Method usage:
-//	 *     <pre>
-//	 *        CruiseShipsDetailsPage shipDetailsPage = shipCard.clicksShipImage( true );
-//	 *     </pre>
-//	 * </p>
-//	 *
-//	 * @return {@inheritDoc}
-//	 */
-//	@Override
-//	public CruiseShipsDetailsPage clickShipImage()
-//	{
-//		WebDriverWait wdw = WaitUtil.wait5( objectDriver );
-//		logger.info( "Clicking on <\"{}\"> ship image", ship );
-//
-//		try
-//		{
-//			WebElement title = findImageTitleAnchor();
-//			Link upperLink = new Link( findUpperAnchor() );
-//			upperLink.hover();
-//			wdw.until( WaitUtil.elementAttributeToMatch( title, "class", MatcherUtils.is( "hover" ) ) );
-//			upperLink.click();
-//			return new CruiseShipsDetailsPage( objectDriver, this.ship );
-//		}
-//		catch ( Throwable e )
-//		{
-//			Throwables.propagateIfInstanceOf( e, ApplicationException.class );
-//			logger.error( "throwing a new ApplicationException on {}#clickShipImage.", getClass().getSimpleName() );
-//			ApplicationException aex = new ApplicationException( objectDriver.getDriver(), e.getMessage(), e );
-//			aex.addInfo( "business process", "failed to click on <\"{}\"> image." + ship );
-//			throw aex;
-//		}
-//	}
-//
-//	@Override
-//	public Set<String> getDeparturePortNames()
-//	{
-//		List<String> names = Lambda.extractString( departurePorts );
-//		return Sets.newHashSet( names.iterator() );
-//	}
-//
-//	@Override
-//	public Set<String> getDestinationNames()
-//	{
-//		List<String> names = Lambda.extractString( destinations );
-//		return Sets.newHashSet( names.iterator() );
-//	}
-//
-//	@Override
-//	public Set<String> getTripDurationNames()
-//	{
-//		List<String> names = Lambda.extractString( tripDurations );
-//		return Sets.newHashSet( names.iterator() );
-//	}
-//
-//	//endregion
-//
-//
-//	//region ShipCardObject - Element Finder Methods Section
-//
-	private WebElement findImageImg()
-	{
-		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( ".//span[@class='image']/img" );
-		//return getRoot().findElement( findBy );
-		return null;
-	}
-//
-//	private WebElement findUpperAnchor()
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.xpath( ".//a[contains(concat(' ',normalize-space(@class),' '),' upper ')]" );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findImageTitleAnchor()
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.cssSelector( "h2.title > a" );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findCompareMsgSpan()
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.cssSelector( "a.compare > span.compare-msg" );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findAddedMsgSpan()
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.cssSelector( "a.compare > span.added-msg" );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findCompareAnchor()
-//	{
-//		org.openqa.selenium.By findBy = ExtendedBy.composite( org.openqa.selenium.By.tagName( "span" ), org.openqa.selenium.By.className( "compare" ) );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findDeparturePortAnchor( DeparturePorts port )
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.linkText( port.toString() );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findDestinationAnchor( Destinations destination )
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.linkText( destination.toString() );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private WebElement findTripDurationAnchor( TripDurations tripDurations )
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.linkText( tripDurations.toString() );
-//		return rootElement.findElement( findBy );
-//	}
-//
-//	private List<WebElement> getShipDataLis()
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.tagName( "li" );
-//		return rootElement.findElements( findBy );
-//	}
-//
-//	private WebElement findListDataStrong( WebElement listItem )
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.tagName( "strong" );
-//		return listItem.findElement( findBy );
-//	}
-//
-//	private List<WebElement> findListDataSectionAnchors( WebElement listItem )
-//	{
-//		org.openqa.selenium.By findBy = org.openqa.selenium.By.tagName( "a" );
-//		return listItem.findElements( findBy );
-//	}
 
-	//endregion
 
 }

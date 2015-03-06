@@ -5,13 +5,13 @@ import com.framework.config.Configurations;
 import com.framework.config.FrameworkConfiguration;
 import com.framework.config.FrameworkProperty;
 import com.framework.config.ResultStatus;
+import com.framework.driver.exceptions.ConfigurationRuntimeException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.*;
 import com.framework.utils.string.LogStringStyle;
 import com.framework.utils.string.TextArt;
 import com.google.common.base.Optional;
-import org.apache.commons.configuration.ConfigurationException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -283,7 +283,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 					logger.debug( "Test-case have < {} > registered step/steps.", stepsAnnotation.getMap().size() );
 					onTestCaseStart( tc, itr );
 				}
-				catch ( ConfigurationException e )
+				catch ( ConfigurationRuntimeException e )
 				{
 					logger.warn( e.getMessage() );
 				}

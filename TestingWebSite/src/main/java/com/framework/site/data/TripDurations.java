@@ -70,6 +70,19 @@ public enum TripDurations
 		return null;
 	}
 
+	public static TripDurations valueByHRef( String href )
+	{
+		for ( TripDurations e : values() )
+		{
+			String id = e.getId();
+			if( href.endsWith( id ) )
+			{
+				return e;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public String toString()
 	{

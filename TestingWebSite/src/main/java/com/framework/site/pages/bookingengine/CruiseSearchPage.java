@@ -20,6 +20,10 @@ public class CruiseSearchPage extends BaseCarnivalPage
 
 	private static final Logger logger = LoggerFactory.getLogger( CruiseSearchPage.class );
 
+	private static final String SHIP_CODE = "shipCode=%s";
+
+	private static final String TRIP_DURATION = "dur=%s";
+
 	private static final String LOGICAL_NAME = "Cruise Search Page";
 
 	private Ships ship;
@@ -87,12 +91,14 @@ public class CruiseSearchPage extends BaseCarnivalPage
 	public String getExpectedUrlQuery()
 	{
 		PreConditions.checkNotNull( ship, "the ship cannot be null. use #setShip" );
-		PreConditions.checkNotNull( ship, "the trip duration cannot be null. use #setTripDurations" );
-		final String QUERY = "shipCode=%s&dur=%s";
+		StringBuilder sb = new StringBuilder( String.format( SHIP_CODE, ship.getId() ) );
+		if( tripDurations != null )
+		{
+			sb.append( "&" ).append( String.format( TRIP_DURATION, tripDurations.getId() ) );
+		}
 
-		String query = String.format( QUERY, ship.getId(), tripDurations.getId() );
-		logger.info( "expected url query for ship < {} > is < {} >", ship.getFullName(), query );
-		return query;
+		logger.info( "expected url query for ship < {} > is < {} >", ship.getFullName(), sb.toString() );
+		return sb.toString();
 	}
 
 	//endregion

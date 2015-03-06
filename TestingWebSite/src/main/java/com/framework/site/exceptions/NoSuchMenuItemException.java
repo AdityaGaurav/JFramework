@@ -1,7 +1,7 @@
 package com.framework.site.exceptions;
 
-import com.framework.driver.exceptions.ApplicationItemNotFoundException;
-import org.openqa.selenium.WebDriver;
+import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.exceptions.ApplicationException;
 
 
 /**
@@ -18,11 +18,11 @@ import org.openqa.selenium.WebDriver;
  * Time   : 15:34
  */
 
-public class NoSuchMenuItemException extends ApplicationItemNotFoundException
+public class NoSuchMenuItemException extends ApplicationException
 {
 	private static final long serialVersionUID = 7978996500317505389L;
 
-	public NoSuchMenuItemException( final WebDriver driver, final String message )
+	public NoSuchMenuItemException( final HtmlDriver driver, final String message )
 	{
 		super( driver, message );
 	}
