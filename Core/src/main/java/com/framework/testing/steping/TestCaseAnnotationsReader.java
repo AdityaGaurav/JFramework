@@ -4,7 +4,6 @@ import com.framework.testing.annotations.Issue;
 import com.framework.testing.annotations.Steps;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +152,7 @@ public class TestCaseAnnotationsReader
 		return Lists.newArrayListWithExpectedSize( 0 );
 	}
 
-	public StepsAnnotation getAnnotatedTestCaseSteps( List<TestStep> allSteps ) throws ConfigurationException
+	public StepsAnnotation getAnnotatedTestCaseSteps( List<TestStep> allSteps )
 	{
 		StepsAnnotation pSteps = null;
 

@@ -669,10 +669,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 			logger.info( "Configuration file < '{}' > was loaded successfully!", props.getBasePath() );
 			return props;
 		}
-		catch ( ConfigurationException cEx )
+		catch ( Exception cEx )
 		{
 			logger.error( cEx.getMessage() );
-			throw new ConfigurationRuntimeException( cEx );
+			throw new com.framework.driver.exceptions.ConfigurationRuntimeException( cEx );
 		}
 	}
 
@@ -706,7 +706,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		catch ( IOException | ConfigurationException ioEx )
 		{
 			logger.error( ioEx.getMessage() );
-			throw new ConfigurationRuntimeException( ioEx );
+			throw new com.framework.driver.exceptions.ConfigurationRuntimeException( ioEx );
 		}
 	}
 
@@ -743,7 +743,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		catch ( ConfigurationException cEx )
 		{
 			logger.error( cEx.getMessage() );
-			throw new ConfigurationRuntimeException( cEx );
+			throw new com.framework.driver.exceptions.ConfigurationRuntimeException( cEx );
 		}
 	}
 

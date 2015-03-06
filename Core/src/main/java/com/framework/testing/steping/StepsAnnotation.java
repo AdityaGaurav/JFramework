@@ -1,11 +1,11 @@
 package com.framework.testing.steping;
 
+import com.framework.driver.exceptions.ConfigurationRuntimeException;
 import com.framework.testing.annotations.Step;
 import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.exceptions.DuplicateTestStepException;
 import com.framework.utils.error.PreConditions;
 import com.google.common.collect.Maps;
-import org.apache.commons.configuration.ConfigurationRuntimeException;
 
 import java.util.Map;
 
