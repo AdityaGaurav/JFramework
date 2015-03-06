@@ -186,14 +186,14 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 	@Override
 	public boolean hasItems()
 	{
-		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner.has-items" ) );
+		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner" ) );
 		return optional.isPresent();
 	}
 
 	@Override
 	public boolean hasItems( final long millis )
 	{
-		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner.has-items" ), millis );
+		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner" ), millis );
 		return ! optional.isPresent();
 	}
 
