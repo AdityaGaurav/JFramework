@@ -47,6 +47,15 @@
         <property name="setAssumeUntrustedCertificateIssue"  value="false"/>
     </bean>
 
+    <bean id="chrome.default" class="com.framework.driver.factory.WebDriverMetadata">
+        <constructor-arg name="id" value="chrome.default"/>
+        <constructor-arg name="browserType">
+            <util:constant static-field="org.openqa.selenium.remote.BrowserType.CHROME"/>
+        </constructor-arg>
+        <property name="setEnableNativeEvents" value="true"/>
+        <property name="binary" value="${chrome.binary.file}"/>
+    </bean>
+
     <!--<bean id="proxy.example" class="org.openqa.selenium.Proxy" lazy-init="true">-->
         <!--<property name="autodetect" value="false"/>-->
         <!--<property name="ftpProxy" value=""/>-->
@@ -71,7 +80,7 @@
         <description>Different firefox extensions</description>
         <entry key="${firebug.extension}" value="true"/>
         <entry key="${firepath.extension}" value="true"/>
-        <entry key="${error.collector.extension}" value="false"/>
+        <entry key="${error.collector.extension}" value="true"/>
     </util:map>
 
     <!--<util:map id="firefox.binaries" key-type="java.lang.String" value-type="java.lang.String" scope="request">-->
