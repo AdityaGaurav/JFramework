@@ -47,7 +47,6 @@
     <modules>
         <module>Utilities</module>
         <module>Core</module>
-        <module>JReporter</module>
         <module>TestingWebsite</module>
     </modules>
 
@@ -67,8 +66,6 @@
         <org.springframework.version>4.1.4.RELEASE</org.springframework.version><!-- last updated 6-Jan-2015 -->
         <com.googlecode.lambdaj.version>2.3.3</com.googlecode.lambdaj.version><!-- last updated 7-Jan-2015 -->
         <com.google.guava.version>18.0</com.google.guava.version><!-- last updated 3-Jan-2015 -->
-        <assertj-guava.version>1.3.0</assertj-guava.version><!-- last updated 5-Jan-2015 -->
-        <assertj-joda-time.version>1.1.0</assertj-joda-time.version><!-- last updated 5-Jan-2015 -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <dom4j.version>1.6.1</dom4j.version><!-- last updated 12-Jan-2015 -->
         <jaxen.version>1.1.6</jaxen.version><!-- last updated 12-Jan-2015 -->
@@ -76,9 +73,16 @@
         <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven.version>2.0.6</maven.version>
+        <xml.unit.version>1.6</xml.unit.version><!-- last updated 16-Jan-2015 -->
         <org.cthul-matchers.version>1.1.0</org.cthul-matchers.version>
-        <assertj-assertions-generator-maven-plugin.version>1.5.0</assertj-assertions-generator-maven-plugin.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version><!-- last updated 11-Jan-2015 -->
+        <org.apache.velocity-tools.version>2.0</org.apache.velocity-tools.version><!-- last updated 9-Feb-2015 -->
+        <maven.surfire.plugin.version>2.18.1</maven.surfire.plugin.version><!-- last updated 17-Jan-2015 -->
+        <com.jhlabs.filters.version>2.0.235-1</com.jhlabs.filters.version><!-- last updated 17-Jan-2015 -->
+        <com.google.inject.version>3.0</com.google.inject.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <com.google.code.gson.version>2.3</com.google.code.gson.version><!-- last updated 15-Feb-2015 -->
+        <org.json.version>20141113</org.json.version>
     </properties>
 
     <dependencies>
@@ -196,6 +200,11 @@
                 <artifactId>selenium-support</artifactId>
                 <version>${org.seleniumhq.selenium.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-api</artifactId>
+                <version>${org.seleniumhq.selenium.version}</version>
+            </dependency>
 
             <!--
                 Description    : Joda-Time provides a quality replacement for the Java date and time classes. and easier to use
@@ -215,7 +224,7 @@
             -->
             <dependency>
                 <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
+                <artifactId>hamcrest-library</artifactId>
                 <version>${org.hamcrest.version}</version>
             </dependency>
 
@@ -225,53 +234,21 @@
                 Official URL   : https://github.com/derari/cthul/wiki/Matchers
                 Maven Repo URL : http://mvnrepository.com/artifact/org.cthul
             -->
-            <dependency>
-                <groupId>org.cthul</groupId>
-                <artifactId>cthul-matchers</artifactId>
-                <version>${org.cthul-matchers.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!--
-                Description    : Rich and fluent assertions for testing
-                Official URL   : http://joel-costigliola.github.io/assertj/
-                Maven Repo URL : http://mvnrepository.com/artifact/org.assertj
-            -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-guava</artifactId>
-                <version>${assertj-guava.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-joda-time</artifactId>
-                <version>${assertj-joda-time.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>joda-time</groupId>
-                        <artifactId>joda-time</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.cthul</groupId>-->
+                <!--<artifactId>cthul-matchers</artifactId>-->
+                <!--<version>${org.cthul-matchers.version}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.hamcrest</groupId>-->
+                        <!--<artifactId>hamcrest-core</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.hamcrest</groupId>-->
+                        <!--<artifactId>hamcrest-library</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
 
             <!--
                 Description   : The pseudo-functional collection manipulation library.
@@ -282,6 +259,12 @@
                 <groupId>com.googlecode.lambdaj</groupId>
                 <artifactId>lambdaj</artifactId>
                 <version>${com.googlecode.lambdaj.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-all</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
@@ -289,14 +272,6 @@
                 <artifactId>spring-context</artifactId>
                 <version>${org.springframework.version}</version>
             </dependency>
-
-            <!--
-                Description   : VelocityTools is an integrated collection of Velocity sub-projects with the common goal
-                                of creating tools and infrastructure to speed and ease development of
-                                both web and non-web applications using the Velocity template engine.
-                Official URL  : http://velocity.apache.org/tools/devel/
-                Maven Repo URL: http://mvnrepository.com/artifact/velocity
-            -->
 
             <!--
                 Description   : Apache Velocity is a general purpose template engine.
@@ -308,6 +283,20 @@
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity</artifactId>
                 <version>${org.apache.velocity.version}</version>
+            </dependency>
+
+            <!--
+                  Description   : VelocityTools is an integrated collection of Velocity sub-projects with the common goal
+                                  of creating tools and infrastructure to speed and ease development of
+                                  both web and non-web applications using the Velocity template engine.
+                  Official URL  : http://velocity.apache.org/tools/devel/
+                  Maven Repo URL: http://mvnrepository.com/artifact/velocity
+            -->
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-tools</artifactId>
+                <version>${org.apache.velocity-tools.version}</version>
             </dependency>
 
             <!--
@@ -334,6 +323,58 @@
                 <version>${jaxen.version}</version>
             </dependency>
 
+
+            <!--
+                Description:   XMLUnit compares a control XML document to a test document or the resultStatus of a transformation,
+                               validates documents, and compares the results of XPath expressions.
+                Official Site: http://xmlunit.sourceforge.net/
+                Maven Repo   : http://mvnrepository.com/artifact/xmlunit/xmlunit
+            -->
+
+            <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>${xml.unit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${com.google.inject.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons-configuration.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-collections</groupId>
+                        <artifactId>commons-collections</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${com.google.code.gson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -345,13 +386,18 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                         <encoding>UTF-8</encoding>
                         <optimize>false</optimize>
                         <debug>true</debug>
                         <showDeprecation>true</showDeprecation>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surfire.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -369,16 +415,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-                <version>${assertj-assertions-generator-maven-plugin.version}</version>
-                <configuration>
-                    <classes>
-                        <param>org.openqa.selenium.WebDriver.Options</param>
-                    </classes>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
