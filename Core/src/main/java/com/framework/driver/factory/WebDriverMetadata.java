@@ -1,7 +1,10 @@
 package com.framework.driver.factory;
 
+import com.framework.config.Configurations;
+import com.framework.config.FrameworkProperty;
 import com.framework.utils.string.LogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.openqa.selenium.Platform;
 
 import java.util.Map;
 import java.util.Properties;
@@ -181,7 +184,16 @@ public class WebDriverMetadata
 
 	public String getBinary()
 	{
-		return binary;
+		if( Platform.getCurrent().equals( Platform.MAC ) )
+		{
+			return Configurations.getInstance().getString( FrameworkProperty.GOOGLE_CHROME_MAC_WEB_DRIVER_FILE );
+		}
+		if( Platform.getCurrent().equals( Platform.WINDOWS ) )
+		{
+			return Configurations.getInstance().getString( FrameworkProperty.GOOGLE_CHROME_WIN_WEB_DRIVER_FILE );
+		}
+
+		return null;
 	}
 
 	public void setBinary( final String binary )
