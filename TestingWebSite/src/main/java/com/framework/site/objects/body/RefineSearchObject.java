@@ -9,10 +9,10 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
 import com.framework.site.objects.body.interfaces.RefineSearch;
+import com.framework.utils.conversion.Converter;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.commons.configuration.PropertyConverter;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -195,7 +195,7 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 		HtmlElement he = findItinerariesStrong();
 		String text = he.getText();
 		logger.info( "Number of itineraries found is < {} >", text );
-		return PropertyConverter.toInteger( text );
+		return Converter.toInteger( text );
 	}
 
 	//endregion

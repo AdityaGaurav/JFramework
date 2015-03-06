@@ -85,7 +85,8 @@ public enum Destinations
 	{
 		for ( Destinations e : values() )
 		{
-			if( href.contains( e.getHref() ) )
+			String enumHRef = e.getHref();
+			if( href.contains( enumHRef ) )
 			{
 				return e;
 			}

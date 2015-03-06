@@ -19,13 +19,13 @@ import com.framework.site.pages.core.CruiseShipsPage;
 import com.framework.site.pages.core.HomePage;
 import com.framework.site.pages.core.cruiseships.CompareCruiseShipsPage;
 import com.framework.testing.annotations.*;
+import com.framework.utils.conversion.Converter;
 import com.framework.utils.datetime.Sleeper;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.img.ImageCompare;
 import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.web.CSS2Properties;
 import com.google.common.collect.Lists;
-import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
@@ -122,7 +122,7 @@ public class ShipCompareTest extends BaseTest
 			if( method.getName().equals( "compareShips_AccordionCollapse" )
 					|| method.getName().equals( "compareShips_HoverAction" ) )
 			{
-				if( PropertyConverter.toBoolean( testContext.getAttribute( "compare" ) ) )
+				if( Converter.toBoolean( testContext.getAttribute( "compare" ) ) )
 				{
 					shipCards = add2Ships();
 				}

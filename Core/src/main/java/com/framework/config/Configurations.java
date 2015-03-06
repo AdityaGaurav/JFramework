@@ -3,6 +3,7 @@ package com.framework.config;
 import com.framework.driver.exceptions.UnsupportedDriverException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.driver.factory.WebDriverMetadata;
+import com.framework.utils.conversion.Converter;
 import com.framework.utils.string.LogStringStyle;
 import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.Configuration;
@@ -550,7 +551,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	public Locale getLocale()
 	{
 		if( locale.equals( "UK" ) ) return Locale.UK;
-		return  PropertyConverter.toLocale( "en_" + locale );
+		return Converter.toLocale( "en_" + locale );
 	}
 
 	public String getTestEnvironment()
@@ -584,7 +585,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	@Override
 	public URL baseUrl()
 	{
-		return PropertyConverter.toURL( baseUrl ) ;
+		return Converter.toURL( baseUrl ) ;
 	}
 
 	private void setBaseUrl( final String baseUrl )
@@ -799,10 +800,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		String folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_LAST_REPORT_DIRECTORY.getPropertyName() );
 		File f = new File( folder );
 		if( ! f.exists() ) f.mkdirs();
-		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_LOGS_DIRECTORY.getPropertyName()  );
+		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_LOGS_DIRECTORY.getPropertyName() );
 		f = new File( folder );
 		if( ! f.exists() ) f.mkdirs();
-		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_SCREENSHOTS_DIRECTORY.getPropertyName()  );
+		folder = def.getString( FrameworkProperty.JFRAMEWORK_BASE_SCREENSHOTS_DIRECTORY.getPropertyName() );
 		f = new File( folder );
 		if( ! f.exists() ) f.mkdirs();
 		folder = def.getString( FrameworkProperty.JFRAMEWORK_DATA_DIR.getPropertyName() );

@@ -8,8 +8,8 @@ import com.framework.config.FrameworkConfiguration;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.site.data.TestEnvironment;
 import com.framework.site.pages.core.HomePage;
+import com.framework.utils.conversion.Converter;
 import com.framework.utils.error.PreConditions;
-import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Cookie;
@@ -297,7 +297,7 @@ public class SiteSessionManager
 
 	public URL getCurrentUrl()
 	{
-		return PropertyConverter.toURL( getDriver().getCurrentUrl() );
+		return Converter.toURL( getDriver().getCurrentUrl() );
 	}
 
 	public boolean isHomePage()
