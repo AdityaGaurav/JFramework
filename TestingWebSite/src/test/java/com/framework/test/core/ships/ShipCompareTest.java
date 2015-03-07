@@ -2,6 +2,8 @@ package com.framework.test.core.ships;
 
 import com.framework.BaseTest;
 import com.framework.config.Configurations;
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.site.config.SiteProperty;
@@ -20,7 +22,7 @@ import com.framework.site.pages.core.HomePage;
 import com.framework.site.pages.core.cruiseships.CompareCruiseShipsPage;
 import com.framework.testing.annotations.*;
 import com.framework.utils.conversion.Converter;
-import com.framework.utils.datetime.Sleeper;
+import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.img.ImageCompare;
 import com.framework.utils.matchers.JMatchers;
@@ -390,24 +392,25 @@ public class ShipCompareTest extends BaseTest
 
 				/* AND hovers over the displayed activities */
 				th.hover();
-				Sleeper.pauseFor( 100 );  // give time to background-color change
 
 				/* THEN the activities column header being hovered are highlighted #F6F5F6 */
 				String text = th.getText();
 				String pName = StringUtils.replaceChars( text, " ,'", "_" ).toUpperCase();
 				String REASON = "Validate that TH background-color for " + pName;
-				Color ACTUAL_COLOR = Color.fromString( th.getCssValue( CSS2Properties.BACKGROUND_COLOR.getStringValue() ) );
-				Matcher<Color> EXPECTED_OF_COLOR = JMatchers.is( Color.fromString( "#F6F6F6" ) );
+				Color color = Color.fromString( "#F6F6F6" );
+				HtmlCondition<Boolean> condition =
+						ExpectedConditions.elementCssPropertyToMatch( th, CSS2Properties.COLOR.getStringValue(), JMatchers.is( color.asRgba() ) );
 				SiteSessionManager.get().createCheckPoint( "TH_BACKGROUND_COLOR_" + pName )
-						.assertThat( REASON, ACTUAL_COLOR, EXPECTED_OF_COLOR );
+						.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 
 				td.hover();
-				Sleeper.pauseFor( 100 );  // give time to background-color change
+
 				REASON = "Validate that TD background-color for " + text;
-				ACTUAL_COLOR = Color.fromString( td.getCssValue( CSS2Properties.BACKGROUND_COLOR.getStringValue() ) );
-				EXPECTED_OF_COLOR = JMatchers.is( Color.fromString( "#E3E3E3" ) );
+				color = Color.fromString( "#E3E3E3" );
+				condition = ExpectedConditions.elementCssPropertyToMatch(
+						th, CSS2Properties.BACKGROUND_COLOR.getStringValue(), JMatchers.is( color.asRgba() ) );
 				SiteSessionManager.get().createCheckPoint( "TD_BACKGROUND_COLOR_" + pName )
-						.assertThat( REASON, ACTUAL_COLOR, EXPECTED_OF_COLOR );
+						.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 			}
 
 			SiteSessionManager.get().assertAllCheckpoints();
