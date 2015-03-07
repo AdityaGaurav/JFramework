@@ -9,7 +9,6 @@ import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
 import com.framework.site.data.TripDurations;
-import com.framework.site.objects.body.interfaces.FilterCategories;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.string.LogStringStyle;
@@ -43,12 +42,16 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-public class FiltersObject extends AbstractWebObject implements FilterCategories
+public class FilterCategoriesObject extends AbstractWebObject
 {
 
 	//region FiltersObject - Variables Declaration and Initialization Section.
 
-	private static final Logger logger = LoggerFactory.getLogger( FiltersObject.class );
+	private static final Logger logger = LoggerFactory.getLogger( FilterCategoriesObject.class );
+
+	static final String LOGICAL_NAME = "filter Categories Container";
+
+	public static final By ROOT_BY = By.cssSelector( "div.filter-block.app-filters[data-app='ships']" );
 
 	private static final String CATEGORY_PORT = "port";
 
@@ -73,9 +76,9 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 
 	//region FiltersObject - Constructor Methods Section
 
-	public FiltersObject( final HtmlElement rootElement )
+	public FilterCategoriesObject( final HtmlElement rootElement )
 	{
-		super( rootElement, FilterCategories.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -88,7 +91,7 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 	@Override
 	protected void initWebObject()
 	{
-		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
+		logger.info( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
@@ -118,7 +121,7 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( FilterCategories.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	private void showMore( HtmlElement filterBlock )
@@ -137,7 +140,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 
 	//region FiltersObject - FilterCategories Implementation Section
 
-	@Override
 	public void collapse()
 	{
 		if( isExpanded() )
@@ -152,7 +154,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		}
 	}
 
-	@Override
 	public void expand()
 	{
 		if( ! isExpanded() )
@@ -167,7 +168,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		}
 	}
 
-	@Override
 	public boolean isExpanded()
 	{
 		HtmlElement div = findBodyContainerDiv();
@@ -175,7 +175,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return ! className.endsWith( "collapsed" );
 	}
 
-	@Override
 	public void filterByDeparturePort( final DeparturePorts... ports )
 	{
 		if( ! isExpanded() ) expand();
@@ -197,7 +196,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		}
 	}
 
-	@Override
 	public List<DeparturePorts> getAvailableDeparturePorts()
 	{
 		if( null == departurePorts )
@@ -218,7 +216,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return departurePortsList;
 	}
 
-	@Override
 	public List<Destinations> getAvailableDestinations()
 	{
 		if( null == destinations )
@@ -239,7 +236,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return destinationsList;
 	}
 
-	@Override
 	public void filterByDestination( final Destinations... destinations )
 	{
 		if( ! isExpanded() ) expand();
@@ -263,13 +259,11 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		}
 	}
 
-	@Override
 	public void filterByTripDurations( final TripDurations... ports )
 	{
 	   	throw new NotImplementedException();
 	}
 
-	@Override
 	public HtmlElement getFilterItem( final DeparturePorts port )
 	{
 		String id = port.getId();
@@ -278,7 +272,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return he;
 	}
 
-	@Override
 	public HtmlElement getFilterItem( final Destinations destination )
 	{
 		String id = destination.getId();
@@ -287,7 +280,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return he;
 	}
 
-	@Override
 	public List<HtmlElement> getCategories()
 	{
 		List<HtmlElement> categories = findCategories();
@@ -295,7 +287,6 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return categories;
 	}
 
-	@Override
 	public HtmlElement getModeToggle()
 	{
 		HtmlElement he = findModeToggleAnchor();
@@ -303,26 +294,22 @@ public class FiltersObject extends AbstractWebObject implements FilterCategories
 		return he;
 	}
 
-	@Override
 	public HtmlElement getCurrentFiltersSection()
 	{
 		return findFilterCategory( CATEGORY_CURRENT_FILTERS );
 	}
 
-	@Override
 	public Optional<HtmlElement> filterElementExists( final String dataVal )
 	{
 		By by = By.cssSelector( String.format( "a.remove-filter[data-val=\"%s\"]", dataVal ) );
 		return findCurrentFilter().childExists( by );
 	}
 
-	@Override
 	public HtmlElement getClearAllFilters()
 	{
 		return findClearFilters();
 	}
 
-	@Override
 	public void clearFilters()
 	{
 		getClearAllFilters().click();

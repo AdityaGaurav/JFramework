@@ -3,7 +3,6 @@ package com.framework.site.objects.body.common;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -28,20 +27,30 @@ import static org.hamcrest.Matchers.is;
  * Time   : 11:06
  */
 
-public class SectionBreadcrumbsBarObject extends AbstractWebObject implements BreadcrumbsBar
+public class SectionBreadcrumbsBarObject extends AbstractWebObject
 {
 
 	//region SectionBreadcrumbsBarObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( SectionBreadcrumbsBarObject.class );
 
+	static final String LOGICAL_NAME = "Cruise Deals Adjustment";
+
+	public static final By ROOT_BY = By.className( "breadcrumb-bar" );
+
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private Breadcrumbs breadcrumbs;
+	private BreadcrumbsObject breadcrumbs;
 
-	private Share share;
+	private BreadcrumbsShareObject share;
+
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private HtmlElement breadCrumbBar;
 
 	//endregion
 
@@ -85,8 +94,7 @@ public class SectionBreadcrumbsBarObject extends AbstractWebObject implements Br
 		return getBaseRootElement( SectionBreadcrumbsBarObject.ROOT_BY );
 	}
 
-	@Override
-	public Share share()
+	public BreadcrumbsShareObject share()
 	{
 		if ( null == this.share )
 		{
@@ -95,14 +103,23 @@ public class SectionBreadcrumbsBarObject extends AbstractWebObject implements Br
 		return share;
 	}
 
-	@Override
-	public Breadcrumbs breadcrumbs()
+	public BreadcrumbsObject breadcrumbs()
 	{
 		if ( null == this.breadcrumbs )
 		{
 			this.breadcrumbs = new BreadcrumbsObject( findBreadcrumbUl() );
 		}
 		return breadcrumbs;
+	}
+
+	public HtmlElement getContainer()
+	{
+		if( null == breadCrumbBar )
+		{
+			breadCrumbBar = getDriver().findElement( ROOT_BY );
+		}
+
+		return breadCrumbBar;
 	}
 
 	//endregion
@@ -124,12 +141,12 @@ public class SectionBreadcrumbsBarObject extends AbstractWebObject implements Br
 
 	private HtmlElement findBreadcrumbUl()
 	{
-		return getRoot().findElement( Breadcrumbs.ROOT_BY  );
+		return getRoot().findElement( BreadcrumbsObject.ROOT_BY  );
 	}
 
 	private HtmlElement findShareUl()
 	{
-		return getRoot().findElement( Share.ROOT_BY );
+		return getRoot().findElement( BreadcrumbsShareObject.ROOT_BY );
 	}
 
 	//endregion

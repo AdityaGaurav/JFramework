@@ -5,16 +5,21 @@ package com.framework.site.objects.body.interfaces;
  *
  * Package: com.framework.site.objects.body.interfaces
  *
- * Name   : AdvancedSearch
+ * Name   : CallOut 
  *
  * User   : solmarkn / Dani Vainstein
  *
- * Date   : 2015-01-06
+ * Date   : 2015-03-07 
  *
- * Time   : 20:41
+ * Time   : 13:23
+ *
  */
 
-public interface AdvancedSearch
+public interface CallOut
 {
+	boolean hasTitle();
 
+	boolean hasImage();
+
+	boolean hasParagraph();
 }

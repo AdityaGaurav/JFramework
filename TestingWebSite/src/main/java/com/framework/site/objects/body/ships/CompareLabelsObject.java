@@ -3,7 +3,6 @@ package com.framework.site.objects.body.ships;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.Ships;
-import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.google.common.collect.Lists;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -27,12 +26,16 @@ import java.util.List;
  *
  */
 
-class CompareLabelsObject extends AbstractWebObject implements ContentBlockComparing.CompareLabels
+class CompareLabelsObject extends AbstractWebObject
 {
 
 	//region CompareLabelsObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( CompareLabelsObject.class );
+
+	static final String LOGICAL_NAME = "Compare Labels";
+
+	static final By ROOT_BY = By.id( "compare-labels" );
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -47,7 +50,7 @@ class CompareLabelsObject extends AbstractWebObject implements ContentBlockCompa
 
 	CompareLabelsObject( final HtmlElement rootElement )
 	{
-		super( rootElement, ContentBlockComparing.CompareLabels.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -70,7 +73,7 @@ class CompareLabelsObject extends AbstractWebObject implements ContentBlockCompa
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( ContentBlockComparing.CompareLabels.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 
@@ -79,13 +82,11 @@ class CompareLabelsObject extends AbstractWebObject implements ContentBlockCompa
 
 	//region CompareLabelsObject - Interface Implementation Section
 
-	@Override
 	public boolean isVisible()
 	{
 		return getRoot().getAttribute( "class" ).endsWith( "visible" );
 	}
 
-	@Override
 	public List<Ships> getShipSections()
 	{
 		if( ships.size() == 0 )

@@ -6,17 +6,12 @@ import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.body.interfaces.ShipSortBar;
+import com.framework.site.data.Enumerators;
 import com.framework.utils.datetime.TimeConstants;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
 import static com.framework.utils.datetime.TimeConstants.TWO_SECONDS;
@@ -26,12 +21,16 @@ import static org.hamcrest.Matchers.is;
 //todo: class documentation
 
 
-public class SortBarObject extends AbstractWebObject implements ShipSortBar
+public class SortBarObject extends AbstractWebObject implements Enumerators
 {
 
 	//region SortBarObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( SortBarObject.class );
+
+	static final String LOGICAL_NAME = "Ships Sort Bar";
+
+	public static final By ROOT_BY = By.cssSelector( "div.sort-bar" );
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -48,7 +47,7 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 
 	public SortBarObject( final HtmlElement rootElement )
 	{
-		super( rootElement, ShipSortBar.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -80,7 +79,7 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( ShipSortBar.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	private boolean isSortTypeExpanded()
@@ -149,46 +148,47 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 
 	//region SortBarObject - Implementation Methods Section
 
-	/**
-	 * @return the number displayed in div.sort-bar > ul.options > h3 > span
-	 */
-	@Override
-	public int getResults()
+//	/**
+//	 * @return the number displayed in div.sort-bar > ul.options > h3 > span
+//	 */
+//	@Override
+//	public int getResults()
+//	{
+//		HtmlElement he = findSortBarH3Span();
+//
+//		Predicate<HtmlElement> predicate = new Predicate<HtmlElement>()
+//		{
+//			@Override
+//			public boolean apply( final HtmlElement input )
+//			{
+//				String text = input.getText();
+//				return NumberUtils.isNumber( text ) && NumberUtils.createInteger( text ) > 0;
+//			}
+//		};
+//
+//		new FluentWait<HtmlElement>( he )
+//				.withTimeout( 10, TimeUnit.SECONDS )
+//				.pollingEvery( 2000, TimeUnit.MILLISECONDS )
+//				.withMessage( "Waiting for ships count to be grater than 0" )
+//				.until( predicate );
+//
+//		String text = he.getText();
+//		logger.info( "Reading the number of ships results. < {} Results >", text );
+//		if ( NumberUtils.isNumber( text ) )
+//		{
+//			return NumberUtils.createInteger( text );
+//		}
+//
+//		throw new ApplicationException( he, "Ships results is not numeric '" + text + "'" );
+//	}
+
+	public HtmlElement getResultsElement()
 	{
 		HtmlElement he = findSortBarH3Span();
-
-		Predicate<HtmlElement> predicate = new Predicate<HtmlElement>()
-		{
-			@Override
-			public boolean apply( final HtmlElement input )
-			{
-				String text = input.getText();
-				return NumberUtils.isNumber( text ) && NumberUtils.createInteger( text ) > 0;
-			}
-		};
-
-		new FluentWait<HtmlElement>( he )
-				.withTimeout( 10, TimeUnit.SECONDS )
-				.pollingEvery( 2000, TimeUnit.MILLISECONDS )
-				.withMessage( "Waiting for ships count to be grater than 0" )
-				.until( predicate );
-
-		String text = he.getText();
-		logger.info( "Reading the number of ships results. < {} Results >", text );
-		if ( NumberUtils.isNumber( text ) )
-		{
-			return NumberUtils.createInteger( text );
-		}
-
-		throw new ApplicationException( he, "Ships results is not numeric '" + text + "'" );
+		logger.info( "Returning itineraries result element ..." );
+		return he;
 	}
 
-	/**
-	 * determine the current display layout type
-	 *
-	 * @return a {@linkplain ShipSortBar.SortType} enumeration value.
-	 */
-	@Override
 	public LayoutType getLayoutType()
 	{
 		HtmlElement he = findCurrentLayoutType();
@@ -212,7 +212,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 	 *     <li>asserts that new value matches the requested value</li>
 	 * </ul>
 	 */
-	@Override
 	public void setLayoutType( final LayoutType layout )
 	{
 		logger.info( "Changing layout type to < {} > if required ...", layout.name() );
@@ -258,12 +257,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 		he.createAssertion().assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 	}
 
-	/**
-	 * determine the current display sort type
-	 *
-	 * @return a {@linkplain ShipSortBar.SortType} enumeration value.
-	 */
-	@Override
 	public SortType getSortType()
 	{
 		HtmlElement he = findCurrentSortType();
@@ -287,7 +280,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 	 *     <li>asserts that new value matches the requested value</li>
 	 * </ul>
 	 */
-	@Override
 	public void setSortType( final SortType sort )
 	{
 		logger.info( "Changing sort type to < {} > if required ...", sort.name() );
@@ -331,7 +323,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 		he.createAssertion().assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 	}
 
-	@Override
 	public HtmlElement hoverSortType()
 	{
 		logger.info( "Hovering over sort type toggle anchor ..." );
@@ -339,7 +330,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 		return findLayoutToggleAnchor();
 	}
 
-	@Override
 	public HtmlElement hoverLayoutType()
 	{
 		logger.info( "Hovering over layout type toggle anchor ..." );
@@ -347,7 +337,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 		return findSortToggleAnchor();
 	}
 
-	@Override
 	public HtmlElement getSortTypeOption( final SortType option )
 	{
 		logger.info( "Retrieve HtmlElement for sort type option < {} >" );
@@ -362,7 +351,6 @@ public class SortBarObject extends AbstractWebObject implements ShipSortBar
 		return findDataLabelListItem( subList, "A-Z" );
 	}
 
-	@Override
 	public HtmlElement getLayoutOption( final LayoutType option )
 	{
 		logger.info( "Retrieve HtmlElement for layout type option < {} >" );

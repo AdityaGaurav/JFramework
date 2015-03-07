@@ -4,7 +4,6 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.body.interfaces.LinkTouts;
 import com.framework.utils.string.LogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -34,12 +33,16 @@ import static org.hamcrest.Matchers.is;
  * Time   : 19:55
  */
 
-public class LinkToutsContainerObject extends AbstractWebObject implements LinkTouts
+public class LinkToutsContainerObject extends AbstractWebObject
 {
 
 	//region LinkToutsContainerObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( LinkToutsContainerObject.class );
+
+	static final String LOGICAL_NAME = "Link Touts Container";
+
+	public static final By ROOT_BY = By.className( "link-tout" );
 
 
 	//endregion
@@ -49,7 +52,7 @@ public class LinkToutsContainerObject extends AbstractWebObject implements LinkT
 
 	public LinkToutsContainerObject( final HtmlElement rootElement )
 	{
-		super( rootElement, LinkTouts.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -78,7 +81,7 @@ public class LinkToutsContainerObject extends AbstractWebObject implements LinkT
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( LinkTouts.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -118,7 +121,7 @@ public class LinkToutsContainerObject extends AbstractWebObject implements LinkT
 
 	//endregion
 
-	public class LinkTout implements LinkTouts.LinkTout
+	public class LinkTout
 	{
 	 	private final int index;
 
@@ -162,40 +165,34 @@ public class LinkToutsContainerObject extends AbstractWebObject implements LinkT
 
 		private HtmlElement getRoot()
 		{
-			return getBaseRootElement( LinkTouts. ROOT_BY );
+			return getBaseRootElement( ROOT_BY );
 		}
 
-		@Override
 		public String getReference()
 		{
 			return null;
 		}
 
-		@Override
 		public String getImageAlt()
 		{
 			return null;
 		}
 
-		@Override
 		public String getLeftTitle()
 		{
 			return null;
 		}
 
-		@Override
 		public String getRightTitle()
 		{
 			return null;
 		}
 
-		@Override
 		public String getParagraphText()
 		{
 			return null;
 		}
 
-		@Override
 		public String activateTout()
 		{
 			return null;

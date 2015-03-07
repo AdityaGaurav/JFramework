@@ -6,7 +6,6 @@ import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.core.HomePage;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
@@ -20,12 +19,16 @@ import static org.hamcrest.Matchers.is;
 
 //todo: class documentation
 
-public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsBar.Breadcrumbs
+public class BreadcrumbsObject extends AbstractWebObject
 {
 
 	//region BreadcrumbsObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( BreadcrumbsObject.class );
+
+	static final String LOGICAL_NAME = "Breadcrumbs";
+
+	static final org.openqa.selenium.By ROOT_BY = By.cssSelector( "ul.breadcrumbs" );
 
 	private static final By HOME_LINK_TEXT = By.linkText( "Home" );
 
@@ -36,7 +39,7 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 
 	public BreadcrumbsObject( final HtmlElement rootElement )
 	{
-		super( rootElement, BreadcrumbsBar.Breadcrumbs.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -68,7 +71,7 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( BreadcrumbsBar.Breadcrumbs.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 
@@ -78,7 +81,6 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	//region BreadcrumbsObject - Business Methods Section
 
 	//todo: method documentation
-	@Override
 	public HomePage navigateHome()
 	{
 		logger.info( "Navigating \"Home\" using breadcrumbs first item." );
@@ -90,7 +92,6 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	}
 
 	//todo: method documentation
-	@Override
 	public boolean isLastChildEnabled()
 	{
 		logger.info( "Determine if the breadcrumbs 'last-child' is enabled ( active link )" );
@@ -99,7 +100,6 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 		return ! lastActive.getAttribute( "href" ).isEmpty();
 	}
 
-	@Override
 	public String getLastChildName()
 	{
 		String text = findLastChildActiveAnchor().getText();
@@ -108,7 +108,6 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	}
 
 	//todo: method documentation
-	@Override
 	public List<String> getNames()
 	{
 		List<HtmlElement> lis = findBreadcrumbsLis();
@@ -118,14 +117,12 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 	}
 
 	//todo: method documentation
-	@Override
 	public boolean breadcrumbItemExists( final String itemName )
 	{
 		logger.info( "Determine if breadcrumbs item <\"{}\"> exists.", itemName );
 		return getRoot().childExists( By.linkText( itemName ) ).isPresent();
 	}
 
-	@Override
 	public void clickOnItem( final String item )
 	{
 		logger.info( "Clicking on breadcrumb item < {} >", item );
@@ -141,7 +138,6 @@ public class BreadcrumbsObject extends AbstractWebObject implements BreadcrumbsB
 		}
 	}
 
-	@Override
 	public HtmlElement getLastChild()
 	{
 		HtmlElement he = findLastChildLi();

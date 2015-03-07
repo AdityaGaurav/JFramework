@@ -9,15 +9,15 @@ import com.framework.site.objects.footer.enums.FooterItem;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
-import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -69,11 +69,11 @@ class SubFooterObject extends AbstractWebObject implements Footer.SubFooter
 		final String REASON = "assert that element \"%s\" exits";
 		JAssertion assertion = getRoot().createAssertion();
 
-		Optional<HtmlElement> e = getRoot().childExists( Footer.LinkList.ROOT_BY, FIVE_SECONDS );
+		Optional<HtmlElement> e = getDriver().elementExists( Footer.LinkList.ROOT_BY );
 		assertion.assertThat( String.format( REASON, "ul.minor" ), e.isPresent(), JMatchers.is( true ) );
 		ul_minor = e.get();
 
-		e = getRoot().childExists( Footer.SubFooter.ROOT_BY, THREE_SECONDS );
+		e = getDriver().elementExists( Footer.SubFooter.ROOT_BY );
 		assertion.assertThat( String.format( REASON, "ul.social" ), e.isPresent(), JMatchers.is( true ) );
 		ul_social = e.get();
 	}
@@ -148,6 +148,20 @@ class SubFooterObject extends AbstractWebObject implements Footer.SubFooter
 		}
 	}
 
+	@Override
+	public Map<String,String> getInfo()
+	{
+		logger.info( "Returning a map of sub-footer links ..." );
+		Map<String,String> links = Maps.newHashMap();
+		List<HtmlElement> anchors = findMinorAnchors();
+		for( HtmlElement he : anchors )
+		{
+			links.put( he.getText(), he.getAttribute( "href" ) );
+		}
+
+		return links;
+	}
+
 	//endregion
 
 
@@ -169,8 +183,14 @@ class SubFooterObject extends AbstractWebObject implements Footer.SubFooter
 
 	private HtmlElement findLeftItem( FooterItem item )
 	{
-		final By findBy = By.xpath( String.format( "//a[text()=\"%s\"]", item.getPropertyName() ) );
+		final By findBy = By.linkText( item.getPropertyName() );
 		return ul_minor.findElement( findBy );
+	}
+
+	private List<HtmlElement> findMinorAnchors()
+	{
+		final By findBy = By.cssSelector( "ul.minor.pull-left a" );
+		return getDriver().findElements( findBy );
 	}
 
 	//endregion

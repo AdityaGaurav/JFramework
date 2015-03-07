@@ -7,7 +7,6 @@ import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
-import com.framework.site.objects.body.interfaces.CompareShipBanner;
 import com.framework.site.pages.core.cruiseships.CompareCruiseShipsPage;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
@@ -27,12 +26,22 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 
 
-public class CompareShipBannerObject extends AbstractWebObject implements CompareShipBanner
+public class CompareShipBannerObject extends AbstractWebObject
 {
 
 	//region CompareBannerObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( CompareShipBannerObject.class );
+
+	static final String LOGICAL_NAME = "Ship Compare Banner";
+
+	public static final By ROOT_BY = By.id( "compare-banner" );
+
+	static final String SESSION_STORAGE_COMPARE = "Explore.Ships.Compare";
+
+	static final String SESSION_STORAGE_QUERY = "Explore.Query.ship";
+
+	static final String COOKIE_NAME = "s_sq";
 
 	private JsonObject sessionStorageCompare;
 
@@ -56,7 +65,7 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 	 */
 	public CompareShipBannerObject( final HtmlElement rootElement )
 	{
-		super( rootElement, CompareShipBanner.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -84,7 +93,7 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 
 		JAssertion assertion = getRoot().createAssertion();
 
-		Optional<HtmlElement> optional = getRoot().childExists( CompareShipBanner.ROOT_BY, TimeConstants.THREE_SECONDS );
+		Optional<HtmlElement> optional = getRoot().childExists( ROOT_BY, TimeConstants.THREE_SECONDS );
 		assertion.assertThat( String.format( REASON, "compare-banner" ), optional.isPresent(), is( true ) );
 		this.compare_banner = optional.get();
 
@@ -117,7 +126,7 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( CompareShipBanner.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -125,37 +134,87 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 
 	//region CompareBannerObject - Implementation Methods Section
 
-	@Override
+	/**
+	 * Get a ship by his index from left to right.
+	 *
+	 * @param index the index of the ship to retrieve
+	 *
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible
+	 *  	   or if the index is out of bound.
+	 */
 	public Ships getShip( final int index )
 	{
 		return null;
 	}
 
-	@Override
+	/**
+	 * Remove a ship by his index, and returning the ship that was removed.
+	 *
+	 * @param index the index of the ship to remove
+	 *
+	 * @throws com.framework.driver.exceptions.ApplicationException if the banner is not visible or
+	 *  	   if the index is out of bound.
+	 */
 	public Ships remove( final int index )
 	{
 		return null;
 	}
 
-	@Override
+	/**
+	 * Remove a ship by his index, and returning the ship that was removed.
+	 *
+	 * @param ship the ship to remove
+	 *
+	 * @throws com.framework.utils.error.PreConditionException if the index is out bound
+	 * 		   or the banner is not visible
+	 * @throws com.framework.site.exceptions.NoSuchShipException
+	 *         if the ship is not listed inside the comparison banner.
+	 */
 	public void remove( final Ships ship )
 	{
 
 	}
 
-	@Override
+	/**
+	 * @return a list of comparing ships from left to right.
+	 *
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible.
+	 */
 	public List<Ships> getShips()
 	{
 		return null;
 	}
 
-	@Override
+	/**
+	 * @return a list of comparing ships names
+	 *
+	 * @throws com.framework.utils.error.PreConditionException if the banner is not visible.
+	 */
 	public List<String> getShipNames()
 	{
 		return null;
 	}
 
-	@Override
+	/**
+	 * returns a compare ship information by argument {@code ship}
+	 * <p>
+	 *     The map will contains the following values.
+	 *     <ul>
+	 *      	<li>a[data-id] - key: id</li>
+	 *      	<li>h4.text - key: name</li>
+	 *      	<li>img[src] - key src.</li>
+	 *      	<li>img[alt] - key: alt</li>
+	 *     </ul>
+	 * </p>
+	 * @param ship the {@linkplain com.framework.site.data.Ships} item to be queried
+	 *
+	 * @return a {@code Map} with the described above keys.
+	 *
+	 * @throws com.framework.utils.error.PreConditionException if the index is out bound
+	 * 		   or the banner is not visible
+	 * @throws com.framework.site.exceptions.NoSuchShipException
+	 *         if the ship is not listed inside the comparison banner.
+	 */
 	public Map<String, String> getCompareShipInfo( final Ships ship )
 	{
 		return null;
@@ -167,43 +226,40 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 	 *     determine if the banner is visible by querying the div.banner web-element
 	 * </p>
 	 *
-	 * @return {@inheritDoc}
+	 * @return {@code true} if the ship compare banner is visible, otherwise {@code false}.
 	 */
-	@Override
 	public boolean isVisible()
 	{
 		return getRoot().isDisplayed();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * The banner must be displayed before calling the function.
 	 * <p>
 	 *     determine if the banner has items by querying the div.banner.has-items web-element
 	 * </p>
 	 *
-	 * @return {@inheritDoc}
+	 * @return {@code true} if the compare banner has items
+	 *
+	 * @see #isVisible()
 	 */
-	@Override
 	public boolean hasItems()
 	{
 		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner.has-items" ) );
 		return optional.isPresent();
 	}
 
-	@Override
 	public boolean hasItems( final long millis )
 	{
 		Optional<HtmlElement> optional = getRoot().childExists( By.cssSelector( "div.banner.has-items" ), millis );
 		return ! optional.isPresent();
 	}
 
-	@Override
 	public List<HtmlElement> getItems()
 	{
 		return findCurrentlyComparing();
 	}
 
-	@Override
 	public void cleanSessionStorage()
 	{
 		PreConditions.checkState( this.webStorageEnabled, "Driver Capabilities for webStorageEnabled is false." );
@@ -215,7 +271,6 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 		}
 	}
 
-	@Override
 	public JsonObject getSessionStorageKey( final String key )
 	{
 		PreConditions.checkState( webStorageEnabled, "Driver Capabilities for webStorageEnabled is false." );
@@ -225,7 +280,6 @@ public class CompareShipBannerObject extends AbstractWebObject implements Compar
 		return ( JsonObject ) jsonParser.parse( value );
 	}
 
-	@Override
 	public CompareCruiseShipsPage clickCompareShips( int ships )
 	{
 		HtmlElement he = findCompareBannerButton();

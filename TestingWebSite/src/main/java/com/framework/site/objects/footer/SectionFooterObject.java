@@ -6,6 +6,7 @@ import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	{
 		if ( null == this.linkList )
 		{
-			this.linkList = new LinkListObject( getZeroFooterDiv() );
+			this.linkList = new LinkListObject( getLinkListDiv() );
 		}
 		return linkList;
 	}
@@ -119,6 +120,11 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	private HtmlElement getRoot()
 	{
 		return getBaseRootElement( Footer.ROOT_BY );
+	}
+
+	public HtmlElement getContainer()
+	{
+		return getDriver().findElement( By.id( "ccl-refresh-footer" ) );
 	}
 
 	//endregion
@@ -164,6 +170,12 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		}
 	}
 
+	@Override
+	public void scrollIntoView()
+	{
+		getRoot().scrollIntoView();
+	}
+
 	//endregion
 
 
@@ -177,6 +189,11 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 	private HtmlElement getZeroFooterDiv()
 	{
 		return getRoot().findElement( ZeroFooter.ROOT_BY );
+	}
+
+	private HtmlElement getLinkListDiv()
+	{
+		return getRoot().findElement( LinkList.ROOT_BY );
 	}
 
 	//endregion

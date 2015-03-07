@@ -8,7 +8,6 @@ import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.config.SiteProperty;
 import com.framework.site.data.Ships;
-import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -44,12 +43,16 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-class CompareSectionObject extends AbstractWebObject implements ContentBlockComparing.CompareSection
+public class CompareSectionObject extends AbstractWebObject
 {
 
 	//region CompareSectionObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( CompareSectionObject.class );
+
+	public enum getStatus{ AVAILABLE, NOT_AVAILABLE, COMING_SOON }
+
+	static final String LOGICAL_NAME = "Compare Section";
 
 	public static final int SCROLL_OFFSET = 130;
 
@@ -72,7 +75,7 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 
 	CompareSectionObject( final HtmlElement rootElement )
 	{
-		super( rootElement, ContentBlockComparing.CompareSection.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -168,13 +171,11 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 
 	//region CompareSectionObject - Interface Implementation Section
 
-	@Override
 	public List<Ships> getShipsSections()
 	{
 		return shipsSections;
 	}
 
-	@Override
 	public void expand()
 	{
 		if( ! isExpanded() )
@@ -188,7 +189,6 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		populateTableData();
 	}
 
-	@Override
 	public void collapse()
 	{
 		if( isExpanded() )
@@ -200,7 +200,6 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		}
 	}
 
-	@Override
 	public boolean isExpanded()
 	{
 		boolean expanded = h2.getAttribute( "class" ).equals( "expanded" );
@@ -208,14 +207,12 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		return expanded;
 	}
 
-	@Override
 	public String getSectionName()
 	{
 		logger.info( "return the current section name < {} >", sectionName );
 		return sectionName;
 	}
 
-	@Override
 	public List<String> getParameters()
 	{
 		List<String> params = Lists.newArrayList( rows.keySet() );
@@ -223,19 +220,16 @@ class CompareSectionObject extends AbstractWebObject implements ContentBlockComp
 		return params;
 	}
 
-	@Override
 	public Map<String, Map.Entry<HtmlElement, Map<Ships, String>>> getRows()
 	{
 		return rows;
 	}
 
-	@Override
 	public HtmlElement getTable()
 	{
 		return findTable();
 	}
 
-	@Override
 	public boolean indicatorNotVisible( Map<Ships,String> values )
 	{
 		String valuesJoined = Joiner.on( "," ).join( ( ( HashMap ) values ).values() );

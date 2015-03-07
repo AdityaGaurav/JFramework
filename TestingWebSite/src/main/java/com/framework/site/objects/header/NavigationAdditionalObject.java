@@ -9,7 +9,6 @@ import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
 import com.framework.driver.objects.PageObject;
 import com.framework.site.config.SiteSessionManager;
-import com.framework.site.exceptions.NoSuchMenuItemException;
 import com.framework.site.objects.header.enums.LevelOneMenuItem;
 import com.framework.site.objects.header.enums.MenuItems;
 import com.framework.site.objects.header.interfaces.Header;
@@ -214,7 +213,7 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 			case IN_ROOM_GIFTS_AND_SHOPPING : return new FunShopsPage();
 			default:
 			{
-				throw new NoSuchMenuItemException( getDriver(), "The menu item <'{" + level2.getTitle() + "}'> was not found"  );
+				throw new IllegalArgumentException( "The menu item <'{" + level2.getTitle() + "}'> was not found"  );
 			}
 		}
 	}

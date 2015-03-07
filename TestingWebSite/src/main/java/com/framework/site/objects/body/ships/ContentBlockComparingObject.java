@@ -5,7 +5,6 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.Ships;
-import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
@@ -36,12 +35,16 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-public class ContentBlockComparingObject extends AbstractWebObject implements ContentBlockComparing
+public class ContentBlockComparingObject extends AbstractWebObject
 {
 
 	//region ContentBlockComparingObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( ContentBlockComparingObject.class );
+
+	static final String LOGICAL_NAME = "Content Block Comparing";
+
+	public static final By ROOT_BY = By.cssSelector( ".content-block[class*=\"comparing\"]" );
 
 	private int comparingShips = 1;
 
@@ -51,13 +54,13 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private CompareLabels compareLabels;
+	private CompareLabelsObject compareLabels;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private List<CompareSection> sections = Lists.newArrayList();
+	private List<CompareSectionObject> sections = Lists.newArrayList();
 
 	//endregion
 
@@ -66,7 +69,7 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 
 	public ContentBlockComparingObject( final HtmlElement rootElement, int ships )
 	{
-		super( rootElement, ContentBlockComparing.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		comparingShips = ships;
 		initWebObject();
 	}
@@ -101,14 +104,14 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( ContentBlockComparing.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
-	private CompareLabels compareLabels()
+	private CompareLabelsObject compareLabels()
 	{
 		if( null == compareLabels )
 		{
-			compareLabels = new CompareLabelsObject( getDriver().findElement( CompareLabels.ROOT_BY ) );
+			compareLabels = new CompareLabelsObject( getDriver().findElement( CompareLabelsObject.ROOT_BY ) );
 		}
 
 		return compareLabels;
@@ -119,13 +122,11 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 
 	//region ContentBlockComparingObject - Implementation Methods Section
 
-	@Override
 	public String getSectionName( final int index )
 	{
 		return null;
 	}
 
-	@Override
 	public List<String> getSectionNames( final int index )
 	{
 		List<HtmlElement> spans = findSectionsSpans();
@@ -134,12 +135,11 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 		return names;
 	}
 
-	@Override
-	public List<CompareSection> getExpandedSections()
+	public List<CompareSectionObject> getExpandedSections()
 	{
 		List<HtmlElement> expanded = findExpandedSectionsDivs();
 		logger.info( "current expanded sections: < {} >", expanded.size() );
-		List<CompareSection> sections = Lists.newArrayListWithExpectedSize( expanded.size() );
+		List<CompareSectionObject> sections = Lists.newArrayListWithExpectedSize( expanded.size() );
 		for( HtmlElement he : expanded )
 		{
 			CompareSectionObject cso = new CompareSectionObject( he );
@@ -149,12 +149,11 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 		return sections;
 	}
 
-	@Override
-	public List<CompareSection> getCollapsedSections()
+	public List<CompareSectionObject> getCollapsedSections()
 	{
 		List<HtmlElement> collapsed = findCollapsedSectionsDivs();
 		logger.info( "current collapsed sections: < {} >", collapsed.size() );
-		List<CompareSection> sections = Lists.newArrayListWithExpectedSize( collapsed.size() );
+		List<CompareSectionObject> sections = Lists.newArrayListWithExpectedSize( collapsed.size() );
 		for( HtmlElement he : collapsed )
 		{
 			CompareSectionObject cso = new CompareSectionObject( he );
@@ -164,19 +163,17 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 		return sections;
 	}
 
-	@Override
 	public void collapseAll()
 	{
-		List<CompareSection> expanded = getExpandedSections();
-		for( CompareSection section : expanded )
+		List<CompareSectionObject> expanded = getExpandedSections();
+		for( CompareSectionObject section : expanded )
 		{
 			section.collapse();
 		}
 
 	}
 
-	@Override
-	public CompareSection getSection( final String name )
+	public CompareSectionObject getSection( final String name )
 	{
 		PreConditions.checkNotNullNotBlankOrEmpty( name, "The section name is either null, empty or blank" );
 		logger.info( "Return section element < {} >", name );
@@ -184,8 +181,7 @@ public class ContentBlockComparingObject extends AbstractWebObject implements Co
 		return new CompareSectionObject( he );
 	}
 
-	@Override
-	public List<CompareSection> getComparisonSections()
+	public List<CompareSectionObject> getComparisonSections()
 	{
 		if( sections.size() == 0 )
 		{

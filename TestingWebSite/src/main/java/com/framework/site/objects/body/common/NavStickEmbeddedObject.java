@@ -4,7 +4,7 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.body.interfaces.NavStickEmbedded;
+import com.framework.site.data.Enumerators;
 import com.framework.site.pages.core.BeginnersGuidePage;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -34,12 +34,20 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-public class NavStickEmbeddedObject extends AbstractWebObject implements NavStickEmbedded
+public class NavStickEmbeddedObject extends AbstractWebObject implements Enumerators
 {
 
 	//region NavStickEmbeddedObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( NavStickEmbeddedObject.class );
+
+	static final By ROOT_BY = By.cssSelector( "ul.nav.stickem" );
+
+	static final String LOGICAL_NAME = "Stick Embedded";
+
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
 
 	private HtmlElement whats_included, on_ship, shore_excursions, destinations;
 
@@ -50,7 +58,7 @@ public class NavStickEmbeddedObject extends AbstractWebObject implements NavStic
 
 	public NavStickEmbeddedObject( final HtmlElement rootElement )
 	{
-		super( rootElement, NavStickEmbedded.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -116,7 +124,7 @@ public class NavStickEmbeddedObject extends AbstractWebObject implements NavStic
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( NavStickEmbedded.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -124,7 +132,6 @@ public class NavStickEmbeddedObject extends AbstractWebObject implements NavStic
 
 	//region NavStickEmbeddedObject - Business Methods Section
 
-	@Override
 	public NavStickItem getActiveItem()
 	{
 		HtmlElement he = getRoot().findElement( By.cssSelector( "li.link-active" ) );

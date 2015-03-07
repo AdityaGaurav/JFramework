@@ -8,7 +8,6 @@ import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
-import com.framework.site.objects.body.interfaces.RefineSearch;
 import com.framework.utils.conversion.Converter;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
@@ -40,12 +39,16 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-public class RefineSearchObject extends AbstractWebObject implements RefineSearch
+public class RefineSearchObject extends AbstractWebObject
 {
 
 	//region RefineSearchObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( RefineSearchObject.class );
+
+	static final String LOGICAL_NAME = "Refine Search";
+
+	public static final By ROOT_BY = By.className( "search-side" );
 
 	private static final String DEP_CODE = "embkCode";
 
@@ -70,7 +73,7 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 
 	public RefineSearchObject( final HtmlElement rootElement )
 	{
-		super( rootElement, RefineSearch.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -111,7 +114,7 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( RefineSearch.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -119,7 +122,6 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 
 	//region RefineSearchObject - RefineSearch Implementation Methods Section
 
-	@Override
 	public List<DeparturePorts> getCheckedDeparturePorts()
 	{
 		List<HtmlElement> checkedDeparturePorts =
@@ -138,7 +140,6 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 		return ports;
 	}
 
-	@Override
 	public List<TripDurations> getCheckedTripDurations()
 	{
 		List<HtmlElement> checkedDurations =
@@ -157,7 +158,6 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 		return durations;
 	}
 
-	@Override
 	public List<Ships> getCheckedShips()
 	{
 		List<HtmlElement> checkedShips =
@@ -177,23 +177,21 @@ public class RefineSearchObject extends AbstractWebObject implements RefineSearc
 		return ships;
 	}
 
-	@Override
 	public List<String> getCheckedEvents()
 	{
 		return null;
 	}
 
-	@Override
 	public List<String> getCheckedRates()
 	{
 		return null;
 	}
 
-	@Override
 	public int getItinerariesFound()
 	{
 		HtmlElement he = findItinerariesStrong();
 		String text = he.getText();
+		he.createAssertion().assertThat( "Validate itineraries found is numeric", text, JMatchers.isNumber( text ) );
 		logger.info( "Number of itineraries found is < {} >", text );
 		return Converter.toInteger( text );
 	}

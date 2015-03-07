@@ -199,7 +199,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		String dataId = getRoot().getAttribute( "data-id" );
 		String dataName = getRoot().getAttribute( "data-name" );
 		this.ship = Ships.valueById( dataId );
-		if( ship == null ) throw new NoSuchShipException( getDriver(), "The ship code < " + dataId + " > does not exists" );
+		if( ship == null ) throw new NoSuchShipException( "The ship code < " + dataId + " > does not exists" );
 		getDriver().assertThat( "Validates the ship name", dataName, JMatchers.is( ship.getFullName() ) );
 
 		Map<String,String> map = Maps.newHashMap();
@@ -238,7 +238,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			}
 			catch ( AssertionError e )
 			{
-				throw new NoSuchDestinationException( getDriver(), "The destination code < " + href + " > does not exists" );
+				throw new NoSuchDestinationException( "The destination code < " + href + " > does not exists" );
 			}
 
 			this.destinations.add( current );
@@ -267,7 +267,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			}
 			catch ( AssertionError e )
 			{
-				throw new NoSuchDeparturePortException( getDriver(), "The departure port code < " + href + " > does not exists" );
+				throw new NoSuchDeparturePortException( "The departure port code < " + href + " > does not exists" );
 			}
 		}
 	}
@@ -293,7 +293,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			}
 			catch ( AssertionError e )
 			{
-				throw new NoSuchTripDurationException( getDriver(), "The destination code < " + text + " > does not exists" );
+				throw new NoSuchTripDurationException( "The destination code < " + text + " > does not exists" );
 			}
 
 			this.tripDurations.add( current );

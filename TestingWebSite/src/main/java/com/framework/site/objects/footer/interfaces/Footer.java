@@ -3,9 +3,11 @@ package com.framework.site.objects.footer.interfaces;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.Link;
 import com.framework.site.objects.footer.enums.FooterItem;
+import com.google.common.collect.Table;
 import org.openqa.selenium.By;
 
 import java.net.URL;
+import java.util.Map;
 
 
 /**
@@ -42,6 +44,8 @@ public interface Footer
 
 	boolean hasZeroFooter();
 
+	void scrollIntoView();
+
 	interface SubFooter
 	{
 
@@ -58,6 +62,8 @@ public interface Footer
 		HtmlElement getTradeMark();
 
 		URL getFacebookLikeRef();
+
+		Map<String,String> getInfo();
 	}
 
 	interface ZeroFooter
@@ -76,6 +82,8 @@ public interface Footer
 		static final String LOGICAL_NAME = "Link-List";
 
 		boolean isDisplayed();
+
+		Table<String,String,String> getInfo();
 	}
 
 }

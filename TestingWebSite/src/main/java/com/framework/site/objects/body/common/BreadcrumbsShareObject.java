@@ -7,7 +7,6 @@ import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.utils.datetime.Sleeper;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
@@ -35,12 +34,16 @@ import static org.hamcrest.Matchers.is;
  * Time   : 12:17
  */
 
-public class BreadcrumbsShareObject extends AbstractWebObject implements BreadcrumbsBar.Share
+class BreadcrumbsShareObject extends AbstractWebObject
 {
 
 	//region BreadcrumbsShareObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( BreadcrumbsShareObject.class );
+
+	static final String LOGICAL_NAME = "Breadcrumb Bar Share";
+
+	static final By ROOT_BY = By.cssSelector( "ul.share" );
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -53,9 +56,9 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Constructor Methods Section
 
-	public BreadcrumbsShareObject( final HtmlElement rootElement )
+	BreadcrumbsShareObject( final HtmlElement rootElement )
 	{
-		super( rootElement, BreadcrumbsBar.Share.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -93,7 +96,7 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( BreadcrumbsBar.Share.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -101,7 +104,6 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 
 	//region BreadcrumbsShareObject - Business Methods Section
 
-	@Override
 	public void clickPrint()
 	{
 		/** adds a new tag when event onbeforeprint is fired by the browser */
@@ -148,7 +150,6 @@ public class BreadcrumbsShareObject extends AbstractWebObject implements Breadcr
 		HtmlDriverWait.wait5( getDriver() ).until( ExpectedConditions.presenceBy( By.id( "afterPrint" ) ) );
 	}
 
-	@Override
 	public void clickShare()
 	{
 		//todo current a bug: cannot implement

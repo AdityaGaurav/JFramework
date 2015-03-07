@@ -6,6 +6,9 @@ import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,12 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private List<HtmlElement> linkListUl = Lists.newArrayList();
+
 	//endregion
 
 
@@ -65,8 +74,9 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 		final String REASON = "assert that all elements \"%s\" exits";
 		JAssertion assertion = getRoot().createAssertion();
 
-		Optional<List<HtmlElement>> e = getRoot().allChildrenExists( By.cssSelector( ".link-lists li" ), FIVE_SECONDS );
-		assertion.assertThat( String.format( REASON, ".link-lists li" ), e.isPresent(), JMatchers.is( true ) );
+		Optional<List<HtmlElement>> e = getRoot().allChildrenExists( By.tagName( "ul" ), FIVE_SECONDS );
+		assertion.assertThat( String.format( REASON, ".link-lists ul" ), e.isPresent(), JMatchers.is( true ) );
+		linkListUl = e.get();
 	}
 
 	//endregion
@@ -90,10 +100,41 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 		return getRoot().isDisplayed();
 	}
 
+	@Override
+	public Table<String,String,String> getInfo()
+	{
+		Table<String,String,String> linkList = HashBasedTable.create();
+		List<HtmlElement> uls = findFooterSectionsUl();
+		for( HtmlElement ul : uls )
+		{
+			List<HtmlElement> anchors = ul.findElements( By.tagName( "a" ) );
+			String sectionName = ul.findElement( By.tagName( "h5" ) ).getText();
+			for( HtmlElement anchor : anchors )
+			{
+				String text = anchor.getText();
+				String href = anchor.getAttribute( "href" );
+				linkList.put( sectionName, text, href );
+			}
+		}
+
+		return linkList;
+	}
+
 	//endregion
 
 
 	//region LinkListObject - Element Finder Methods Section
+
+	private List<HtmlElement> findFooterSectionsUl()
+	{
+		if( linkListUl.size() == 0 )
+		{
+			final By findBy = By.tagName( "ul" );
+			linkListUl = getRoot().findElements( findBy );
+		}
+
+		return linkListUl;
+	}
 
 	//endregion
 
