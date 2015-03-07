@@ -1,7 +1,6 @@
 package com.framework.site.pages.core;
 
 import com.framework.site.objects.body.common.NavStickEmbeddedObject;
-import com.framework.site.objects.body.interfaces.NavStickEmbedded;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ public class UKCaribbeanPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private NavStickEmbedded navStickEmbedded;
+	private NavStickEmbeddedObject navStickEmbedded;
 
 	//endregion
 
@@ -50,7 +49,7 @@ public class UKCaribbeanPage extends BaseCarnivalPage
 
 	//region UKCaribbeanPage - Service Methods Section
 
-	public NavStickEmbedded navStickEmbedded()
+	public NavStickEmbeddedObject navStickEmbedded()
 	{
 		if ( null == this.navStickEmbedded )
 		{

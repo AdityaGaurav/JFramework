@@ -3,7 +3,6 @@ package com.framework.site.pages.core;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.google.common.base.Optional;
@@ -42,7 +41,7 @@ public class CruiseDealsPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private BreadcrumbsBar breadcrumbsBar = null;
+	private SectionBreadcrumbsBarObject breadcrumbsBar = null;
 
 	//endregion
 
@@ -81,7 +80,7 @@ public class CruiseDealsPage extends BaseCarnivalPage
 
 	//region CruiseDealsPage - Service Methods Section
 
-	public BreadcrumbsBar subscribe()
+	public SectionBreadcrumbsBarObject subscribe()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
@@ -102,7 +101,7 @@ public class CruiseDealsPage extends BaseCarnivalPage
 
 	HtmlElement findBreadcrumbsBar()
 	{
-		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+		return getDriver().findElement( SectionBreadcrumbsBarObject.ROOT_BY );
 	}
 
 	//endregion

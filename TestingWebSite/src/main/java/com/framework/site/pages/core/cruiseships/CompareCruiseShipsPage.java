@@ -5,7 +5,6 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
-import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.framework.site.objects.body.ships.ContentBlockComparingObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.site.pages.bookingengine.CruiseSearchPage;
@@ -58,7 +57,7 @@ public class CompareCruiseShipsPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private ContentBlockComparing contentBlockComparing = null;
+	private ContentBlockComparingObject contentBlockComparing = null;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -125,12 +124,12 @@ public class CompareCruiseShipsPage extends BaseCarnivalPage
 		CompareCruiseShipsPage.compareShipsCount = compareShipsCount;
 	}
 
-	public ContentBlockComparing contentBlockComparing()
+	public ContentBlockComparingObject contentBlockComparing()
 	{
 		if( null == this.contentBlockComparing )
 		{
 			this.contentBlockComparing =
-					new ContentBlockComparingObject( getDriver().findElement( ContentBlockComparing.ROOT_BY ), compareShipsCount );
+					new ContentBlockComparingObject( getDriver().findElement( ContentBlockComparingObject.ROOT_BY ), compareShipsCount );
 		}
 
 		return this.contentBlockComparing;

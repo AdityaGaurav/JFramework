@@ -4,7 +4,6 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.matchers.JMatchers;
@@ -33,7 +32,7 @@ public class CruiseFromPortPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private BreadcrumbsBar breadcrumbsBar = null;
+	private SectionBreadcrumbsBarObject breadcrumbsBar = null;
 
 	//endregion
 
@@ -86,7 +85,7 @@ public class CruiseFromPortPage extends BaseCarnivalPage
 		return departurePort;
 	}
 
-	public BreadcrumbsBar breadcrumbsBar()
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
@@ -102,7 +101,7 @@ public class CruiseFromPortPage extends BaseCarnivalPage
 
 	private HtmlElement findBreadcrumbsBar()
 	{
-		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+		return getDriver().findElement( SectionBreadcrumbsBarObject.ROOT_BY );
 	}
 
 	private HtmlElement findHeroTitlePara()

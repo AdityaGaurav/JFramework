@@ -6,7 +6,6 @@ import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.LinkToutsContainerObject;
-import com.framework.site.objects.body.interfaces.LinkTouts;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
@@ -35,7 +34,7 @@ public class HomePage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private LinkTouts linkTouts = null;
+	private LinkToutsContainerObject linkTouts = null;
 
 	//endregion
 
@@ -116,7 +115,7 @@ public class HomePage extends BaseCarnivalPage
 				.toString();
 	}
 
-	public LinkTouts linkToutsContainer()
+	public LinkToutsContainerObject linkToutsContainer()
 	{
 		if ( null == this.linkTouts )
 		{
@@ -144,7 +143,7 @@ public class HomePage extends BaseCarnivalPage
 
 	private HtmlElement finLinkTouts()
 	{
-		return getDriver().findElement( LinkTouts.ROOT_BY );
+		return getDriver().findElement( LinkToutsContainerObject.ROOT_BY );
 	}
 
 	//endregion

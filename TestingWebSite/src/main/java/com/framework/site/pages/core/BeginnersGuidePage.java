@@ -2,8 +2,6 @@ package com.framework.site.pages.core;
 
 import com.framework.site.objects.body.common.NavStickEmbeddedObject;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
-import com.framework.site.objects.body.interfaces.NavStickEmbedded;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import org.slf4j.Logger;
@@ -32,9 +30,9 @@ public class BeginnersGuidePage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private BreadcrumbsBar breadcrumbsBar;
+	private SectionBreadcrumbsBarObject breadcrumbsBar;
 
-	private NavStickEmbedded navStickEmbedded;
+	private NavStickEmbeddedObject navStickEmbedded;
 
 	//endregion
 
@@ -63,7 +61,7 @@ public class BeginnersGuidePage extends BaseCarnivalPage
 
 	//region BeginnersGuidePage - Service Methods Section
 
-	public BreadcrumbsBar breadcrumbsBar()
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
@@ -72,7 +70,7 @@ public class BeginnersGuidePage extends BaseCarnivalPage
 		return breadcrumbsBar;
 	}
 
-	public NavStickEmbedded navStickEmbedded()
+	public NavStickEmbeddedObject navStickEmbedded()
 	{
 		if ( null == this.navStickEmbedded )
 		{

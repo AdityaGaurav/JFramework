@@ -3,7 +3,6 @@ package com.framework.site.pages.core.cruiseships;
 import com.framework.driver.event.ExpectedConditions;
 import com.framework.site.data.Ships;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
@@ -29,7 +28,7 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private BreadcrumbsBar breadcrumbsBar;
+	private SectionBreadcrumbsBarObject breadcrumbsBar;
 
 	//endregion
 
@@ -81,7 +80,7 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage
 		CruiseShipsDetailsPage.ship = ship;
 	}
 
-	public BreadcrumbsBar breadcrumbsBar()
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{

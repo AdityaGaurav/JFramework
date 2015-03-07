@@ -5,11 +5,10 @@ import com.framework.site.config.SiteProperty;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
+import com.framework.site.data.Enumerators;
 import com.framework.site.data.Ships;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.objects.body.interfaces.ShipCard;
-import com.framework.site.objects.body.interfaces.ShipSortBar;
 import com.framework.site.objects.body.ships.ShipCardObject;
 import com.framework.site.objects.body.ships.SortBarObject;
 import com.framework.site.pages.BaseCarnivalPage;
@@ -29,7 +28,7 @@ import java.util.*;
 
 
 @DefaultUrl ( matcher = "contains()", value = "/cruise-ships.aspx" )
-public class BaseCruiseShipsPage extends BaseCarnivalPage
+public class BaseCruiseShipsPage extends BaseCarnivalPage implements Enumerators
 {
 
 	//region BaseCruiseShipsPage - Variables Declaration and Initialization Section.
@@ -42,9 +41,15 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private ShipSortBar sortBar;
+	private SortBarObject sortBar;
 
-	private BreadcrumbsBar breadcrumbsBar;
+	private SectionBreadcrumbsBarObject breadcrumbsBar;
+
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private HtmlElement contentBlock;
 
 	//endregion
 
@@ -82,21 +87,21 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 		String REASON = "Validating number of ships by property value ships.count";
 		final int shipsCount = NumberUtils.createInteger( SiteProperty.SHIPS_COUNT.fromContext().toString() );
 		final Matcher<Integer> EXPECTED_SHIPS_COUNT = JMatchers.is( shipsCount );
-		final int ACTUAL_SHIPS_COUNT = sortBar().getResults();
+		final int ACTUAL_SHIPS_COUNT = NumberUtils.createInteger( sortBar().getResultsElement().getText() );
 		getDriver().assertThat( REASON, ACTUAL_SHIPS_COUNT, EXPECTED_SHIPS_COUNT );
 
 		/* Validating sort-type is "FEATURED" by default */
 
 		REASON = "Validating sort-type is \"FEATURED\" by default";
-		final Matcher<ShipSortBar.SortType> EXPECTED_VALUE_OF_SORT_TYPE = JMatchers.is( ShipSortBar.SortType.FEATURED );
-		final ShipSortBar.SortType ACTUAL_SORT_TYPE = sortBar().getSortType();
+		final Matcher<SortType> EXPECTED_VALUE_OF_SORT_TYPE = JMatchers.is( SortType.FEATURED );
+		final SortType ACTUAL_SORT_TYPE = sortBar().getSortType();
 		getDriver().assertThat( REASON, ACTUAL_SORT_TYPE, EXPECTED_VALUE_OF_SORT_TYPE );
 
 		/* Validating sort-type is "FEATURED" by default */
 
 		REASON = "Validating layout-type is \"List\" by default";
-		final Matcher<ShipSortBar.LayoutType> EXPECTED_VALUE_OF_LAYOUT_TYPE = JMatchers.is( ShipSortBar.LayoutType.BY_LIST );
-		final ShipSortBar.LayoutType ACTUAL_LAYOUT_TYPE = sortBar().getLayoutType();
+		final Matcher<LayoutType> EXPECTED_VALUE_OF_LAYOUT_TYPE = JMatchers.is( LayoutType.BY_LIST );
+		final LayoutType ACTUAL_LAYOUT_TYPE = sortBar().getLayoutType();
 		getDriver().assertThat( REASON, ACTUAL_LAYOUT_TYPE, EXPECTED_VALUE_OF_LAYOUT_TYPE );
 
 	}
@@ -111,7 +116,7 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 		return SiteSessionManager.get().getCurrentUrl().getPath().endsWith( "/cruise-ships.aspx" );
 	}
 
-	public ShipSortBar sortBar()
+	public SortBarObject sortBar()
 	{
 		if ( null == this.sortBar )
 		{
@@ -120,7 +125,7 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 		return sortBar;
 	}
 
-	public BreadcrumbsBar breadcrumbsBar()
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
@@ -218,7 +223,6 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 		return Sets.newHashSet( shipsMap.values() );
 	}
 
-
 	public List<Ships> getShipsSorted( List<Ships> actual )
 	{
 		List<Ships> sorted = Lists.newArrayList( actual );
@@ -253,6 +257,16 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 		return findHeroBannerContainerLis();
 	}
 
+	public HtmlElement getContentBlockResults()
+	{
+		if( null == contentBlock )
+		{
+			contentBlock = getDriver().findElement( By.cssSelector( ".content-block.results" ) );
+		}
+
+		return contentBlock;
+	}
+
 	//endregion
 
 
@@ -260,7 +274,7 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage
 
 	private HtmlElement findSortBarDiv()
 	{
-		return getDriver().findElement( ShipSortBar.ROOT_BY );
+		return getDriver().findElement( SortBarObject.ROOT_BY );
 	}
 
 	private List<HtmlElement> getShipCardDiv()

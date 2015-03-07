@@ -4,7 +4,6 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.Destinations;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.matchers.JMatchers;
@@ -17,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 
 
 @DefaultUrl( matcher = "containsPattern()", value = "/cruise-to/(alaska-cruises|bahamas-cruises|bermuda-cruises|" +
-		"caribbean-cruises|australia|long-cruises|" +
+		"caribbean-cruises|australia|long-cruises|canada-new-england-cruises|transatlantic-cruises|" +
 		"hawaii-cruises|europe-cruises|mexico-cruises|pacific-islands).aspx" )
 public class CruiseToDestinationPage extends BaseCarnivalPage
 {
@@ -34,7 +33,7 @@ public class CruiseToDestinationPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private BreadcrumbsBar breadcrumbsBar = null;
+	private SectionBreadcrumbsBarObject breadcrumbsBar = null;
 
 	//endregion
 
@@ -86,7 +85,7 @@ public class CruiseToDestinationPage extends BaseCarnivalPage
 		return destination;
 	}
 
-	public BreadcrumbsBar breadcrumbsBar()
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )
 		{
@@ -108,7 +107,7 @@ public class CruiseToDestinationPage extends BaseCarnivalPage
 
 	private HtmlElement findBreadcrumbsBar()
 	{
-		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+		return getDriver().findElement( SectionBreadcrumbsBarObject.ROOT_BY );
 	}
 
 	private HtmlElement findHeroTitleH1()

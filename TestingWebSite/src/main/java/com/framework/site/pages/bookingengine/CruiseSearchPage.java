@@ -4,7 +4,6 @@ import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
 import com.framework.site.objects.body.RefineSearchObject;
-import com.framework.site.objects.body.interfaces.RefineSearch;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.error.PreConditions;
@@ -34,7 +33,7 @@ public class CruiseSearchPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private RefineSearch refineSearch;
+	private RefineSearchObject refineSearch;
 
 	//endregion
 
@@ -74,7 +73,7 @@ public class CruiseSearchPage extends BaseCarnivalPage
 		this.tripDurations = tripDurations;
 	}
 
-	public RefineSearch refineSearch()
+	public RefineSearchObject refineSearch()
 	{
 		if ( null == this.refineSearch )
 		{
@@ -108,7 +107,7 @@ public class CruiseSearchPage extends BaseCarnivalPage
 
 	private HtmlElement findSearchSideDiv()
 	{
-		return getDriver().findElement( RefineSearch.ROOT_BY );
+		return getDriver().findElement( RefineSearchObject.ROOT_BY );
 	}
 
 	//endregion

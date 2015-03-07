@@ -1,7 +1,11 @@
 package com.framework.site.pages.core;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.datetime.TimeConstants;
+import org.apache.commons.lang3.BooleanUtils;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +38,12 @@ public class CruisingPage extends BaseCarnivalPage
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS CACHING ------------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private HtmlElement cBoxContent;
+
 
 	//endregion
 
@@ -53,7 +63,10 @@ public class CruisingPage extends BaseCarnivalPage
 
 	protected void validatePageInitialState()
 	{
-		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
+		if( ! isVacationWithKidsDisplayed() )
+		{
+			logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
+		}
 	}
 
 	//endregion
@@ -69,10 +82,46 @@ public class CruisingPage extends BaseCarnivalPage
 
 	//region CruisingPage - Business Methods Section
 
+	public boolean isVacationWithKidsDisplayed()
+	{
+		boolean displayed = findCBoxContentDiv().isDisplayed();
+		logger.info( "Determine if Vacation with Kids popup is displayed -> {}", BooleanUtils.toStringYesNo( displayed ) );
+		return displayed;
+	}
+
+	public void vacationWithKidsClick( boolean yesOrNo )
+	{
+		if( isVacationWithKidsDisplayed() )
+		{
+			logger.info( "Clicking < {} > on vacation with kids popup", yesOrNo ? "Yes" : "No" );
+			if( yesOrNo )
+			{
+				findCBoxContentDiv().findElement( By.id( "yesLink" ) ).click();
+			}
+			else
+			{
+				findCBoxContentDiv().findElement( By.id( "noLink" ) ).click();
+			}
+		}
+
+		findCBoxContentDiv().waitToBeDisplayed( false, TimeConstants.FIVE_SECONDS );
+	}
+
 	//endregion
 
 
 	//region CruisingPage - Element Finder Methods Section
+
+	private HtmlElement findCBoxContentDiv()
+	{
+		if( null == cBoxContent )
+		{
+			final By findBy = By.id( "cboxContent" );
+			cBoxContent = getDriver().findElement( findBy );
+		}
+		return cBoxContent;
+	}
+
 
 	//endregion
 

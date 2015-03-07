@@ -4,7 +4,7 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.*;
 import com.framework.driver.objects.AbstractPageObject;
 import com.framework.site.config.SiteSessionManager;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.footer.SectionFooterObject;
 import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.site.objects.header.SectionHeaderObject;
@@ -49,6 +49,8 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	protected static final String USER_LAST_NAME_COOKIE = "UserLastName";
 
 	public static final String USER_FIRST_NAME_COOKIE = "UserFirstName";
+
+	public static final String VACATION_WITH_KIDS_COOKIE = "ccl_learn_experience";
 
 	protected static final String USER_EMAIL_ADDRESS_COOKIE = "UserEmailAddress";
 
@@ -195,7 +197,7 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 
 	protected HtmlElement findBreadcrumbBarDiv()
 	{
-		return getDriver().findElement( BreadcrumbsBar.ROOT_BY );
+		return getDriver().findElement( SectionBreadcrumbsBarObject.ROOT_BY );
 	}
 
 	private Optional<HtmlElement> findHstInput()

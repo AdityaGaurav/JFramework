@@ -1,14 +1,13 @@
 package com.framework.site.pages.core;
 
 import com.framework.driver.event.HtmlElement;
+import com.framework.site.data.Enumerators;
 import com.framework.site.data.Ships;
 import com.framework.site.data.xml.SmartRandomShipCard;
 import com.framework.site.data.xml.XmlShipCard;
-import com.framework.site.objects.body.interfaces.CompareShipBanner;
-import com.framework.site.objects.body.interfaces.FilterCategories;
 import com.framework.site.objects.body.interfaces.ShipCard;
 import com.framework.site.objects.body.ships.CompareShipBannerObject;
-import com.framework.site.objects.body.ships.FiltersObject;
+import com.framework.site.objects.body.ships.FilterCategoriesObject;
 import com.framework.site.objects.body.ships.ShipCardObject;
 import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.datetime.TimeConstants;
@@ -28,7 +27,7 @@ import java.util.List;
 
 
 @DefaultUrl( matcher = "contains()", value = "/cruise-ships.aspx" )
-public class CruiseShipsPage extends BaseCruiseShipsPage
+public class CruiseShipsPage extends BaseCruiseShipsPage implements Enumerators
 {
 
 	//region CruiseShipsPage - Variables Declaration and Initialization Section.
@@ -41,17 +40,15 @@ public class CruiseShipsPage extends BaseCruiseShipsPage
 
 	private static final String COMPARE_RANDOM_SHIP_XML = "compare.random.ships.xml";
 
-	public enum SelectRandom{ LESS_TIMES_SELECTED, OLDER_SELECTED, MOST_TIME_SELECTED, LAST_SELECTED, RANDOM, NONE }
-
 	private Ships excludeShip = null;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private CompareShipBanner compareShipBanner;
+	private CompareShipBannerObject compareShipBanner;
 
-	private FilterCategories filterCategories;
+	private FilterCategoriesObject filterCategories;
 
 	//endregion
 
@@ -85,7 +82,7 @@ public class CruiseShipsPage extends BaseCruiseShipsPage
 
 	//region CruiseShipsPage - Service Methods Section
 
-	public CompareShipBanner compareBanner()
+	public CompareShipBannerObject compareBanner()
 	{
 		if ( null == this.compareShipBanner )
 		{
@@ -94,11 +91,11 @@ public class CruiseShipsPage extends BaseCruiseShipsPage
 		return compareShipBanner;
 	}
 
-	public FilterCategories filterCategories()
+	public FilterCategoriesObject filterCategories()
 	{
 		if ( null == this.filterCategories )
 		{
-			this.filterCategories = new FiltersObject( findFilterCategories() );
+			this.filterCategories = new FilterCategoriesObject( findFilterCategories() );
 		}
 		return filterCategories;
 	}
@@ -259,12 +256,12 @@ public class CruiseShipsPage extends BaseCruiseShipsPage
 
 	private HtmlElement findCompareBannerDiv()
 	{
-		return getDriver().findElement( CompareShipBanner.ROOT_BY );
+		return getDriver().findElement( CompareShipBannerObject.ROOT_BY );
 	}
 
 	private HtmlElement findFilterCategories()
 	{
-		return getDriver().findElement( FilterCategories.ROOT_BY );
+		return getDriver().findElement( FilterCategoriesObject.ROOT_BY );
 	}
 
 	private List<HtmlElement> findShipCards()
