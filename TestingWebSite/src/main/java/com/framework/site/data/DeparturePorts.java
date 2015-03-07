@@ -150,6 +150,6 @@ public enum DeparturePorts
 	@Override
 	public String toString()
 	{
-		return departurePort;
+		return name();
 	}
 }
