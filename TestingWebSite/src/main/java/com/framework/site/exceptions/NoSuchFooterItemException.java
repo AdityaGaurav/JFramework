@@ -1,9 +1,5 @@
 package com.framework.site.exceptions;
 
-import com.framework.driver.event.HtmlDriver;
-import com.framework.driver.exceptions.ApplicationException;
-
-
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -18,12 +14,12 @@ import com.framework.driver.exceptions.ApplicationException;
  * Time   : 15:34
  */
 
-public class NoSuchMenuItemException extends ApplicationException
+public class NoSuchFooterItemException extends IllegalArgumentException
 {
 	private static final long serialVersionUID = 7978996500317505389L;
 
-	public NoSuchMenuItemException( final HtmlDriver driver, final String message )
+	public NoSuchFooterItemException( final String message )
 	{
-		super( driver, message );
+		super( message );
 	}
 }
