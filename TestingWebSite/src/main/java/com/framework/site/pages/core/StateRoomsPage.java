@@ -4,10 +4,7 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
-import com.framework.site.objects.body.staterooms.DidYouKnowObject;
-import com.framework.site.objects.body.staterooms.StateRoomsObject;
-import com.framework.site.objects.body.staterooms.UserFeedbackObject;
-import com.framework.site.objects.body.staterooms.WhereToStayObject;
+import com.framework.site.objects.body.staterooms.*;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.google.common.base.Optional;
@@ -55,6 +52,8 @@ public class StateRoomsPage extends BaseCarnivalPage
 	private StateRoomsObject stateRooms;
 
 	private WhereToStayObject whereShouldIStay;
+
+	private StateRoomCategoriesObject stateRoomCategories;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -154,6 +153,15 @@ public class StateRoomsPage extends BaseCarnivalPage
 		return whereShouldIStay;
 	}
 
+	public StateRoomCategoriesObject stateRoomCategories()
+	{
+		if ( null == this.stateRoomCategories )
+		{
+			this.stateRoomCategories = new StateRoomCategoriesObject( finStateRoomCategoriesDiv() );
+		}
+		return stateRoomCategories;
+	}
+
 	//endregion
 
 
@@ -184,6 +192,11 @@ public class StateRoomsPage extends BaseCarnivalPage
 	private HtmlElement finWhereShouldIStayDiv()
 	{
 		return getDriver().findElement( WhereToStayObject.ROOT_BY );
+	}
+
+	private HtmlElement finStateRoomCategoriesDiv()
+	{
+		return getDriver().findElement( StateRoomCategoriesObject.ROOT_BY );
 	}
 
 	//endregion

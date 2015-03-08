@@ -42,7 +42,7 @@ public class StateRoomsObject extends AbstractWebObject implements Enumerators
 
 	private static final Logger logger = LoggerFactory.getLogger( StateRoomsObject.class );
 
-	static final String LOGICAL_NAME = "State Rooms Thumbnails";
+	static final String LOGICAL_NAME = "State Rooms Types";
 
 	public static final By ROOT_BY = By.cssSelector( "div.row.rooms-thumbnails" );
 
