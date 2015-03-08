@@ -31,6 +31,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.hamcrest.Matcher;
@@ -390,6 +391,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public void doCompare( final boolean check )
 	{
+		logger.info( "comparing ship ...." );
 		HtmlElement compareAnchor = findCompareAnchor();
 		HtmlElement compareMsg = findCompareMsgSpan();
 		HtmlElement addedMsg = findAddedMsgSpan();
@@ -417,18 +419,22 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	public boolean isComparing()
 	{
 		HtmlElement he = findAddedMessageSpan();
-		return he.isDisplayed();
+		boolean displayed = he.isDisplayed();
+		logger.info( "Determine if ship < {} > is currently compared < {} >", BooleanUtils.toStringYesNo( displayed ) );
+		return displayed;
 	}
 
 	@Override
 	public HtmlElement getImage()
 	{
+		logger.info( "Returning ship image ..." );
 		return findShipImageImg();
 	}
 
 	@Override
 	public CruiseFromPortPage selectDeparturePort( final DeparturePorts departurePort )
 	{
+		logger.info( "Selecting departure port < {} > ...", departurePort.name() );
 		CruiseFromPortPage.fromDeparturePort( departurePort );
 		String css = String.format( "li:nth-child(2) a[href*=\"%s\"]", departurePort.getHref() );
 		getRoot().findElement( By.cssSelector( css ) ).click();
@@ -438,6 +444,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public BaseCarnivalPage selectDestination( final Destinations destination )
 	{
+		logger.info( "Selecting destination < {} > ...", destination.name() );
 		if( destination.equals( Destinations.CRUISE_TO_NOWHERE ) )
 		{
 			return new CruiseToPage();
@@ -451,6 +458,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public BaseCarnivalPage selectTripDuration( final TripDurations tripDuration )
 	{
+		logger.info( "Selecting trip duration < {} > ...", tripDuration.name() );
 		String css = String.format( "li:nth-child(3) a[href*=\"dur=%s\"]", tripDuration.getId() );
 		getRoot().findElement( By.cssSelector( css ) ).click();
 		if( SiteSessionManager.get().getCurrentLocale().equals( Locale.US )
@@ -485,8 +493,8 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public Set<String> getDeparturePortNames()
 	{
-
 		List<String> list = Lambda.extractString( departurePorts );
+		logger.info( "Returning a list of departure port names < {} >", Lambda.join( list, ", " ) );
 		return Sets.newHashSet( list );
 	}
 
@@ -494,6 +502,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	public Set<String> getDestinationNames()
 	{
 		List<String> list = Lambda.extractString( destinations );
+		logger.info( "Returning a list of destinations names < {} >", Lambda.join( list, ", " ) );
 		return Sets.newHashSet( list );
 	}
 
@@ -501,6 +510,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	public Set<String> getTripDurationNames()
 	{
 		List<String> list = Lambda.extractString( tripDurations );
+		logger.info( "Returning a list of trip-durations names < {} >", Lambda.join( list, ", " ) );
 		return Sets.newHashSet( list );
 	}
 
