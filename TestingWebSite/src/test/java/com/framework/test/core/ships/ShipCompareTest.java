@@ -12,8 +12,8 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Destinations;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
-import com.framework.site.objects.body.interfaces.ContentBlockComparing;
 import com.framework.site.objects.body.interfaces.ShipCard;
+import com.framework.site.objects.body.ships.CompareSectionObject;
 import com.framework.site.objects.header.enums.LevelOneMenuItem;
 import com.framework.site.objects.header.enums.MenuItems;
 import com.framework.site.pages.bookingengine.CruiseSearchPage;
@@ -62,7 +62,7 @@ public class ShipCompareTest extends BaseTest
 
 	private CompareCruiseShipsPage compareCruiseShipsPage = null;
 
-	private List<ContentBlockComparing.CompareSection> sections = Lists.newArrayList();
+	private List<CompareSectionObject> sections = Lists.newArrayList();
 
 	private File blueX, blueO;
 
@@ -167,7 +167,7 @@ public class ShipCompareTest extends BaseTest
 							            "AND displays a \"+\" sign in the bar" } )
 	} )
 	@Test ( description = "Compare Ships page. verify accordion collapse",
-			enabled = false,
+			enabled = true,
 			groups = { "US", "UK"  }
 	)
 	public void compareShips_AccordionCollapse() throws Exception
@@ -178,8 +178,8 @@ public class ShipCompareTest extends BaseTest
 		try
 		{
 			/* WHEN user clicks on the accordion bar which is a "-" displayed */
-			List<ContentBlockComparing.CompareSection> sections = compareCruiseShipsPage.contentBlockComparing().getExpandedSections();
-			for( ContentBlockComparing.CompareSection section : sections )
+			List<CompareSectionObject> sections = compareCruiseShipsPage.contentBlockComparing().getExpandedSections();
+			for( CompareSectionObject section : sections )
 			{
 				String name = section.getSectionName();
 				/* THEN the clicked bar accordion is collapsed */
@@ -211,7 +211,7 @@ public class ShipCompareTest extends BaseTest
 							            "among ships being compared." } )
 	} )
 	@Test ( description = "Compare Ships page. Verify display when difference in availability",
-			enabled = false,
+			enabled = true,
 			groups = { "US", "UK"  }
 	)
 	public void compareShips_Display_Difference_Availability() throws Exception
@@ -220,8 +220,8 @@ public class ShipCompareTest extends BaseTest
 		PreConditions.checkNotNull( this.compareCruiseShipsPage, "Compare Cruise Ship page is null, before starting test" );
 		try
 		{
-			List<ContentBlockComparing.CompareSection> sections = compareCruiseShipsPage.contentBlockComparing().getComparisonSections();
-			for( ContentBlockComparing.CompareSection section : sections )
+			List<CompareSectionObject> sections = compareCruiseShipsPage.contentBlockComparing().getComparisonSections();
+			for( CompareSectionObject section : sections )
 			{
 				section.expand();
 				String sectionName = section.getSectionName();
@@ -270,7 +270,7 @@ public class ShipCompareTest extends BaseTest
 					} )
 	} )
 	@Test ( description = "Compare Ships page. Verify available and not available images",
-			enabled = false,
+			enabled = true,
 			groups = { "US", "UK"  }
 	)
 	public void compareShips_Display_Available_NotAvailable_Images() throws Exception
@@ -282,8 +282,8 @@ public class ShipCompareTest extends BaseTest
 		try
 		{
 			compareCruiseShipsPage.contentBlockComparing().collapseAll();
-			List<ContentBlockComparing.CompareSection> sections = compareCruiseShipsPage.contentBlockComparing().getComparisonSections();
-			ContentBlockComparing.CompareSection selected;
+			List<CompareSectionObject> sections = compareCruiseShipsPage.contentBlockComparing().getComparisonSections();
+			CompareSectionObject selected;
 			String sectionName;
 			do
 			{
@@ -359,7 +359,7 @@ public class ShipCompareTest extends BaseTest
 										"AND the activities column is highlighted #E3E3E3"} )
 	} )
 	@Test ( description = "Compare Ships page. Verify hover action",
-			enabled = false,
+			enabled = true,
 			invocationCount = 3,
 			groups = { "US", "UK"  }
 	)
@@ -376,7 +376,7 @@ public class ShipCompareTest extends BaseTest
 			}
 
 			int rnd = RandomUtils.nextInt( 0, sections.size() - 1 );
-			ContentBlockComparing.CompareSection selected = sections.get( rnd );
+			CompareSectionObject selected = sections.get( rnd );
 
 			/* WHEN user clicks in the bar on @activityAccordion */
 			selected.expand();
@@ -431,7 +431,7 @@ public class ShipCompareTest extends BaseTest
 										"The available and notAvailable images matching site-core definition" } )
 	} )
 	@Test ( description = "Compare Ships page. Validate legend keys and images.",
-			enabled = false,
+			enabled = true,
 			groups = { "US", "UK"  }
 	)
 	void compareShips_Legend() throws Exception

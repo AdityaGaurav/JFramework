@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="US Locale Ships Pages" parallel="false" configfailurepolicy="continue" junit="false" verbose="5">
+
+    <listeners>
+        <listener class-name="com.framework.reporter.JHtmlReporter"/>
+    </listeners>
+    <groups>
+        <run>
+            <include name="US"/>
+            <exclude name="IN-DEV"/>
+        </run>
+    </groups>
+    <parameter name="driver-id" value="firefox.default"/>
+
+    <test verbose="2" name="accommodations" annotations="JDK" enabled="true" preserve-order="true">
+        <classes>
+            <class name="com.framework.test.core.accommodations.AccommodationsTest"/>
+            <class name="com.framework.test.core.accommodations.AccommodationsDidYouKnowTest"/>
+            <class name="com.framework.test.core.accommodations.AccommodationsUserFeedbackTest"/>
+            <class name="com.framework.test.core.accommodations.AccommodationsStateRoomsTest"/>
+            <class name="com.framework.test.core.accommodations.AccommodationsWhereToStayTest"/>
+        </classes>
+    </test>
+</suite>

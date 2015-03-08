@@ -3,9 +3,13 @@ package com.framework.site.objects.body.staterooms;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
+import com.framework.site.data.Enumerators;
+import com.framework.site.objects.body.common.cbox.CBoxLoadedContentObject;
+import com.framework.site.objects.body.common.cbox.CBoxWrapperObject;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +35,7 @@ import static org.hamcrest.Matchers.is;
  *
  */
 
-class StateRoomsObject extends AbstractWebObject
+public class StateRoomsObject extends AbstractWebObject implements Enumerators
 {
 
 	//region StateRoomsObject - Variables Declaration and Initialization Section.
@@ -40,9 +44,13 @@ class StateRoomsObject extends AbstractWebObject
 
 	static final String LOGICAL_NAME = "State Rooms Thumbnails";
 
-	static final By ROOT_BY = By.cssSelector( "div.row.rooms-thumbnails" );
+	public static final By ROOT_BY = By.cssSelector( "div.row.rooms-thumbnails" );
 
-	public enum RoomType{ INTERIOR, BALCONY, SUITE, OCEAN_VIEW }
+	// ------------------------------------------------------------------------|
+	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
+	// ------------------------------------------------------------------------|
+
+	private CBoxWrapperObject cBoxWrapper;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -55,7 +63,7 @@ class StateRoomsObject extends AbstractWebObject
 
 	//region StateRoomsObject - Constructor Methods Section
 
-	StateRoomsObject( final HtmlElement rootElement )
+	public StateRoomsObject( final HtmlElement rootElement )
 	{
 		super( rootElement, LOGICAL_NAME );
 		initWebObject();
@@ -72,15 +80,12 @@ class StateRoomsObject extends AbstractWebObject
 		logger.info( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		final String REASON = "assert that all element \"%s\" exits";
+		final String REASON1 = "assert that all element \"%s\" exits";
 
 		JAssertion assertion = getRoot().createAssertion();
-		Optional<List<HtmlElement>> e = getRoot().allChildrenExists( By.className( "div.col.col-10-20" ), THREE_SECONDS );
-		assertion.assertThat( String.format( REASON, "div.col.col-10-20" ), e.isPresent(), is( true ) );
-		assertion.assertThat( "4 staterooms types", e.get(), JMatchers.hasSize( 4 ) );
-
-		e = getRoot().allChildrenExists( By.id( "room_ligthbox" ), THREE_SECONDS );
-		assertion.assertThat( String.format( REASON, "#room_ligthbox" ), e.isPresent(), is( true ) );
+		Optional<List<HtmlElement>> es = getRoot().allChildrenExists( By.cssSelector( "div.col.col-10-20" ), THREE_SECONDS );
+		assertion.assertThat( String.format( REASON1, "div.col.col-10-20" ), es.isPresent(), is( true ) );
+		assertion.assertThat( "4 staterooms types", es.get(), JMatchers.hasSize( 4 ) );
 	}
 
 	//endregion
@@ -93,6 +98,15 @@ class StateRoomsObject extends AbstractWebObject
 		return getBaseRootElement( ROOT_BY );
 	}
 
+	public CBoxWrapperObject cboxWrapper()
+	{
+		if ( null == this.cBoxWrapper )
+		{
+			this.cBoxWrapper = new CBoxWrapperObject( findCboxWrapperDiv() );
+		}
+		return cBoxWrapper;
+	}
+
 	//endregion
 
 
@@ -103,45 +117,78 @@ class StateRoomsObject extends AbstractWebObject
 		return getRoot();
 	}
 
-	public HtmlElement clickItem( final RoomType roomType )
+	public CBoxWrapperObject clickStateRoom( final RoomType roomType )
 	{
 	   	logger.info( "Clicking on State-Room < {} >", roomType );
-	 	HtmlElement he = findStateRoomAnchor( roomType );
+	 	HtmlElement he = findStateRoomI( roomType );
+		CBoxLoadedContentObject.forContentType( CboxLoadedContentType.STATE_ROOMS );
 		he.click();
 		logger.info( "Waiting for cBoxContent to be displayed" );
-		findCBoxContent().waitToBeDisplayed( true, TimeConstants.THREE_SECONDS );
-		return findCBoxContent().findElement( By.id( "" ) );
+		findCboxWrapperDiv().waitToBeDisplayed( true, TimeConstants.THREE_SECONDS );
+		return cboxWrapper();
 	}
 
+	public HtmlElement getImage( final RoomType roomType )
+	{
+		logger.info( "Returning image for State-Room < {} >", roomType );
+		return findStateRoomImg( roomType );
+	}
 
 	//endregion
 
 
 	//region StateRoomsObject - Element finder Section
 
-	private HtmlElement findStateRoomAnchor( RoomType type )
+	private HtmlElement findStateRoomI( RoomType type )
 	{
+		final String PATTERN = "//span[@class=\"h3\" and text()=\"%s\"]/following-sibling::i";
+		String stateRoomName = StringUtils.EMPTY;
 		switch ( type )
 		{
 			case INTERIOR:
-			{
-				return getDriver().findElement( By.xpath( "//span[@class=\"h3\" and text()=\"Interior\"]/following-sibling::i" ) );
-			}
+				stateRoomName = "Interior";
+				break;
 			case SUITE:
-			{
-				return getDriver().findElement( By.xpath( "//span[@class=\"h3\" and text()=\"Suite\"]/following-sibling::i" ) );
-			}
+				stateRoomName = "Suite";
+				break;
 			case BALCONY:
-			{
-				return getDriver().findElement( By.xpath( "//span[@class=\"h3\" and text()=\"Balcony\"]/following-sibling::i" ) );
-			}
+				stateRoomName = "Balcony";
+				break;
 			case OCEAN_VIEW:
-			{
-				return getDriver().findElement( By.xpath( "//span[@class=\"h3\" and text()=\"Ocean View\"]/following-sibling::i" ) );
-			}
+				stateRoomName = "Ocean View";
+				break;
+			default:
+				throw new IllegalArgumentException( "Invalid State-Room " + type.name() );
 		}
 
-		throw new IllegalArgumentException( "Invalid State-Room " + type.name() );
+		return getDriver().findElement( By.xpath( String.format( PATTERN, stateRoomName ) ) );
+	  ////span[@class="h3" and text()="Balcony"]/../../following-sibling::img
+
+	}
+
+	private HtmlElement findStateRoomImg( RoomType type )
+	{
+		final String PATTERN = "//span[@class=\"h3\" and text()=\"%s\"]/../../following-sibling::img";
+		String stateRoomName = StringUtils.EMPTY;
+		switch ( type )
+		{
+			case INTERIOR:
+				stateRoomName = "Interior";
+				break;
+			case SUITE:
+				stateRoomName = "Suite";
+				break;
+			case BALCONY:
+				stateRoomName = "Balcony";
+				break;
+			case OCEAN_VIEW:
+				stateRoomName = "Ocean View";
+				break;
+			default:
+				throw new IllegalArgumentException( "Invalid State-Room " + type.name() );
+		}
+
+		return getDriver().findElement( By.xpath( String.format( PATTERN, stateRoomName ) ) );
 	}
 
 	private HtmlElement findCBoxContent()
@@ -151,6 +198,11 @@ class StateRoomsObject extends AbstractWebObject
 			cboxContent = getDriver().findElement( By.id( "cboxContent" ) );
 		}
 		return cboxContent;
+	}
+
+	private HtmlElement findCboxWrapperDiv()
+	{
+		return getDriver().findElement( CBoxWrapperObject.ROOT_BY );
 	}
 
 	//endregion

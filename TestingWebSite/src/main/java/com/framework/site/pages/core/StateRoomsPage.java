@@ -5,7 +5,9 @@ import com.framework.driver.event.HtmlElement;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.staterooms.DidYouKnowObject;
+import com.framework.site.objects.body.staterooms.StateRoomsObject;
 import com.framework.site.objects.body.staterooms.UserFeedbackObject;
+import com.framework.site.objects.body.staterooms.WhereToStayObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
 import com.google.common.base.Optional;
@@ -49,6 +51,10 @@ public class StateRoomsPage extends BaseCarnivalPage
 	private DidYouKnowObject didYouKnow;
 
 	private UserFeedbackObject userFeedback;
+
+	private StateRoomsObject stateRooms;
+
+	private WhereToStayObject whereShouldIStay;
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS CACHING ------------------------------------------------|
@@ -130,6 +136,23 @@ public class StateRoomsPage extends BaseCarnivalPage
 		return userFeedback;
 	}
 
+	public StateRoomsObject stateRooms()
+	{
+		if ( null == this.stateRooms )
+		{
+			this.stateRooms = new StateRoomsObject( findStateRoomsDiv() );
+		}
+		return stateRooms;
+	}
+
+	public WhereToStayObject whereToStay()
+	{
+		if ( null == this.whereShouldIStay )
+		{
+			this.whereShouldIStay = new WhereToStayObject( finWhereShouldIStayDiv() );
+		}
+		return whereShouldIStay;
+	}
 
 	//endregion
 
@@ -151,6 +174,16 @@ public class StateRoomsPage extends BaseCarnivalPage
 	private HtmlElement findUserFeedbackDiv()
 	{
 		return getDriver().findElement( DidYouKnowObject.ROOT_BY );
+	}
+
+	private HtmlElement findStateRoomsDiv()
+	{
+		return getDriver().findElement( StateRoomsObject.ROOT_BY );
+	}
+
+	private HtmlElement finWhereShouldIStayDiv()
+	{
+		return getDriver().findElement( WhereToStayObject.ROOT_BY );
 	}
 
 	//endregion
