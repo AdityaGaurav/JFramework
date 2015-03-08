@@ -44,6 +44,8 @@ public enum CSS2Properties
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-color">propdef-background-color</a> */
 	BACKGROUND_COLOR( "background-color" ),
 
+	BACKGROUND_POSITION( "background-position" ),
+
 	/** <a href="http://www.w3.org/TR/1998/REC-CSS2-19980512/colors.html#propdef-background-image">propdef-background-image</a> */
 	BACKGROUND_IMAGE( "background-image" ),
 
