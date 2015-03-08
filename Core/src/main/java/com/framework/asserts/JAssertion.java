@@ -4,6 +4,7 @@ import com.framework.config.ResultStatus;
 import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlDriverWait;
+import com.framework.driver.event.HtmlElement;
 import com.framework.driver.utils.ui.screenshots.Photographer;
 import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.framework.testing.steping.LoggerProvider;
@@ -45,7 +46,9 @@ public class JAssertion
 	private final Logger logger = LoggerFactory.getLogger( JAssertion.class );
 
 	/** and instance of the current active driver */
-	private final HtmlDriver driver;
+	private HtmlDriver driver;
+
+	private final HtmlElement element;
 
 	private static LoggerProvider reporter;
 
@@ -74,6 +77,13 @@ public class JAssertion
 	public JAssertion( final HtmlDriver driver )
 	{
 		this.driver = driver;
+		this.element = null;
+	}
+
+	public JAssertion( final HtmlElement element )
+	{
+		this.driver = null;
+		this.element = element;
 	}
 
 	//endregion
@@ -183,22 +193,29 @@ public class JAssertion
 	{
 		setStatus( ResultStatus.FAILURE );
 		logger.error( "Assertion failed with message: < '{}' >", ex.getMessage() );
-		if( driver!= null )
+		if( driver == null && element == null  ) return;
+
+		Photographer photographer;
+		if( driver != null )
 		{
-			Photographer photographer = new Photographer( driver );
-			photographer.setLogger( logger );
-			this.snapshot = photographer.grabScreenshot(); //todo: publish it
-			if ( snapshot.isPresent() )
-			{
-				String png = snapshot.get().getScreenshotName();
-				String html = snapshot.get().getHtmlSourceName();
-				logger.info( "Screenshot file captured is < '{}' >", png );
-				logger.info( "Html Source file captured is < '{}' >", html );
-			}
-			else
-			{
-				logger.warn( "No screenshot was captured." );
-			}
+			photographer = new Photographer( driver );
+		}
+		else
+		{
+			photographer = new Photographer( element );
+		}
+		photographer.setLogger( logger );
+		this.snapshot = photographer.grabScreenshot();
+		if ( snapshot.isPresent() )
+		{
+			String png = snapshot.get().getScreenshotName();
+			String html = snapshot.get().getHtmlSourceName();
+			logger.info( "Screenshot file captured is < '{}' >", png );
+			logger.info( "Html Source file captured is < '{}' >", html );
+		}
+		else
+		{
+			logger.warn( "No screenshot was captured." );
 		}
 	}
 
@@ -279,6 +296,7 @@ public class JAssertion
 			@Override
 			public void doAssert()
 			{
+				if( driver == null ) driver = element.getWrappedHtmlDriver();
 				Object result = HtmlDriverWait.wait( driver, timeoutSeconds ).until( condition );
 				boolean response = ( result == null || result == Boolean.FALSE );
 
@@ -349,6 +367,11 @@ public class JAssertion
 	protected HtmlDriver getDriver()
 	{
 		return driver;
+	}
+
+	protected HtmlElement getElement()
+	{
+		return element;
 	}
 
 	//endregion

@@ -9,14 +9,11 @@ import com.framework.driver.exceptions.ApplicationException;
 import com.framework.driver.objects.PageObject;
 import com.framework.site.config.SiteProperty;
 import com.framework.site.config.SiteSessionManager;
-import com.framework.site.data.DeparturePorts;
-import com.framework.site.data.Destinations;
-import com.framework.site.data.Ships;
-import com.framework.site.data.TripDurations;
-import com.framework.site.objects.body.interfaces.BreadcrumbsBar;
-import com.framework.site.objects.body.interfaces.FilterCategories;
+import com.framework.site.data.*;
+import com.framework.site.objects.body.common.BreadcrumbsObject;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.body.interfaces.ShipCard;
-import com.framework.site.objects.body.interfaces.ShipSortBar;
+import com.framework.site.objects.body.ships.FilterCategoriesObject;
 import com.framework.site.objects.header.enums.LevelOneMenuItem;
 import com.framework.site.objects.header.enums.MenuItems;
 import com.framework.site.pages.BaseCarnivalPage;
@@ -276,14 +273,15 @@ public class ShipsLandingPageTest extends BaseTest
 		{
 
 			/* WHEN the user examine the last item on the breadcrumb */
-			BreadcrumbsBar.Breadcrumbs breadcrumbs = cruiseShipsPage.breadcrumbsBar().breadcrumbs();
+			BreadcrumbsObject breadcrumbs = cruiseShipsPage.breadcrumbsBar().breadcrumbs();
 
 			/* THEN the last item text is "Ships" */
 
 			String ACTUAL_STR = breadcrumbs.getLastChildName();
 			String REASON = "Validates that last child breadcrumb text is 'Ships'";
 			Matcher<String> EXPECTED_OF_STR = JMatchers.equalTo( "Ships" );
-			SiteSessionManager.get().createCheckPoint( "BREADCRUMB_LAST_CHILD_TEXT" )
+			HtmlElement container = ( ( SectionBreadcrumbsBarObject ) cruiseShipsPage.breadcrumbsBar() ).getContainer();
+			SiteSessionManager.get().createCheckPoint( container, "BREADCRUMB_LAST_CHILD_TEXT" )
 					.assertThat( REASON, ACTUAL_STR, EXPECTED_OF_STR );
 
 			/* AND the last item state should be active */
@@ -323,12 +321,13 @@ public class ShipsLandingPageTest extends BaseTest
 		{
 			/* WHEN the user examine the displayed breadcrumbs */
 
-			BreadcrumbsBar.Breadcrumbs breadcrumbs = cruiseShipsPage.breadcrumbsBar().breadcrumbs();
+			BreadcrumbsObject breadcrumbs = cruiseShipsPage.breadcrumbsBar().breadcrumbs();
 
 			String REASON = "Validates breadcrumbs text display order.";
 			List<String> ACTUAL_OF_LIST_STR = breadcrumbs.getNames();
 			Matcher<Iterable<? extends String>> EXPECTED_OF_LIST_STR = JMatchers.contains( "Home", "Explore", "Ships" );
-			SiteSessionManager.get().createCheckPoint( "BREADCRUMB_ORDERING" )
+			HtmlElement container = ( ( SectionBreadcrumbsBarObject ) cruiseShipsPage.breadcrumbsBar() ).getContainer();
+			SiteSessionManager.get().createCheckPoint( container, "BREADCRUMB_ORDERING" )
 					.assertThat( REASON, ACTUAL_OF_LIST_STR, EXPECTED_OF_LIST_STR );
 
 			SiteSessionManager.get().assertAllCheckpoints();
@@ -400,7 +399,7 @@ public class ShipsLandingPageTest extends BaseTest
 			CruiseShipsPage page = ( CruiseShipsPage ) cruiseShipsPage;
 
 			/* WHEN user examines the left filter */
-			FilterCategories filterCategories = page.filterCategories();
+			FilterCategoriesObject filterCategories = page.filterCategories();
 
 			/* THEN the filter default state is expanded */
 			String REASON = "Validates that categories filter default state is \"expanded\"";
@@ -506,9 +505,10 @@ public class ShipsLandingPageTest extends BaseTest
 			CruiseShipsPage page = ( CruiseShipsPage ) cruiseShipsPage;
 
 			/* WHEN user select a single departure port filter */
-			FilterCategories filterCategories = page.filterCategories();
+			FilterCategoriesObject filterCategories = page.filterCategories();
 			List<DeparturePorts> ports = filterCategories.getAvailableDeparturePorts();
 			int rnd = RandomUtils.nextInt( 0, ports.size() - 1 );
+			PreConditions.checkElementIndex( rnd, ports.size(), "The departure ports selected index is out of bounds" );
 			DeparturePorts selected = ports.get( rnd );
 			Set<Ships> EXPECTED_SHIPS = page.getShipsMatching( selected );
 
@@ -545,10 +545,11 @@ public class ShipsLandingPageTest extends BaseTest
 
 			/* AND ships Counter matches actual cards count */
 			REASON = "Validate that \"Ships counter\"  matches actual cards count";
-			int ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			Matcher<Integer> EXPECTED_OF_INT = JMatchers.is( EXPECTED_SHIPS.size() );
+			HtmlElement he = cruiseShipsPage.sortBar().getResultsElement();
+			String shipCount = String.valueOf( EXPECTED_SHIPS.size() );
+			HtmlCondition<Boolean> EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipCount ) );
 			SiteSessionManager.get().createCheckPoint( "RESULT_COUNTER_" + EXPECTED_SHIPS.size() )
-					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
+					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 
 			/* AND ships matches actual cards */
 			REASON = "Validate that \"Ships\" matches actual filtered cards";
@@ -576,10 +577,11 @@ public class ShipsLandingPageTest extends BaseTest
 
 			/* AND ships Counter matches actual cards count */
 			REASON = "Validate that \"Ships counter\"  matches actual cards count after clear filters";
-			ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			EXPECTED_OF_INT = JMatchers.is( cruiseShipsPage.getShipCardsCount() );
+			he = cruiseShipsPage.sortBar().getResultsElement();
+			shipCount = String.valueOf( cruiseShipsPage.getShipCardsCount() );
+			EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipCount ) );
 			SiteSessionManager.get().createCheckPoint( "RESULT_COUNTER_AFTER_CLEAR" )
-					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
+					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 
 			SiteSessionManager.get().assertAllCheckpoints();
 		}
@@ -622,7 +624,7 @@ public class ShipsLandingPageTest extends BaseTest
 			CruiseShipsPage page = ( CruiseShipsPage ) cruiseShipsPage;
 
 			/* WHEN user select a single destination filter */
-			FilterCategories filterCategories = page.filterCategories();
+			FilterCategoriesObject filterCategories = page.filterCategories();
 			List<Destinations> destinations = filterCategories.getAvailableDestinations();
 			int rnd = RandomUtils.nextInt( 0, destinations.size() - 1 );
 			Destinations selected = destinations.get( rnd );
@@ -661,10 +663,11 @@ public class ShipsLandingPageTest extends BaseTest
 
 			/* AND ships Counter matches actual cards count */
 			REASON = "Validate that \"Ships counter\"  matches actual cards count";
-			int ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			Matcher<Integer> EXPECTED_OF_INT = JMatchers.is( EXPECTED_SHIPS.size() );
+			HtmlElement he = cruiseShipsPage.sortBar().getResultsElement();
+			String shipCount = String.valueOf( EXPECTED_SHIPS.size() );
+			HtmlCondition<Boolean> EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipCount ) );
 			SiteSessionManager.get().createCheckPoint( "RESULT_COUNTER_" + EXPECTED_SHIPS.size() )
-					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
+					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 
 			/* AND ships matches actual cards */
 			REASON = "Validate that \"Ships\" matches actual filtered cards";
@@ -692,10 +695,11 @@ public class ShipsLandingPageTest extends BaseTest
 
 			/* AND ships Counter matches actual cards count */
 			REASON = "Validate that \"Ships counter\"  matches actual cards count after clear filters";
-			ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			EXPECTED_OF_INT = JMatchers.is( cruiseShipsPage.getShipCardsCount() );
+			he = cruiseShipsPage.sortBar().getResultsElement();
+			shipCount = String.valueOf( EXPECTED_SHIPS.size() );
+			EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipCount ) );
 			SiteSessionManager.get().createCheckPoint( "RESULT_COUNTER_AFTER_CLEAR" )
-					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
+					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 
 			SiteSessionManager.get().assertAllCheckpoints();
 		}
@@ -729,20 +733,20 @@ public class ShipsLandingPageTest extends BaseTest
 		try
 		{
 			/* WHEN list is selected in "GRID" menu */
-			cruiseShipsPage.sortBar().setLayoutType( ShipSortBar.LayoutType.BY_GRID );
+			cruiseShipsPage.sortBar().setLayoutType( Enumerators.LayoutType.BY_GRID );
 
 			/* THEN the display should not be list-layout */
 			String REASON = "Validate Layout is Grid";
-			ShipSortBar.LayoutType ACTUAL_RESULT_LAYOUT = cruiseShipsPage.sortBar().getLayoutType();
-			Matcher<ShipSortBar.LayoutType> EXPECTED_LAYOUT = JMatchers.is( ShipSortBar.LayoutType.BY_GRID );
+			Enumerators.LayoutType ACTUAL_RESULT_LAYOUT = cruiseShipsPage.sortBar().getLayoutType();
+			Matcher<Enumerators.LayoutType> EXPECTED_LAYOUT = JMatchers.is( Enumerators.LayoutType.BY_GRID );
 			SiteSessionManager.get().createCheckPoint( "GRID_LAYOUT" )
 					.assertThat( REASON, ACTUAL_RESULT_LAYOUT, EXPECTED_LAYOUT );
 
 			/* AND WHEN list is selected in "LIST" menu */
-			cruiseShipsPage.sortBar().setLayoutType( ShipSortBar.LayoutType.BY_LIST );
+			cruiseShipsPage.sortBar().setLayoutType( Enumerators.LayoutType.BY_LIST );
 			REASON = "Validate Layout is List";
 			ACTUAL_RESULT_LAYOUT = cruiseShipsPage.sortBar().getLayoutType();
-			EXPECTED_LAYOUT = JMatchers.is( ShipSortBar.LayoutType.BY_LIST );
+			EXPECTED_LAYOUT = JMatchers.is( Enumerators.LayoutType.BY_LIST );
 			SiteSessionManager.get().createCheckPoint( "LIST_LAYOUT" )
 					.assertThat( REASON, ACTUAL_RESULT_LAYOUT, EXPECTED_LAYOUT );
 
@@ -801,7 +805,7 @@ public class ShipsLandingPageTest extends BaseTest
 					.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 
 			/* AND the user clicks on the list and expand it */
-			ShipSortBar.SortType sortType = cruiseShipsPage.sortBar().getSortType();
+			Enumerators.SortType sortType = cruiseShipsPage.sortBar().getSortType();
 			HtmlElement sortTypeOption = cruiseShipsPage.sortBar().getSortTypeOption( sortType );
 
 			/* THEN the selected option value above should be "CHECKED" on the drop-down list */
@@ -813,13 +817,13 @@ public class ShipsLandingPageTest extends BaseTest
 
 			/* AND the user hovers over the unselected option. */
 			HtmlElement unSelectedOption;
-			if ( sortType.equals( ShipSortBar.SortType.A_Z ) )
+			if ( sortType.equals( Enumerators.SortType.A_Z ) )
 			{
-				unSelectedOption = cruiseShipsPage.sortBar().getSortTypeOption( ShipSortBar.SortType.FEATURED );
+				unSelectedOption = cruiseShipsPage.sortBar().getSortTypeOption( Enumerators.SortType.FEATURED );
 			}
 			else
 			{
-				unSelectedOption = cruiseShipsPage.sortBar().getSortTypeOption( ShipSortBar.SortType.A_Z );
+				unSelectedOption = cruiseShipsPage.sortBar().getSortTypeOption( Enumerators.SortType.A_Z );
 			}
 			unSelectedOption.hover();
 
@@ -832,7 +836,7 @@ public class ShipsLandingPageTest extends BaseTest
 					.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 
 			/* WHEN list is selected in "A-Z" sort menu */
-			cruiseShipsPage.sortBar().setSortType( ShipSortBar.SortType.A_Z );
+			cruiseShipsPage.sortBar().setSortType( Enumerators.SortType.A_Z );
 
 			/* THEN user verifies sort order of displayed results are alphabetical order by name.*/
 			REASON = "Validates that list is alphabetical order";
@@ -855,7 +859,7 @@ public class ShipsLandingPageTest extends BaseTest
 					.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 
 			/* AND the user clicks on the list and expand it */
-			ShipSortBar.LayoutType layout = cruiseShipsPage.sortBar().getLayoutType();
+			Enumerators.LayoutType layout = cruiseShipsPage.sortBar().getLayoutType();
 			HtmlElement layoutOption = cruiseShipsPage.sortBar().getLayoutOption( layout );
 
 			/* THEN the selected option value above should be "CHECKED" on the drop-down list */
@@ -866,13 +870,13 @@ public class ShipsLandingPageTest extends BaseTest
 					.assertThat( REASON, ACTUAL_STR, EXPECTED_OF_STR );
 
 			/* AND the user hovers over the unselected option. */
-			if ( layout.equals( ShipSortBar.LayoutType.BY_GRID ) )
+			if ( layout.equals( Enumerators.LayoutType.BY_GRID ) )
 			{
-				unSelectedOption = cruiseShipsPage.sortBar().getLayoutOption( ShipSortBar.LayoutType.BY_LIST );
+				unSelectedOption = cruiseShipsPage.sortBar().getLayoutOption( Enumerators.LayoutType.BY_LIST );
 			}
 			else
 			{
-				unSelectedOption = cruiseShipsPage.sortBar().getLayoutOption( ShipSortBar.LayoutType.BY_GRID );
+				unSelectedOption = cruiseShipsPage.sortBar().getLayoutOption( Enumerators.LayoutType.BY_GRID );
 			}
 			unSelectedOption.hover();
 
@@ -885,7 +889,7 @@ public class ShipsLandingPageTest extends BaseTest
 					.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
 
 			/* AND WHEN list is selected in "FEATURED" menu */
-			cruiseShipsPage.sortBar().setSortType( ShipSortBar.SortType.FEATURED );
+			cruiseShipsPage.sortBar().setSortType( Enumerators.SortType.FEATURED );
 
 			/* THEN user verifies FEATURED order displayed should match feature order as in site-core */
 			REASON = "Validates that list is in featured order";
@@ -1262,14 +1266,15 @@ public class ShipsLandingPageTest extends BaseTest
 			Object o = SiteProperty.SHIPS_COUNT.fromContext();
 			int ACTUAL_INT = cruiseShipsPage.getShipCardsCount();
 			Matcher<Integer> EXPECTED_OF_INT = JMatchers.is( Integer.valueOf( o.toString() ));
-			SiteSessionManager.get().createCheckPoint( "SHIPS_COUNT" )
+			HtmlElement container = cruiseShipsPage.getContentBlockResults();
+			SiteSessionManager.get().createCheckPoint( container, "SHIPS_COUNT" )
 					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
 
 			REASON = "Validate counter for X ships.";
-			ACTUAL_INT = cruiseShipsPage.sortBar().getResults();
-			EXPECTED_OF_INT = JMatchers.is( Integer.valueOf( o.toString() ) );
+			HtmlElement he = cruiseShipsPage.sortBar().getResultsElement();
+			HtmlCondition<Boolean> EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( o.toString() ) );
 			SiteSessionManager.get().createCheckPoint( "SHIPS_DISPLAY_COUNTER" )
-					.assertThat( REASON, ACTUAL_INT, EXPECTED_OF_INT );
+					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 
 			cruiseShipsPage.getAllShipsCards();
 

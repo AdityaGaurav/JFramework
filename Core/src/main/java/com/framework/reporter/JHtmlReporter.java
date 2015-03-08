@@ -163,9 +163,9 @@ public class JHtmlReporter extends ScenarioListenerAdapter implements IReporter
 	@SuppressWarnings ( "ResultOfMethodCallIgnored" )
 	private void deleteLastReport()
 	{
-		boolean deleted = FileSystemUtils.deleteRecursively( new File( configuration.getOutputDirectory() ) );
-		logger.info( "Last report < {} > was deleted -> {}.", deleted );
-		new File( configuration.getOutputDirectory() ).mkdir();
+//		boolean deleted = FileSystemUtils.deleteRecursively( new File( configuration.getOutputDirectory() ) );
+//		logger.info( "Last report < {} > was deleted -> {}.", deleted );
+//		new File( configuration.getOutputDirectory() ).mkdir();
 	}
 
 	protected void copyResources() throws IOException

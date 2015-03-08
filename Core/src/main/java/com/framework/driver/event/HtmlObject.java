@@ -10,7 +10,7 @@ import com.framework.driver.utils.ui.HighlightStyleBackup;
 import com.framework.driver.utils.ui.screenshots.Photographer;
 import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.framework.utils.datetime.Sleeper;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -396,7 +396,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "qualifier", qualifier )
 				.append( "locator", foundBy )
 				.toString();
@@ -660,7 +660,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 	@Override
 	public Actions createAction()
 	{
-		return null;
+		return new Actions( getWrappedHtmlDriver().getWrappedDriver() );
 	}
 
 	@Override
