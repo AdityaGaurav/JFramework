@@ -4,7 +4,7 @@ import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -201,7 +201,7 @@ public class LinkToutsContainerObject extends AbstractWebObject
 		@Override
 		public String toString()
 		{
-			return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+			return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 					.append( "toutTitle", toutTitle != null ? toutTitle : "N/A" )
 					.append( "index", index )
 					.toString();
