@@ -1,7 +1,7 @@
 package com.framework.reporter;
 
 import com.framework.config.Configurations;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +115,7 @@ public class ConfigurationMethod
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "name", null != method ? method.getMethodName() : "N/A" )
 				.append( "type", null != type ? type : "N/A" )
 				.append( "testClass", getTestNGMethod() != null ? getTestNGMethod().getTestClass().getName() : "N/A" )

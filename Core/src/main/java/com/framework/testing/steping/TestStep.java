@@ -2,7 +2,7 @@ package com.framework.testing.steping;
 
 import com.framework.testing.annotations.Step;
 import com.framework.utils.error.PreConditions;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +153,7 @@ public class TestStep implements Comparable<TestStep>//, TimeComparator<TestStep
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "number", number )
 				.append( "description", description )
 				.append( "expected results count", expectedResults != null ? expectedResults.length : 0 )

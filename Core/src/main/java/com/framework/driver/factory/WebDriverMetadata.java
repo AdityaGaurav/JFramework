@@ -2,7 +2,7 @@ package com.framework.driver.factory;
 
 import com.framework.config.Configurations;
 import com.framework.config.FrameworkProperty;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.openqa.selenium.Platform;
 
@@ -188,7 +188,7 @@ public class WebDriverMetadata
 		{
 			return Configurations.getInstance().getString( FrameworkProperty.GOOGLE_CHROME_MAC_WEB_DRIVER_FILE );
 		}
-		if( Platform.getCurrent().equals( Platform.WINDOWS ) )
+		if( Platform.getCurrent().equals( Platform.WINDOWS ) || Platform.getCurrent().equals( Platform.VISTA ) )
 		{
 			return Configurations.getInstance().getString( FrameworkProperty.GOOGLE_CHROME_WIN_WEB_DRIVER_FILE );
 		}
@@ -204,7 +204,7 @@ public class WebDriverMetadata
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "id", id )
 				.toString();
 	}

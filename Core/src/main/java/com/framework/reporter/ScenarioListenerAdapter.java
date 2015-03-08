@@ -9,8 +9,8 @@ import com.framework.driver.exceptions.ConfigurationRuntimeException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.*;
-import com.framework.utils.string.LogStringStyle;
 import com.framework.utils.string.TextArt;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -24,21 +24,6 @@ import java.lang.reflect.Method;
 import static com.framework.config.FrameworkProperty.JFRAMEWORK_BASE_REPORTS_DIRECTORY;
 import static com.framework.config.FrameworkProperty.REPORT_DIRECTORY_PATTERN;
 
-
-/**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
- *
- * Package: com.framework.reporter
- *
- * Name   : BaseReporter 
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-02-18 
- *
- * Time   : 19:35
- *
- */
 
 // ┌────────────────────────────────────────────────────────────────────┐ \\
 // │ Raphaël 2.1.3 - JavaScript Vector Library                          │ \\
@@ -89,7 +74,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 
 		String style = FrameworkProperty.JFRAMEWORK_SUITE_START_STYLE.from( configuration, HeadingStyle.DELTA_CORPS.name() );
 		logger.info( TextArt.SUITE_STARTED_HEADINGS.get( HeadingStyle.valueOf( style ).ordinal() ) );
-		String defaults = configuration.report( LogStringStyle.LOG_MULTI_LINE_STYLE );
+		String defaults = configuration.report( ToLogStringStyle.LOG_MULTI_LINE_STYLE );
 
 		logger.info( "Starting suite execution. initialize SiteConfigurations with default values -> \n{}", defaults );
 
@@ -455,7 +440,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 		{
 			checkpoint.setScreenshot( assertion.getSnapshot().get() );
 		}
-		logger.debug( "checkpoint result -> {}", checkpoint.toString( LogStringStyle.LOG_MULTI_LINE_STYLE ) );
+		logger.debug( "checkpoint result -> {}", checkpoint.toString( ToLogStringStyle.LOG_MULTI_LINE_STYLE ) );
 	}
 
 	private Optional<Steps> determineStepAnnotations( ITestResult itr )

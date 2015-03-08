@@ -9,7 +9,7 @@ import com.framework.testing.annotations.DefaultUrl;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -348,7 +348,7 @@ public abstract class AbstractPageObject implements PageObject
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "qualifier", qualifier )
 				.append( "name", logicalName )
 				.append( "current url", currentURL )

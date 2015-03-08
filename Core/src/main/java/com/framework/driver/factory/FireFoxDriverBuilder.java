@@ -2,7 +2,7 @@ package com.framework.driver.factory;
 
 import com.framework.config.FrameworkConfiguration;
 import com.framework.config.FrameworkProperty;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -141,7 +141,7 @@ public class FireFoxDriverBuilder //implements IWebDriverFactory
 		//profile.updateUserPrefs()
 
 
-		ToStringBuilder stringBuilder = new ToStringBuilder( profile, new LogStringStyle() )
+		ToStringBuilder stringBuilder = new ToStringBuilder( profile, new ToLogStringStyle() )
 				.append( "profile.areNativeEventsEnabled", profile.areNativeEventsEnabled() )
 				.append( "profile.containsWebDriverExtension", profile.containsWebDriverExtension() )
 				.append( "profile.shouldLoadNoFocusLib", profile.shouldLoadNoFocusLib() );

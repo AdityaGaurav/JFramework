@@ -5,7 +5,7 @@ import com.framework.config.ResultStatus;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -338,7 +338,7 @@ public class TestContext
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "start date", null != startDate ? getFormattedEndDate() : "N/A" )
 				.append( "name", testContextRunner.getName() )
 				.append( "parent suite", parentSuite.getName() )

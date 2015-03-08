@@ -6,7 +6,7 @@ import com.framework.testing.steping.TestResultList;
 import com.framework.testing.steping.TestStep;
 import com.framework.testing.steping.TestStepInstance;
 import com.framework.utils.datetime.DateTimeUtils;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -105,7 +105,7 @@ public class TestCaseInstance
 	@Override
 	public String toString()
 	{
-		ToStringBuilder tsb = new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		ToStringBuilder tsb = new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "name", parentTestCase.getName() )
 				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
 				.append( "index", index )

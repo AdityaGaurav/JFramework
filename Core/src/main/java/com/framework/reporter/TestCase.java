@@ -5,7 +5,7 @@ import com.framework.testing.steping.StepsAnnotation;
 import com.framework.testing.steping.TestCaseAnnotationsReader;
 import com.framework.testing.steping.TestStep;
 import com.framework.utils.error.PreConditions;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -118,7 +118,7 @@ public class TestCase
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "name", null != testNGMethod ? testNGMethod.getMethodName() : "N/A" )
 				.append( "testClass", getTestNGMethod() != null ? getTestNGMethod().getTestClass().getName() : "N/A" )
 				.append( "instances count", this.testCaseInstanceStack.size() )

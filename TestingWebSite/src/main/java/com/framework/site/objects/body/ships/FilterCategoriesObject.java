@@ -11,7 +11,7 @@ import com.framework.site.data.Destinations;
 import com.framework.site.data.TripDurations;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -434,7 +434,7 @@ public class FilterCategoriesObject extends AbstractWebObject
 	@Override
 	public String toString()
 	{
-		ToStringBuilder tsb = new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE );
+		ToStringBuilder tsb = new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE );
 		if( departurePorts != null && departurePorts.size() > 0 )
 		{
 			tsb.append( "departurePorts", Lambda.join( departurePorts, "," ) );

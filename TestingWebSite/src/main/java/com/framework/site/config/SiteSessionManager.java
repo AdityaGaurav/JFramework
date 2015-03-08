@@ -6,6 +6,7 @@ import com.framework.asserts.JAssertion;
 import com.framework.config.Configurations;
 import com.framework.config.FrameworkConfiguration;
 import com.framework.driver.event.HtmlDriver;
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.data.TestEnvironment;
 import com.framework.site.pages.core.HomePage;
 import com.framework.utils.conversion.Converter;
@@ -189,6 +190,10 @@ public class SiteSessionManager
 		return new CheckpointAssert( getDriver(), id, collector );
 	}
 
+	public CheckpointAssert createCheckPoint( HtmlElement element, final String id )
+	{
+		return new CheckpointAssert( element, id, collector );
+	}
 
 	public FrameworkConfiguration getConfiguration()
 	{

@@ -11,7 +11,7 @@ import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.openqa.selenium.By;
@@ -109,7 +109,7 @@ public class HomePage extends BaseCarnivalPage
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.appendSuper( super.toString() )
 				.append( "locale", getCurrentLocale().getDisplayCountry() )
 				.toString();

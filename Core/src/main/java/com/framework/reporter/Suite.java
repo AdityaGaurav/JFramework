@@ -2,7 +2,7 @@ package com.framework.reporter;
 
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -308,7 +308,7 @@ public class Suite
 			file = new File( suite.getXmlSuite().getFileName() );
 		}
 
-		return new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
 				.append( "is failed", null != suite ? suite.getSuiteState().isFailed() : "N/A" )
 				.append( "suite name", null != suite ? suite.getName() : "N/A" )

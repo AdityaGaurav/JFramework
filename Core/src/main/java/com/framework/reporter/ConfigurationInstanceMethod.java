@@ -2,7 +2,7 @@ package com.framework.reporter;
 
 import com.framework.config.ResultStatus;
 import com.framework.utils.datetime.DateTimeUtils;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
@@ -100,10 +100,10 @@ public class ConfigurationInstanceMethod
 	@Override
 	public String toString()
 	{
-		ToStringStyle stringStyle = LogStringStyle.LOG_LINE_STYLE;
+		ToStringStyle stringStyle = ToLogStringStyle.LOG_LINE_STYLE;
 		if( throwable != null )
 		{
-			stringStyle = LogStringStyle.LOG_MULTI_LINE_STYLE;
+			stringStyle = ToLogStringStyle.LOG_MULTI_LINE_STYLE;
 		}
 		ToStringBuilder tsb = new ToStringBuilder( this, stringStyle )
 				.append( "name", parentMethod.getName() )

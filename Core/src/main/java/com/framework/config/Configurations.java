@@ -4,7 +4,7 @@ import com.framework.driver.exceptions.UnsupportedDriverException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.driver.factory.WebDriverMetadata;
 import com.framework.utils.conversion.Converter;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.event.ConfigurationErrorListener;
@@ -212,7 +212,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 		String[] locations = getStringArray( JFRAMEWORK_SPRING_FRAMEWORK_LOCATIONS );
 		this.applicationContext = new ClassPathXmlApplicationContext( locations );
 
-		ToStringBuilder tsb = new ToStringBuilder( this.applicationContext, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		ToStringBuilder tsb = new ToStringBuilder( this.applicationContext, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "application name", applicationContext.getApplicationName() )
 				.append( "application id", applicationContext.getId() )
 				.append( "display name", applicationContext.getDisplayName() )
@@ -816,7 +816,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "locale", locale )
 				.append( "testEnvironment", getTestEnvironment() )
 				.append( "currentBrowser", currentBrowser )

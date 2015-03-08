@@ -6,7 +6,7 @@ import com.framework.driver.utils.ui.screenshots.ScreenshotAndHtmlSource;
 import com.framework.reporter.Scenario;
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.string.ErrorMessageFormatter;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -89,7 +89,7 @@ public class TestStepInstance
 	@Override
 	public String toString()
 	{
-		ToStringBuilder tsb = new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		ToStringBuilder tsb = new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "name", parentTestStep.getDescription() )
 				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
 				.append( "number", parentTestStep.getNumber() )
@@ -159,7 +159,7 @@ public class TestStepInstance
 
 	public void reportErrors( Logger log )
 	{
-		ToStringBuilder tsb = new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE );
+		ToStringBuilder tsb = new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE );
 		List<String> errors = getAllErrorMessages();
 		for( int i = 0; i < errors.size(); i ++ )
 		{

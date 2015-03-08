@@ -3,7 +3,7 @@ package com.framework.driver.objects;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlElement;
 import com.framework.utils.error.PreConditions;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
@@ -108,7 +108,7 @@ public abstract class AbstractWebObject // implements WebObject
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "logical name", logicalName )
 				.append( "qualifier", qualifier )
 				.toString();

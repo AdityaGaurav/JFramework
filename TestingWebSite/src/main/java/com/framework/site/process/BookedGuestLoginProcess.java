@@ -7,7 +7,7 @@ import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.bookedguest.BookedGuestLogonPage;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.security.CipherPassword;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public class BookedGuestLoginProcess
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "user", this.user )
 				.toString();
 	}

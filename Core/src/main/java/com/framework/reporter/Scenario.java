@@ -2,7 +2,7 @@ package com.framework.reporter;
 
 import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -387,7 +387,7 @@ public class Scenario
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_MULTI_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
 				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
 				.append( "is failed", isFailed() )
 				.append( "success rate", getFormattedSuccessRate() )

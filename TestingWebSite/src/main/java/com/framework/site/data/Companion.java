@@ -1,6 +1,6 @@
 package com.framework.site.data;
 
-import com.framework.utils.string.LogStringStyle;
+import com.framework.utils.string.ToLogStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
@@ -172,7 +172,7 @@ public class Companion
 	@Override
 	public String toString()
 	{
-		return new ToStringBuilder( this, LogStringStyle.LOG_LINE_STYLE )
+		return new ToStringBuilder( this, ToLogStringStyle.LOG_LINE_STYLE )
 				.append( "firstName", firstName )
 				.append( "lastName", lastName )
 				.append( "ageName", ageName )

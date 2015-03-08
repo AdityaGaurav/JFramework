@@ -35,7 +35,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * </pre>
  */
 
-public class LogStringStyle extends ToStringStyle
+public class ToLogStringStyle extends ToStringStyle
 {
 
 	//region LogStringStyle - Variables Declaration and Initialization Section.
@@ -150,7 +150,7 @@ public class LogStringStyle extends ToStringStyle
 
 	//region LogStringStyle - Constructor and Initialization Section.
 
-	public LogStringStyle()
+	public ToLogStringStyle()
 	{
 		super();
 	}
@@ -190,7 +190,7 @@ public class LogStringStyle extends ToStringStyle
 
 		private Object readResolve()
 		{
-			return LogStringStyle.LOG_LINE_STYLE;
+			return ToLogStringStyle.LOG_LINE_STYLE;
 		}
 	}
 
@@ -206,7 +206,7 @@ public class LogStringStyle extends ToStringStyle
 
 		private Object readResolve()
 		{
-			return LogStringStyle.NO_FIELD_NAMES_STYLE;
+			return ToLogStringStyle.NO_FIELD_NAMES_STYLE;
 		}
 	}
 
@@ -225,7 +225,7 @@ public class LogStringStyle extends ToStringStyle
 
 		private Object readResolve()
 		{
-			return LogStringStyle.LOG_LINE_STYLE;
+			return ToLogStringStyle.LOG_LINE_STYLE;
 		}
 	}
 
