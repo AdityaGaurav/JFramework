@@ -25,6 +25,8 @@ public class CharSequenceIsMatcher extends CharSequenceMatcher
 {
 	//region CharSequenceIsMatcher - Constructor
 
+	private static String toStringMsg;
+
 	public CharSequenceIsMatcher( CharSequence cs, ValidationType vt )
 	{
 		super( cs, vt );
@@ -36,42 +38,49 @@ public class CharSequenceIsMatcher extends CharSequenceMatcher
 	@Factory
 	public static Matcher<CharSequence> isAllUpperCase( CharSequence cs )
 	{
+		toStringMsg = "is all uppercase";
 		return new CharSequenceIsMatcher( cs, ValidationType.UPPER );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isAllLowerCase( CharSequence cs )
 	{
+		toStringMsg = "is all lowercase";
 		return new CharSequenceIsMatcher( cs, ValidationType.LOWER );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isAlpha( CharSequence cs )
 	{
+		toStringMsg = "is alpha";
 		return new CharSequenceIsMatcher( cs, ValidationType.ALPHA );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isAlphaNumeric( CharSequence cs )
 	{
+		toStringMsg = "is alpha-numeric";
 		return new CharSequenceIsMatcher( cs, ValidationType.ALPHANUMERIC );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isNumber( CharSequence cs )
 	{
+		toStringMsg = "is number";
 		return new CharSequenceIsMatcher( cs, ValidationType.NUMBER );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isNumeric( CharSequence cs )
 	{
+		toStringMsg = "is numeric";
 		return new CharSequenceIsMatcher( cs, ValidationType.NUMERIC );
 	}
 
 	@Factory
 	public static Matcher<CharSequence> isDigits( CharSequence cs )
 	{
+		toStringMsg = "is all digits";
 		return new CharSequenceIsMatcher( cs, ValidationType.DIGITS );
 	}
 
@@ -95,6 +104,6 @@ public class CharSequenceIsMatcher extends CharSequenceMatcher
 	@Override
 	protected String relationship()
 	{
-		return "is all uppercase";
+		return toStringMsg;
 	}
 }

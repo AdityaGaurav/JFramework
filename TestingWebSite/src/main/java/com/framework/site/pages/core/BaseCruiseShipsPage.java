@@ -1,5 +1,7 @@
 package com.framework.site.pages.core;
 
+import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
 import com.framework.site.config.SiteProperty;
 import com.framework.site.config.SiteSessionManager;
@@ -13,12 +15,12 @@ import com.framework.site.objects.body.ships.ShipCardObject;
 import com.framework.site.objects.body.ships.SortBarObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -85,10 +87,10 @@ public class BaseCruiseShipsPage extends BaseCarnivalPage implements Enumerators
 		/* Validating number of ships by property value ships.count */
 
 		String REASON = "Validating number of ships by property value ships.count";
-		final int shipsCount = NumberUtils.createInteger( SiteProperty.SHIPS_COUNT.fromContext().toString() );
-		final Matcher<Integer> EXPECTED_SHIPS_COUNT = JMatchers.is( shipsCount );
-		final int ACTUAL_SHIPS_COUNT = NumberUtils.createInteger( sortBar().getResultsElement().getText() );
-		getDriver().assertThat( REASON, ACTUAL_SHIPS_COUNT, EXPECTED_SHIPS_COUNT );
+		String shipsCountStr = SiteProperty.SHIPS_COUNT.fromContext().toString();
+		HtmlElement he = sortBar().getResultsElement();
+		HtmlCondition<Boolean> condition = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipsCountStr ) );
+		getDriver().assertWaitThat( REASON, TimeConstants.TEN_SECONDS, condition );
 
 		/* Validating sort-type is "FEATURED" by default */
 

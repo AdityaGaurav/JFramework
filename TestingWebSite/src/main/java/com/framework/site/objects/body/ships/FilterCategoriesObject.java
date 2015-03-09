@@ -250,7 +250,7 @@ public class FilterCategoriesObject extends AbstractWebObject
 			HtmlElement loader = findLoader();
 			HtmlElement he = dep.findElement( By.id( "filter-dest-" + id ) );
 			he.click();
-			loader.waitAttributeToMatch( "class", JMatchers.endsWith( "hidden" ), TimeConstants.THREE_SECONDS );
+			loader.waitAttributeToMatch( "class", JMatchers.endsWith( "hidden" ), TimeConstants.TEN_SECONDS );
 			dep.waitAttributeToMatch( "class", JMatchers.is( "active-filter"), TimeConstants.THREE_SECONDS );
 			By by = By.cssSelector( String.format( "a.remove-filter[data-val=\"%s\"]", id ) );
 			Optional<HtmlElement> e = findCurrentFilter().childExists( by, TimeConstants.THREE_SECONDS );

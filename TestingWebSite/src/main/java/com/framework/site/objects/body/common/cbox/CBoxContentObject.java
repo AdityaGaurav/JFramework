@@ -113,6 +113,7 @@ public class CBoxContentObject extends AbstractWebObject
 	public void close()
 	{
 		logger.info( "Closing cbox ...." );
+		cbox_close.scrollIntoView();
 		cbox_close.click();
 		HtmlElement wrapper = getDriver().findElement( CBoxWrapperObject.ROOT_BY );
 		wrapper.waitToBeDisplayed( false, TimeConstants.THREE_SECONDS );

@@ -586,6 +586,15 @@ public class ExpectedConditions
 					final Description desc = new StringDescription().appendText( this.toString() );
 
 					String attributeValue = element.getAttribute( attributeName );
+					if( null == attributeValue )
+					{
+						desc.appendText( ", however attribute " )
+								.appendValue( attributeName )
+								.appendText( " is " )
+								.appendValue( "NULL" );
+						logger.info( getDurationString( dt, desc ) );
+						return false;
+					}
 					String urlDecoded;
 					try
 					{
@@ -601,9 +610,8 @@ public class ExpectedConditions
 					{
 						desc.appendText( ", however attribute " )
 								.appendValue( attributeName )
-								.appendText( " is <" )
-								.appendValue( attributeValue )
-								.appendText( ">" );
+								.appendText( " is " )
+								.appendValue( attributeValue );
 					}
 					logger.debug( getDurationString( dt, desc ) );
 					return response;
@@ -659,7 +667,7 @@ public class ExpectedConditions
 								.appendValue( propertyValue )
 								.appendText( ">" );
 					}
-					logger.debug( getDurationString( dt, desc ) );
+					logger.info( getDurationString( dt, desc ) );
 					return response;
 				}
 				catch ( WebDriverException ex )
@@ -707,7 +715,7 @@ public class ExpectedConditions
 					{
 						desc.appendText( ", however text value is <" ).appendValue( text ).appendText( ">" );
 					}
-					logger.debug( getDurationString( dt, desc ) );
+					logger.info( getDurationString( dt, desc ) );
 					return response;
 				}
 				catch ( WebDriverException ex )

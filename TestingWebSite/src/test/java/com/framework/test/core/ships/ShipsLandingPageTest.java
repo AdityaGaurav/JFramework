@@ -369,7 +369,7 @@ public class ShipsLandingPageTest extends BaseTest
 	}
 
 	@UserStory ( "PBI-52423" )
-	@TestCasesIds ( ids = { 59442, 66901 } )
+	@TestCasesIds ( ids = { 59442 } )
 	@Steps ( steps = {
 			@Step ( number = 1, description = "GIVEN that the user is in Ships Landing page /cruise-ships.aspx" ),
 			@Step ( number = 2, description = "WHEN user examines the left filter",
@@ -622,6 +622,7 @@ public class ShipsLandingPageTest extends BaseTest
 		try
 		{
 			CruiseShipsPage page = ( CruiseShipsPage ) cruiseShipsPage;
+			String totalShipsCount = SiteProperty.SHIPS_COUNT.fromContext().toString();
 
 			/* WHEN user select a single destination filter */
 			FilterCategoriesObject filterCategories = page.filterCategories();
@@ -696,8 +697,7 @@ public class ShipsLandingPageTest extends BaseTest
 			/* AND ships Counter matches actual cards count */
 			REASON = "Validate that \"Ships counter\"  matches actual cards count after clear filters";
 			he = cruiseShipsPage.sortBar().getResultsElement();
-			shipCount = String.valueOf( EXPECTED_SHIPS.size() );
-			EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( shipCount ) );
+			EXPECTED_CONDITION_OF_BOOL = ExpectedConditions.elementTextToMatch( he, JMatchers.is( totalShipsCount ) );
 			SiteSessionManager.get().createCheckPoint( "RESULT_COUNTER_AFTER_CLEAR" )
 					.assertWaitThat( REASON, TimeConstants.TEN_SECONDS, EXPECTED_CONDITION_OF_BOOL );
 

@@ -26,6 +26,7 @@ import com.framework.site.pages.core.cruiseships.CruiseShipsDetailsPage;
 import com.framework.site.pages.core.cruiseto.CruiseToDestinationPage;
 import com.framework.site.pages.core.cruiseto.CruiseToPage;
 import com.framework.site.pages.core.findacruise.SearchResultsPage;
+import com.framework.utils.datetime.Sleeper;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -412,7 +413,14 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 			Matcher<Boolean> EXPECTED_OF_BOOL = JMatchers.is( true );
 			getDriver().assertThat( REASON, ACTUAL, EXPECTED_OF_BOOL );
 		}
-		compareAnchor.click();
+		if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+		{
+			compareAnchor.jsClick();
+		}
+		else
+		{
+			compareAnchor.click();
+		}
 	}
 
 	@Override
@@ -461,6 +469,7 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		logger.info( "Selecting trip duration < {} > ...", tripDuration.name() );
 		String css = String.format( "li:nth-child(3) a[href*=\"dur=%s\"]", tripDuration.getId() );
 		getRoot().findElement( By.cssSelector( css ) ).click();
+		Sleeper.pauseFor( 1500 );
 		if( SiteSessionManager.get().getCurrentLocale().equals( Locale.US )
 				|| SiteSessionManager.get().getCurrentLocale().equals( Locale.UK ) )
 		{

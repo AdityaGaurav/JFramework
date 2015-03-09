@@ -9,6 +9,7 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
 import com.framework.utils.conversion.Converter;
+import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -190,6 +191,7 @@ public class RefineSearchObject extends AbstractWebObject
 	public int getItinerariesFound()
 	{
 		HtmlElement he = findItinerariesStrong();
+		he.waitTextToMatch( JMatchers.not( JMatchers.is( "-" ) ), TimeConstants.TEN_SECONDS );
 		String text = he.getText();
 		he.createAssertion().assertThat( "Validate itineraries found is numeric", text, JMatchers.isNumber( text ) );
 		logger.info( "Number of itineraries found is < {} >", text );

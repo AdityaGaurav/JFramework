@@ -1,14 +1,14 @@
 package com.framework.site.objects.body.staterooms;
 
-import com.framework.asserts.JAssertion;
 import com.framework.driver.event.ExpectedConditions;
+import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlDriverWait;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.site.data.Enumerators;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
-import com.google.common.base.Optional;
+import com.framework.utils.matchers.JMatchers;
 import com.google.common.collect.Maps;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
-import static org.hamcrest.Matchers.is;
 
 
 /**
@@ -76,11 +73,9 @@ public class UserFeedbackObject extends AbstractWebObject implements Enumerators
 				getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
-
-		JAssertion assertion = getRoot().createAssertion();
-		Optional<HtmlElement> e = getRoot().childExists( By.className( "explore-tooltips" ), THREE_SECONDS );
-		assertion.assertThat( String.format( REASON, ".explore-tooltips" ), e.isPresent(), is( true ) );
-		explore_tooltips = e.get();
+		HtmlCondition<HtmlElement> condition = ExpectedConditions.presenceBy( By.className( "explore-tooltips" ) );
+		getDriver().assertWaitThat( String.format( REASON, "explore-tooltips" ), TimeConstants.FIVE_SECONDS, condition );
+		explore_tooltips = getDriver().findElement( By.className( "explore-tooltips" ) );
 	}
 
 	//endregion
@@ -101,8 +96,10 @@ public class UserFeedbackObject extends AbstractWebObject implements Enumerators
 	public HtmlElement activateTooltip( UserFeedbackTooltip tooltip, HtmlElement he )
 	{
 		he.click();
+		he.waitAttributeToMatch( "aria-describedby", JMatchers.startsWithIgnoreCase( "qtip-" ), TimeConstants.FIVE_SECONDS );
 		String describedBy = he.getAttribute( "aria-describedby" );
 		logger.info( "Activating tooltip < {} >, returning qTip < {} >", tooltip, describedBy );
+		PreConditions.checkNotNullNotBlankOrEmpty( describedBy, "qtip was found null, empty or blank" );
 		HtmlElement qTip = HtmlDriverWait.wait5( getDriver() ).until( ExpectedConditions.presenceBy( By.id( describedBy ) ) );
 		qTip.waitToBeDisplayed( true, TimeConstants.THREE_SECONDS );
 		return qTip;

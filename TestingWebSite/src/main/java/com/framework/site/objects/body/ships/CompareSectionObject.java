@@ -142,8 +142,10 @@ public class CompareSectionObject extends AbstractWebObject
 				}
 				else if( innerHtml.contains( "filter-soon" ) )
 				{
-	  				String expectedText = SiteProperty.FILTER_SOON_TEXT.from( Configurations.getInstance(), "COMING SOON" );
-					new JAssertion( getDriver() ).assertThat( "Validate FILTER-SOON text", innerHtml, JMatchers.containsString( expectedText ) );
+	  				String expectedText = SiteProperty.FILTER_SOON_TEXT.from( Configurations.getInstance(), "Coming Soon" );
+					new JAssertion( getDriver() )
+							.assertThat( "Validate FILTER-SOON text", innerHtml,
+									JMatchers.containsStringIgnoreCase( expectedText ) );
 					mapValues.put( shipsSections.get( i ), "CS" );
 				}
 				else if( innerHtml.contains( "availableIcon" ) )
@@ -183,7 +185,14 @@ public class CompareSectionObject extends AbstractWebObject
 			logger.info( "Expanding section < {} >", sectionName );
 			HtmlElement he = getRoot().findElement( By.className( "compare-items" ) );
 			he.scrollBy( 0, SCROLL_OFFSET );
-			findExpandCollapseI( h2 ).click();
+			if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+			{
+				findExpandCollapseI( h2 ).jsClick();
+			}
+			else
+			{
+				findExpandCollapseI( h2 ).click();
+			}
 			he.waitToBeDisplayed( true, THREE_SECONDS );
 		}
 		populateTableData();
@@ -195,7 +204,14 @@ public class CompareSectionObject extends AbstractWebObject
 		{
 			logger.info( "Collapsing section < {} >", sectionName );
 			HtmlElement he = findCompareItemsDiv();
-			findExpandCollapseI( h2 ).click();
+			if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+			{
+				findExpandCollapseI( h2 ).jsClick();
+			}
+			else
+			{
+				findExpandCollapseI( h2 ).click();
+			}
 			he.waitToBeDisplayed( false, THREE_SECONDS );
 		}
 	}

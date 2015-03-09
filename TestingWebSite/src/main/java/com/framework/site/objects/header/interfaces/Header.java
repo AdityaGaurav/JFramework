@@ -39,6 +39,8 @@ public interface Header
 
 	NavigationAdditional navigationAdditional();
 
+	HtmlElement getContainer();
+
 	//region Header - Child Interfaces under div.ccl-refresh-header > div.header-nav
 
 	interface MessageBar

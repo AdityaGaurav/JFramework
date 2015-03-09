@@ -2,8 +2,6 @@ package com.framework.test.core.ships;
 
 import com.framework.BaseTest;
 import com.framework.config.Configurations;
-import com.framework.driver.event.ExpectedConditions;
-import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.ApplicationException;
 import com.framework.site.config.SiteProperty;
@@ -22,18 +20,15 @@ import com.framework.site.pages.core.HomePage;
 import com.framework.site.pages.core.cruiseships.CompareCruiseShipsPage;
 import com.framework.testing.annotations.*;
 import com.framework.utils.conversion.Converter;
-import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.img.ImageCompare;
 import com.framework.utils.matchers.JMatchers;
-import com.framework.utils.web.CSS2Properties;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.support.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
@@ -334,7 +329,7 @@ public class ShipCompareTest extends BaseTest
 				{
 					String REASON = "Validates filter-soon text index " + index;
 					String ACTUAL_STR = td.findElement( By.className( "filter-soon" ) ).getText();
-					Matcher<String> EXPECTED_OF_STR = JMatchers.equalToIgnoringCase( expectedText );
+					Matcher<String> EXPECTED_OF_STR = JMatchers.containsStringIgnoreCase( expectedText );
 					SiteSessionManager.get().createCheckPoint( "FILTER_SOON_TEXT_" + index )
 							.assertThat( REASON, ACTUAL_STR, EXPECTED_OF_STR );
 					index ++;
@@ -348,79 +343,6 @@ public class ShipCompareTest extends BaseTest
 			throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
 		}
 	}
-
-	@UserStory ( "PBI-65535" )
-	@TestCaseId ( id = 60212 )
-	@Steps ( steps = {
-			@Step ( number = 1, description = "GIVEN user in compare page \"/cruise-ships/compare-cruise-ships\" with 3 ships." ),
-			@Step ( number = 2, description = "WHEN user clicks in the bar on @activityAccordion" ),
-			@Step ( number = 3, description = "AND hovers over the displayed activities",
-					expectedResults = { "THEN the activities column header being hovered are highlighted #F6F5F6",
-										"AND the activities column is highlighted #E3E3E3"} )
-	} )
-	@Test ( description = "Compare Ships page. Verify hover action",
-			enabled = true,
-			invocationCount = 3,
-			groups = { "US", "UK"  }
-	)
-	void compareShips_HoverAction() throws Exception
-	{
-		/* GIVEN user in compare page "/cruise-ships/compare-cruise-ships" with 2 ships. */
-		PreConditions.checkNotNull( this.compareCruiseShipsPage, "Compare Cruise Ship page is null, before starting test" );
-		try
-		{
-			compareCruiseShipsPage.contentBlockComparing().collapseAll();
-			if( sections.size() == 0 )
-			{
-				sections = compareCruiseShipsPage.contentBlockComparing().getComparisonSections();
-			}
-
-			int rnd = RandomUtils.nextInt( 0, sections.size() - 1 );
-			CompareSectionObject selected = sections.get( rnd );
-
-			/* WHEN user clicks in the bar on @activityAccordion */
-			selected.expand();
-
-			/* AND hovers over the displayed activities */
-			HtmlElement table = selected.getTable();
-			List<HtmlElement> rows = table.findElements( By.tagName( "tr" ) );
-			for( HtmlElement tr : rows )
-			{
-				HtmlElement th = tr.findElement( By.tagName( "th" ) );
-				HtmlElement td = tr.findElements( By.tagName( "td" ) ).get( 0 );
-				th.scrollIntoView( false );
-
-				/* AND hovers over the displayed activities */
-				th.hover();
-
-				/* THEN the activities column header being hovered are highlighted #F6F5F6 */
-				String text = th.getText();
-				String pName = StringUtils.replaceChars( text, " ,'", "_" ).toUpperCase();
-				String REASON = "Validate that TH background-color for " + pName;
-				Color color = Color.fromString( "#F6F6F6" );
-				HtmlCondition<Boolean> condition =
-						ExpectedConditions.elementCssPropertyToMatch( th, CSS2Properties.COLOR.getStringValue(), JMatchers.is( color.asRgba() ) );
-				SiteSessionManager.get().createCheckPoint( "TH_BACKGROUND_COLOR_" + pName )
-						.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
-
-				td.hover();
-
-				REASON = "Validate that TD background-color for " + text;
-				color = Color.fromString( "#E3E3E3" );
-				condition = ExpectedConditions.elementCssPropertyToMatch(
-						th, CSS2Properties.BACKGROUND_COLOR.getStringValue(), JMatchers.is( color.asRgba() ) );
-				SiteSessionManager.get().createCheckPoint( "TD_BACKGROUND_COLOR_" + pName )
-						.assertWaitThat( REASON, TimeConstants.FIVE_SECONDS, condition );
-			}
-
-			SiteSessionManager.get().assertAllCheckpoints();
-		}
-		catch ( WebDriverException | AssertionError e )
-		{
-			throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
-		}
-	}
-
 
 	@UserStory ( "PBI-65535" )
 	@TestCaseId ( id = 68358 )
