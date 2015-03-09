@@ -147,7 +147,7 @@ public class AccommodationsStateRoomsTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. StateRoom Categories. Categories",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_StateRoomCategories_DefaultState() throws Exception
 	{

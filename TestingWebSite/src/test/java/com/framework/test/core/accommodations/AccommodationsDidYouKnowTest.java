@@ -143,8 +143,8 @@ public class AccommodationsDidYouKnowTest extends BaseTest
 					expectedResults = "THEN session did you know look & feel matches the attached mock-up" )
 	} )
 	@Test ( description = "Accommodations. Did you know? User verifies front-end look and feel",
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			enabled = true,
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_DidYouKnow_LookAndFeel() throws Exception
 	{

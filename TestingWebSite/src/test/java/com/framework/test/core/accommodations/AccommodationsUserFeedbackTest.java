@@ -146,8 +146,8 @@ public class AccommodationsUserFeedbackTest extends BaseTest
 			expectedResults = "THEN the tooltip is open displaying his content" )
 	} )
 	@Test ( description = "Accommodations. Guest Feedback. Verify user actions on + tooltips",
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			enabled = true,
+			groups = { "US", "UK" }
 	)
 	public void accommodationsPage_GuestFeedback_Tooltips() throws Exception
 	{

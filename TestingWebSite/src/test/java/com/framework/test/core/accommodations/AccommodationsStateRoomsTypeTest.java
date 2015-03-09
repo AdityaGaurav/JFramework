@@ -150,7 +150,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. closing lightbox",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_CloseLightbox( ITestContext context ) throws Exception
 	{
@@ -222,7 +222,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. closing lightbox",
 			enabled = true,
 			dependsOnMethods = { "accommodationsPage_WhatsYourRoomType_CloseLightbox" },
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_CloseLightboxButton( ITestContext context ) throws Exception
 	{
@@ -290,7 +290,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. image ALT text",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_AltText() throws Exception
 	{
@@ -335,7 +335,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. image Pagination",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_ImagePagination() throws Exception
 	{
@@ -418,7 +418,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. Rotating Images",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_RotatingImages() throws Exception
 	{
@@ -480,7 +480,7 @@ public class AccommodationsStateRoomsTypeTest extends BaseTest
 	} )
 	@Test ( description = "Accommodations. What's Your Room Type Lightbox. Available Features",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhatsYourRoomType_AvailableFeatures() throws Exception
 	{

@@ -201,7 +201,7 @@ public class AccommodationsWhereToStayTest extends BaseTest
 	@Test ( description = "Accommodations. Where To Stay. Decks",
 			enabled = true,
 			dependsOnMethods = { "accommodationsPage_WhereToStay_Titles" },
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_WhereToStay_Decks() throws Exception
 	{

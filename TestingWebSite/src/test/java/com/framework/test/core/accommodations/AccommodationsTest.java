@@ -153,8 +153,8 @@ public class AccommodationsTest extends BaseTest
 					expectedResults = "THEN user see Home > Explore > Accommodations." )
 	} )
 	@Test ( description = "Explore Accommodations page. Verify Breadcrumbs Displays",
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			enabled = true,
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_BreadCrumb_Display() throws Exception
 	{
@@ -189,9 +189,9 @@ public class AccommodationsTest extends BaseTest
 					expectedResults = "THEN the \"Accommodations\" last-child is not clickable." )
 	} )
 	@Test ( description = "Explore Accommodations page. Breadcrumbs functionality. Accommodations",
-			dependsOnMethods = { "accommodationsPage_VerifyBreadCrumbs" },
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			dependsOnMethods = { "accommodationsPage_BreadCrumb_Display" },
+			enabled = true,
+			groups = { "US", "UK" }
 	)
 	public void accommodationsPage_Breadcrumb_Accommodations() throws Exception
 	{
@@ -239,9 +239,9 @@ public class AccommodationsTest extends BaseTest
 			)
 	} )
 	@Test ( description = "Explore Accommodations page. Breadcrumbs functionality. Explore",
-			dependsOnMethods = { "accommodationsPage_VerifyBreadCrumbs" },
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			dependsOnMethods = { "accommodationsPage_BreadCrumb_Display" },
+			enabled = true,
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_Breadcrumb_Explore() throws Exception
 	{
@@ -277,9 +277,9 @@ public class AccommodationsTest extends BaseTest
 					expectedResults = "THEN user redirects to the relevant locale carnival home page" )
 	} )
 	@Test ( description = "Explore Accommodations page. Breadcrumbs functionality. Home",
-			dependsOnMethods = { "accommodationsPage_VerifyBreadCrumbs" },
-			enabled = false,
-			groups = { "AU", "US", "UK"  }
+			dependsOnMethods = { "accommodationsPage_BreadCrumb_Display" },
+			enabled = true,
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_Breadcrumb_Home() throws Exception
 	{
@@ -321,7 +321,7 @@ public class AccommodationsTest extends BaseTest
 	} )
 	@Test ( description = "Explore Accommodations page. Footer contains the same as home page footer",
 			enabled = true,
-			groups = { "AU", "US", "UK"  }
+			groups = { "US", "UK"  }
 	)
 	public void accommodationsPage_ContainsSameFooterAsHomePage() throws Exception
 	{
