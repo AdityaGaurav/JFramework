@@ -791,6 +791,10 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 	private void addBaseUrl()
 	{
 		String key = String.format( "%s.%s.url", locale.toLowerCase(), getTestEnvironment().toLowerCase() );
+		if( ! containsKey( key ) )
+		{
+			throw new ConfigurationRuntimeException( "Invalid environment key " + key );
+		}
 		setBaseUrl( getString( key, DEFAULT_BASE_URL ) );
 	}
 
