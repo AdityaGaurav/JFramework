@@ -756,7 +756,7 @@ public class Configurations extends CompositeConfiguration implements FrameworkC
 			boolean isMac = Platform.getCurrent().equals( Platform.MAC );
 			boolean isUnix = Platform.getCurrent().equals( Platform.UNIX );
 			boolean isLinux = Platform.getCurrent().equals( Platform.LINUX );
-			boolean isAnyOf = BooleanUtils.or( new Boolean[] { isMac, isUnix, isLinux } );
+			boolean isAnyOf = BooleanUtils.isNotTrue( BooleanUtils.or( new Boolean[] { isMac, isUnix, isLinux } ) );
 
 			try
 			{
