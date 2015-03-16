@@ -73,14 +73,14 @@ public class WebDriverListenerAdapter implements WebDriverListener
 			final int handles = event.getDriver().getWindowHandles().size();
 			final String url = event.getDriver().getCurrentUrl();
 
-			logger.debug( MSG_FORMAT, handle, url, handles );
+			logger.info( MSG_FORMAT, handle, url, handles );
 		}
 		else
 		{
 			final SessionId sessionId = ( ( RemoteWebDriver ) event.getDriver() ).getSessionId();
 			Duration duration = new Duration( this.dateTime, DateTime.now() );  /* measuring between before and after */
 			final String fp = DateTimeUtils.getFormattedPeriod( duration );
-			logger.debug( "Closed handles on session '{}'  ( duration: {} )", sessionId, fp );
+			logger.info( "Closed handles on session '{}'  ( duration: {} )", sessionId, fp );
 		}
 	}
 
@@ -134,7 +134,7 @@ public class WebDriverListenerAdapter implements WebDriverListener
 				Cookie cookie = ( Cookie ) event.getArguments()[ 0 ];
 				String cookieName = cookie.getName();
 				final String MSG_FORMAT = "Adding cookie with name < '{}' > and value < {} > on session < {} >";
-				logger.debug( MSG_FORMAT, cookieName, cookie.getValue(), sessionId );
+				logger.info( MSG_FORMAT, cookieName, cookie.getValue(), sessionId );
 			}
 		}
 		else
