@@ -144,6 +144,8 @@ public class Photographer
 		}
 		else if( element != null )
 		{
+			//element.scrollIntoView();
+			//Sleeper.pauseFor( 100 );
 			HtmlDriver drv = element.getWrappedHtmlDriver();
 			try
 			{
@@ -154,9 +156,9 @@ public class Photographer
 				int width = element.getSize().getWidth();
 				int height = element.getSize().getHeight();
 				// Create a rectangle using Width and Height
-				Rectangle rect = new Rectangle( width + 20, height + 20 );
+				Rectangle rect = new Rectangle( width, height );
 				Point p = element.getLocation();
-				Point offset = new Point( p.getX() - 20, p.getY() - 20 );
+				Point offset = new Point( p.getX(), p.getY() );
 
 				//Create image by for element using its location and size.
 				//This will give image data specific to the WebElement
