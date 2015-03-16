@@ -214,6 +214,12 @@ public abstract class AbstractPageObject implements PageObject
 		return getDriver().getTitle();
 	}
 
+	@Override
+	public void close()
+	{
+		getDriver().close();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * execute a jQuery script on client browser using the functions scrollTop with a <i>fast</i> animation

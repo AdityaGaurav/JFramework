@@ -73,12 +73,17 @@ public abstract class AbstractWebObject // implements WebObject
 
 	//region AbstractWebObject - Service Methods Section
 
-	public HtmlElement getBaseRootElement()
+	protected HtmlElement getBaseRootElement()
 	{
 		return rootElement;
 	}
 
-	public HtmlElement getBaseRootElement( By by )
+	public HtmlElement getContainer()
+	{
+		return rootElement;
+	}
+
+	protected HtmlElement getBaseRootElement( By by )
 	{
 		try
 		{
@@ -112,6 +117,11 @@ public abstract class AbstractWebObject // implements WebObject
 				.append( "logical name", logicalName )
 				.append( "qualifier", qualifier )
 				.toString();
+	}
+
+	public void scrollIntoView()
+	{
+		getBaseRootElement().scrollIntoView();
 	}
 
 	/**
