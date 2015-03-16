@@ -75,7 +75,7 @@ public class CheckpointAssert extends JAssertion
 	protected void onBeforeAssert( final JAssert assertCommand )
 	{
 		setStatus( ResultStatus.PENDING );
-		logger.debug( "Executing checkpoint \"{}\"", getId() );
+		logger.info( "Executing checkpoint \"{}\"", getId() );
 		StepEventBus.getEventBus().beforeCheckpoint( getId(), assertCommand );
 	}
 
@@ -87,7 +87,7 @@ public class CheckpointAssert extends JAssertion
 	protected void onAssertSuccess( final JAssert assertCommand )
 	{
 		setStatus( ResultStatus.SUCCESS );
-		logger.debug( "Executed checkpoint [{}]: {} -> {}", getId(), assertCommand.getReason(), getStatus() );
+		logger.info( "Executed checkpoint [{}]: {} -> {}", getId(), assertCommand.getReason(), getStatus() );
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class CheckpointAssert extends JAssertion
 		}
 		else
 		{
-			stb.append( "screenshot was taken", BooleanUtils.toStringYesNo( getSnapshot().get().wasTaken() ) );
+			stb.append( "screenshot was taken", BooleanUtils.toStringYesNo( getSnapshot().isPresent() ) );
 		}
 
 		logger.error( "Checkpoint Report: {}", stb.toString() );

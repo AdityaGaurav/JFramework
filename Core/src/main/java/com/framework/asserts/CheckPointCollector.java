@@ -1,6 +1,7 @@
 package com.framework.asserts;
 
 import com.framework.config.ResultStatus;
+import com.framework.testing.steping.exceptions.CheckpointError;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class CheckPointCollector
 		logger.info( sb.toString() );
 		if( failedCount > 0 )
 		{
-			throw new AssertionError( "a total of <" + failedCount + "> checkpoints were failed. check log for more details." );
+			throw new CheckpointError( "a total of <" + failedCount + "> checkpoints were failed. check log for more details." );
 		}
 	}
 
