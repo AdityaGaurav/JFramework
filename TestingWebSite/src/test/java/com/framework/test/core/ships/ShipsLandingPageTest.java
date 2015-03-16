@@ -150,11 +150,7 @@ public class ShipsLandingPageTest extends BaseTest
 		}
 		catch ( Throwable e )
 		{
-			if ( e instanceof WebDriverException )
-			{
-				throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
-			}
-			else if ( e instanceof AssertionError )
+			if ( e instanceof WebDriverException || e instanceof AssertionError )
 			{
 				throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
 			}
@@ -202,7 +198,7 @@ public class ShipsLandingPageTest extends BaseTest
 		}
 		catch ( WebDriverException | AssertionError e )
 		{
-			throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
+			throw new ApplicationException( e );
 		}
 	}
 
@@ -245,7 +241,7 @@ public class ShipsLandingPageTest extends BaseTest
 		}
 		catch ( WebDriverException | AssertionError e )
 		{
-			throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
+			throw new ApplicationException( e );
 		}
 	}
 
@@ -294,7 +290,7 @@ public class ShipsLandingPageTest extends BaseTest
 
 			SiteSessionManager.get().assertAllCheckpoints();
 		}
-		catch ( WebDriverException | AssertionError e )
+		catch ( WebDriverException e)
 		{
 			throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
 		}
