@@ -15,6 +15,15 @@ import java.util.Set;
 
 public interface HtmlDriver extends WrapsDriver, HasCapabilities, TakesScreenshot, HasInputDevices, JavascriptExecutor
 {
+	/**
+	 * The JavaScript to check if jQuery has been loaded.
+	 */
+	static final String DETECT_SCRIPT_CODE = "return typeof window.jQuery === 'function';";
+
+	static final String LOAD_SCRIPT_CODE = "var jq = document.createElement('script');jq.src = '%s';"
+			+ "document.getElementsByTagName('body')[0].appendChild(jq);";
+
+	static final String JQUERY_URL_PATTERN = "https://code.jquery.com/jquery-%s.min.js";
 
 	/**
 	 * Load a new web page in the current browser window. This is done using an HTTP GET operation,
@@ -356,8 +365,6 @@ public interface HtmlDriver extends WrapsDriver, HasCapabilities, TakesScreensho
 		//todo: documentation
 		Boolean isJavaScriptSupported( Class<? extends WebDriver> driverClass );
 
-		Boolean isJQueryEnabled();
-
-		public void injectJQuery();
+		public void loadJQuery( String version );
 	}
 }

@@ -3,6 +3,7 @@ package com.framework.driver.event;
 import com.framework.asserts.JAssertion;
 import com.framework.config.Configurations;
 import com.framework.config.FrameworkProperty;
+import com.framework.driver.extensions.jquery.ExternalLibraryLoadException;
 import com.framework.utils.error.PreConditions;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -1245,46 +1246,35 @@ public class HtmlWebDriver extends WebDriverEventSource implements HtmlDriver
 		}
 
 		@Override
-		public Boolean isJQueryEnabled()
+		public void loadJQuery( String version )
 		{
-			Optional<Boolean> loaded;
-			try
+			Optional<Boolean> loaded = getBoolean( DETECT_SCRIPT_CODE );
+			if( loaded.isPresent() )
 			{
-				loaded = getBoolean( "return ( typeof jQuery != 'undefined' )" );
-				if( loaded.isPresent() )
+				if( ! loaded.get() )
 				{
-					return ( ( loaded.get() != null ) && ( loaded.get() ) );
+					if( null == version )
+					{
+						version = FrameworkProperty.JQUERY_VERSION.from( Configurations.getInstance(), "latest" );
+					}
+					logger.info( "Injecting JQuery version < '{}' > to page ...", version );
+					String jqueryUrl = String.format( JQUERY_URL_PATTERN, version );
+					final String SCRIPT = String.format( LOAD_SCRIPT_CODE, jqueryUrl );
+					try
+					{
+						executeScript( SCRIPT );
+					}
+					catch ( Exception e )
+					{
+						throw new ExternalLibraryLoadException( e );
+					}
+				}
+				else
+				{
+					version = getString( "return jQuery.fn.jquery" );
+					logger.info( "Page already uses Jquery version < '{}'> ", version );
 				}
 			}
-			catch ( WebDriverException e )
-			{
-				return false;
-			}
-
-			return false;
-		}
-
-		public void injectJQuery()
-		{
-			if( ! isJQueryEnabled(  ) )
-			{
-				String jQueryVersion = FrameworkProperty.JQUERY_VERSION.from( Configurations.getInstance(), "1.7.2" );
-				logger.info( "Injecting JQuery version < '{}' > to page ...", jQueryVersion );
-				StringBuilder stringBuilder = new StringBuilder( " var headID = document.getElementsByTagName(\"head\")[0];" )
-						.append( "var newScript = document.createElement( 'script' );" )
-						.append( "newScript.type = 'text/javascript';" )
-						.append( "newScript.src = 'http://ajax.googleapis.com/ajax/libs/jquery/" )
-						.append( jQueryVersion )
-						.append( "/jquery.min.js';" )
-						.append( "headID.appendChild( newScript );" );
-				executeScript( stringBuilder.toString() );
-			}
-			else
-			{
-				String version = getString( "return jQuery.fn.jquery" );
-				logger.info( "Page already uses Jquery version < '{}'> ", version );
-			}
-
 		}
 	}
 
