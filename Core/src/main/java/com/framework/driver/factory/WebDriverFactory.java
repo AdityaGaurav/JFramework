@@ -1,6 +1,8 @@
 package com.framework.driver.factory;
 
+import com.framework.config.Configurations;
 import com.framework.config.FrameworkConfiguration;
+import com.framework.config.FrameworkProperty;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlWebDriver;
 import com.framework.driver.exceptions.ConfigurationRuntimeException;
@@ -94,7 +96,12 @@ public class WebDriverFactory
 		}
 
 		WebDriver wd = Validate.notNull( newDriver, "The required driver is currently null" );
-		return new HtmlWebDriver( wd );
+		HtmlWebDriver hd = new HtmlWebDriver( wd );
+		if( FrameworkProperty.JQUERY_INTEGRATION_ENABLED.from( Configurations.getInstance(), true ) )
+		{
+			hd.javascript().loadJQuery( null );
+		}
+		return hd;
 	}
 
 	//endregion
