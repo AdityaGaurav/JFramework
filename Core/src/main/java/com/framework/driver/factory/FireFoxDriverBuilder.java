@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 
 
 /**
@@ -96,7 +97,9 @@ public class FireFoxDriverBuilder //implements IWebDriverFactory
 			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
 			FirefoxBinary ffb = new FirefoxBinary();
-			return new FirefoxDriver( ffb, profile, capabilities );
+			FirefoxDriver ff = new FirefoxDriver( ffb, profile, capabilities );
+			ff.setLogLevel( Level.INFO );
+			return ff;
 			//todo add properties
 //			ffDriver.getCapabilities().getVersion();
 //			ffDriver.getCapabilities().getPlatform();
@@ -183,8 +186,18 @@ public class FireFoxDriverBuilder //implements IWebDriverFactory
 	{
 		profile.setPreference( "browser.startup.homepage", configuration.baseUrl().toString() );
 		profile.setPreference( "browser.startup.page", START_WITH_HOME_PAGE );
+
+
 		if( false )
 		{
+
+			profile.setAcceptUntrustedCertificates(true);
+			profile.setPreference("browser.download.folderList",2);//browser dir
+			profile.setPreference("browser.download.dir","C:\\temp\\");
+			profile.setPreference("browser.helperApps.neverAsk.saveToDisk","application/xml,text/plain,text/xml,image/jpeg,application/pdf");
+			profile.setPreference("pdfjs.disabled", true );
+
+
 			profile.setPreference("extensions.firebug.showStackTrace", "true");
 			profile.setPreference("extensions.firebug.delayLoad", "false");
 			profile.setPreference("extensions.firebug.showFirstRunPage", "false");
