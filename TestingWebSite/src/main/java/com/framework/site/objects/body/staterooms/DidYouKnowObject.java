@@ -98,11 +98,6 @@ public class DidYouKnowObject extends AbstractWebObject
 
 	//region DidYouKnowObject - DidYouKnow Implementation Section
 
-	public HtmlElement getContainer()
-	{
-		return getRoot();
-	}
-
 	public boolean isDisplayed()
 	{
 		boolean displayed = getRoot().isDisplayed();

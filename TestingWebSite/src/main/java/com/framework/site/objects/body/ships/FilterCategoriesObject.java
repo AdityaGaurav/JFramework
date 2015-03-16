@@ -82,7 +82,6 @@ public class FilterCategoriesObject extends AbstractWebObject
 		initWebObject();
 	}
 
-
 	//endregion
 
 
