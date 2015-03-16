@@ -1,8 +1,8 @@
 package com.framework.site.objects.header.interfaces;
 
-import com.framework.driver.event.ExtendedBy;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.exceptions.UrlNotAvailableException;
+import com.framework.driver.extensions.jquery.By;
 import com.framework.driver.objects.Link;
 import com.framework.driver.objects.PageObject;
 import com.framework.site.data.Destinations;
@@ -12,7 +12,6 @@ import com.framework.site.pages.bookedguest.BookedGuestLogonPage;
 import com.framework.site.pages.core.CruiseDealsPage;
 import com.framework.site.pages.core.HomePage;
 import com.framework.site.pages.core.cruiseto.CruiseToDestinationPage;
-import org.openqa.selenium.By;
 
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +20,7 @@ import java.util.Locale;
 
 public interface Header
 {
-	public static final By ROOT_BY = By.id( "ccl-refresh-header" );
+	public static final org.openqa.selenium.By ROOT_BY = By.id( "ccl-refresh-header" );
 
 	//static final String SITE_REGION_SCRIPT = "return utag_data.site_region;";
 
@@ -45,7 +44,7 @@ public interface Header
 
 	interface MessageBar
 	{
-		public static final By ROOT_BY = By.className( "message-bar" );
+		public static final org.openqa.selenium.By ROOT_BY = By.className( "message-bar" );
 
 		static final String LOGICAL_NAME = "Message Bar";
 
@@ -54,7 +53,7 @@ public interface Header
 
  	interface NotificationBar
 	{
-		public static final By ROOT_BY = By.className( "notif-bar" );
+		public static final org.openqa.selenium.By ROOT_BY = By.className( "notif-bar" );
 
 		static final String LOGICAL_NAME = "Notification Bar";
 
@@ -63,7 +62,7 @@ public interface Header
 
 	interface HeaderBranding
 	{
-		static final By ROOT_BY = By.cssSelector( "div.header-branding" );
+		static final org.openqa.selenium.By ROOT_BY = By.cssSelector( "div.header-branding" );
 
 		static final String LOGICAL_NAME = "Header Branding";
 
@@ -95,7 +94,8 @@ public interface Header
 		{
 			static final String LOGICAL_NAME = "Header Branding Top Destinations";
 
-			static final By ROOT_BY = By.xpath( "//a[@class='nav-tooltip-trigger' and @data-id='top-destinations']/.." );
+			static final org.openqa.selenium.By ROOT_BY =
+					By.xpath( "//a[@class='nav-tooltip-trigger' and @data-id='top-destinations']/.." );
 
 			boolean isDisplayed();
 
@@ -114,7 +114,7 @@ public interface Header
 		{
 			static final String LOGICAL_NAME = "Header Branding Currency Selector";
 
-			static final By ROOT_BY = ExtendedBy.jQuery( "$('#currencySelector).parent();" );
+			static final org.openqa.selenium.By ROOT_BY = By.jQuerySelector( "#currencySelector" ).parent();
 
 			boolean isDisplayed();
 		}
@@ -122,7 +122,7 @@ public interface Header
 
 	interface HeaderSubscribe
 	{
-		static final By ROOT_BY = By.className( "header-subscribe" );
+		static final org.openqa.selenium.By ROOT_BY = By.className( "header-subscribe" );
 
 		static final String LOGICAL_NAME = "Header Subscribe";
 
@@ -155,7 +155,7 @@ public interface Header
 
 	interface HeaderLinks
 	{
-		static final By ROOT_BY = By.className( "header-links" );
+		static final org.openqa.selenium.By ROOT_BY = By.className( "header-links" );
 
 		static final String LOGICAL_NAME = "Header Links";
 
@@ -206,7 +206,7 @@ public interface Header
 
 	interface NavigationAdditional
 	{
-		static final By ROOT_BY = By.className( "header-nav-additional" );
+		static final org.openqa.selenium.By ROOT_BY = By.className( "header-nav-additional" );
 
 		static final String LOGICAL_NAME = "Additional Navigation";
 
@@ -229,17 +229,5 @@ public interface Header
 		Link getLink( LevelOneMenuItem level1, MenuItems level2 );
 
 		List<String> getChildMenuItemsNames( LevelOneMenuItem level1 );
-
-//		PageObject selectMenuItem( final String menuItem );
-//
-//		void hoverOnMenuItem( final String menuItem );
-//
-//		String getMenuItemImageSrc( final String menuItem );
-//
-//		String getMenuItemImageHref( final String menuItem );
-//
-//		boolean isMenuItemVisible( final String menuItem );
-
-
 	}
 }
