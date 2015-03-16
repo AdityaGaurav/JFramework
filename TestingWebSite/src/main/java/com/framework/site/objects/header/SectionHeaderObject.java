@@ -8,7 +8,6 @@ import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
-import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,12 +177,6 @@ public class SectionHeaderObject extends AbstractWebObject implements Header
 			this.navigationAdditional = new NavigationAdditionalObject( findNavigationAdditionalDiv() );
 		}
 		return navigationAdditional;
-	}
-
-	@Override
-	public HtmlElement getContainer()
-	{
-		return getDriver().findElement( By.cssSelector( "#ccl-refresh-header > div.header-nav" ) );
 	}
 
 	private HtmlElement getRoot()

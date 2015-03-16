@@ -112,11 +112,6 @@ public class StateRoomCategoriesObject extends AbstractWebObject
 
 	//region StateRoomCategories - Implementation Function Section
 
-	public HtmlElement getContainer()
-	{
-		return getRoot();
-	}
-
 	public List<HtmlElement> getActiveSubsets()
 	{
 		return findActiveLis();

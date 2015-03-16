@@ -9,6 +9,7 @@ import com.framework.site.data.DeparturePorts;
 import com.framework.site.data.Ships;
 import com.framework.site.data.TripDurations;
 import com.framework.utils.conversion.Converter;
+import com.framework.utils.datetime.Sleeper;
 import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
@@ -190,6 +191,7 @@ public class RefineSearchObject extends AbstractWebObject
 
 	public int getItinerariesFound()
 	{
+		Sleeper.pauseFor( 2000 );
 		HtmlElement he = findItinerariesStrong();
 		he.waitTextToMatch( JMatchers.not( JMatchers.is( "-" ) ), TimeConstants.TEN_SECONDS );
 		String text = he.getText();

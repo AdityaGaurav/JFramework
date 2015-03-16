@@ -112,11 +112,6 @@ public class StateRoomsObject extends AbstractWebObject implements Enumerators
 
 	//region StateRoomsObject - StateRooms Interface Implementation Section
 
-	public HtmlElement getContainer()
-	{
-		return getRoot();
-	}
-
 	public CBoxWrapperObject clickStateRoom( final RoomType roomType )
 	{
 	   	logger.info( "Clicking on State-Room < {} >", roomType );

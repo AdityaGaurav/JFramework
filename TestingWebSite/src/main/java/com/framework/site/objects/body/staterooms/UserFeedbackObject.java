@@ -150,11 +150,6 @@ public class UserFeedbackObject extends AbstractWebObject implements Enumerators
 		return tooltips;
 	}
 
-	public HtmlElement getContainer()
-	{
-		return getRoot();
-	}
-
 	//endregion
 
 

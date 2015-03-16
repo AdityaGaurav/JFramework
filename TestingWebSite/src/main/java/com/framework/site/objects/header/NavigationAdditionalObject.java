@@ -16,6 +16,7 @@ import com.framework.site.pages.activities.ActivitiesPage;
 import com.framework.site.pages.bookedguest.BookedGuestLogonPage;
 import com.framework.site.pages.bookingengine.FindACruisePage;
 import com.framework.site.pages.core.*;
+import com.framework.site.pages.core.cruisefrom.CruiseFromPortPage;
 import com.framework.site.pages.core.cruiseto.CruiseToPage;
 import com.framework.site.pages.dining.DiningPage;
 import com.framework.site.pages.funshops.FunShopsPage;
@@ -174,12 +175,32 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 				}
 			}
 			case FIND_A_CRUISE		:   return new FindACruisePage();
-			case FIND_A_PORT		: 	return new CloseToHomePage();
+			case FIND_A_PORT		: 	return new CruiseFromPortPage(); // CloseToHomePage(); 11-Mar-2015 changed by marketing
 			case FAQ_S				: 	return new FaqPage();
 			case FORUMS				: 	return new ForumsPage();
 			case MY_BOOKING			:
 			case CHECK_IN			:
-			case PLAN_ACTIVITIES	: 	return new BookedGuestLogonPage();
+			{
+				if( locale.equals( HomePage.AU ) )
+				{
+					return new OnlineCheckInPage();
+				}
+				else
+				{
+					return new BookedGuestLogonPage();
+				}
+			}
+			case PLAN_ACTIVITIES	:
+			{
+				if( locale.equals( Locale.US ) )
+				{
+					return new BookedGuestLogonPage();
+				}
+				else
+				{
+					return new ActivitiesPage();
+				}
+			}
 			case VIFP_CLUB			: 	return new VifpClubPage();
 			case ONBOARD_ACTIVITIES : 	return new OnboardActivitiesPage();
 			case DINING				: 	return new DiningPage();
@@ -211,6 +232,8 @@ class NavigationAdditionalObject extends AbstractWebObject implements Header.Nav
 				}
 			}
 			case IN_ROOM_GIFTS_AND_SHOPPING : return new FunShopsPage();
+			case ALREADY_BOOKED				: return new AlreadyBookedPage();
+			case NOUVEAU_RESERVATION		: return new NouveauReservationPage();
 			default:
 			{
 				throw new IllegalArgumentException( "The menu item <'{" + level2.getTitle() + "}'> was not found"  );

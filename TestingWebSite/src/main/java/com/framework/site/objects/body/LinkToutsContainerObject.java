@@ -67,7 +67,7 @@ public class LinkToutsContainerObject extends AbstractWebObject
 		logger.debug( "validating static elements for web object id: <{}>, name:<{}>...",
 				getQualifier(), getLogicalName() );
 
-		final String REASON = "assert that element \"%s\" exits";
+		final String REASON = "assert that all element \"%s\" exits";
 		JAssertion assertion = getRoot().createAssertion();
 
 		Optional<List<HtmlElement>> es = getRoot().allChildrenExists( By.tagName( "li" ), FIVE_SECONDS );

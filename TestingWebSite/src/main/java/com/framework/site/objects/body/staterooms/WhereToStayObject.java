@@ -96,11 +96,6 @@ public class WhereToStayObject extends AbstractWebObject implements Enumerators
 
 	//region WhereToStayObject - Implementation Methods Section
 
-	public HtmlElement getContainer()
-	{
-		return getRoot();
-	}
-
 	public boolean hasTitle()
 	{
 		Optional<HtmlElement> oe = getRoot().childExists( By.cssSelector( ".intro > h2.blue" ) );

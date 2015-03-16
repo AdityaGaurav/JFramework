@@ -3,7 +3,6 @@ package com.framework.site.objects.footer;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
@@ -30,22 +29,26 @@ import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
  * Time   : 16:34
  */
 
-public class SectionFooterObject extends AbstractWebObject implements Footer
+public class SectionFooterObject extends AbstractWebObject
 {
 
 	//region FooterObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( SectionFooterObject.class );
 
+	public static final By ROOT_BY = By.id( "ccl-refresh-footer" );
+
+	private static final String LOGICAL_NAME = "CCL Footer";
+
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
 
-	private ZeroFooter zeroFooterDiv = null;
+	private ZeroFooterObject zeroFooterDiv = null;
 
-	private SubFooter subFooterDiv = null;
+	private SubFooterObject subFooterDiv = null;
 
-	private LinkList linkList = null;
+	private LinkListObject linkList = null;
 
 	//endregion
 
@@ -54,7 +57,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	public SectionFooterObject( final HtmlElement rootElement )
 	{
-		super( rootElement, Footer.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -72,13 +75,13 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		final String REASON = "assert that element \"%s\" exits";
 		JAssertion assertion = getRoot().createAssertion();
 
-		Optional<HtmlElement> e = getRoot().childExists( LinkList.ROOT_BY, FIVE_SECONDS );
+		Optional<HtmlElement> e = getRoot().childExists( LinkListObject.ROOT_BY, FIVE_SECONDS );
 		assertion.assertThat( String.format( REASON, ".link-list" ), e.isPresent(), JMatchers.is( true ) );
 
-		e = getRoot().childExists( SubFooter.ROOT_BY, THREE_SECONDS );
+		e = getRoot().childExists( SubFooterObject.ROOT_BY, THREE_SECONDS );
 		assertion.assertThat( String.format( REASON, ".sub-footer" ), e.isPresent(), JMatchers.is( true ) );
 
-		e = getRoot().childExists( ZeroFooter.ROOT_BY, THREE_SECONDS );
+		e = getRoot().childExists( ZeroFooterObject.ROOT_BY, THREE_SECONDS );
 		assertion.assertThat( String.format( REASON, ".zero-footer" ), e.isPresent(), JMatchers.is( true ) );
 	}
 
@@ -87,8 +90,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	//region FooterObject - Service Methods Section
 
-	@Override
-	public SubFooter subFooter()
+	public SubFooterObject subFooter()
 	{
 		if ( null == this.subFooterDiv )
 		{
@@ -97,8 +99,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		return subFooterDiv;
 	}
 
-	@Override
-	public ZeroFooter zeroFooter()
+	public ZeroFooterObject zeroFooter()
 	{
 		if ( null == this.zeroFooterDiv )
 		{
@@ -107,8 +108,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		return zeroFooterDiv;
 	}
 
-	@Override
-	public LinkList linkList()
+	public LinkListObject linkList()
 	{
 		if ( null == this.linkList )
 		{
@@ -119,12 +119,7 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( Footer.ROOT_BY );
-	}
-
-	public HtmlElement getContainer()
-	{
-		return getDriver().findElement( By.id( "ccl-refresh-footer" ) );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -132,19 +127,16 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	//region FooterObject - Business Methods Section
 
-	@Override
 	public int getFooterSectionsCount()
 	{
 		return 0;
 	}
 
-	@Override
 	public boolean isDisplayed()
 	{
 		return getRoot().isDisplayed();
 	}
 
-	@Override
 	public boolean hasSubFooter()
 	{
 		try
@@ -157,7 +149,6 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		}
 	}
 
-	@Override
 	public boolean hasZeroFooter()
 	{
 		try
@@ -170,12 +161,6 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 		}
 	}
 
-	@Override
-	public void scrollIntoView()
-	{
-		getRoot().scrollIntoView();
-	}
-
 	//endregion
 
 
@@ -183,17 +168,17 @@ public class SectionFooterObject extends AbstractWebObject implements Footer
 
 	private HtmlElement getSubFooterDiv()
 	{
-		return getRoot().findElement( SubFooter.ROOT_BY );
+		return getRoot().findElement( SubFooterObject.ROOT_BY );
 	}
 
 	private HtmlElement getZeroFooterDiv()
 	{
-		return getRoot().findElement( ZeroFooter.ROOT_BY );
+		return getRoot().findElement( ZeroFooterObject.ROOT_BY );
 	}
 
 	private HtmlElement getLinkListDiv()
 	{
-		return getRoot().findElement( LinkList.ROOT_BY );
+		return getRoot().findElement( LinkListObject.ROOT_BY );
 	}
 
 	//endregion

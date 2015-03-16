@@ -445,7 +445,14 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		logger.info( "Selecting departure port < {} > ...", departurePort.name() );
 		CruiseFromPortPage.fromDeparturePort( departurePort );
 		String css = String.format( "li:nth-child(2) a[href*=\"%s\"]", departurePort.getHref() );
-		getRoot().findElement( By.cssSelector( css ) ).click();
+		if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+		{
+			getRoot().findElement( By.cssSelector( css ) ).jsClick();
+		}
+		else
+		{
+			getRoot().findElement( By.cssSelector( css ) ).click();
+		}
 		return new CruiseFromPortPage();
 	}
 
@@ -459,7 +466,14 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 		}
 		CruiseToDestinationPage.forDestination( destination );
 		String css = String.format( "li:nth-child(1) a[href*=\"%s\"]", destination.getHref() );
-		getRoot().findElement( By.cssSelector( css ) ).click();
+		if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+		{
+			getRoot().findElement( By.cssSelector( css ) ).jsClick();
+		}
+		else
+		{
+			getRoot().findElement( By.cssSelector( css ) ).click();
+		}
 		return new CruiseToDestinationPage();
 	}
 
@@ -468,7 +482,14 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	{
 		logger.info( "Selecting trip duration < {} > ...", tripDuration.name() );
 		String css = String.format( "li:nth-child(3) a[href*=\"dur=%s\"]", tripDuration.getId() );
-		getRoot().findElement( By.cssSelector( css ) ).click();
+		if( getDriver().getCapabilities().getBrowserName().equals( "chrome" ) )
+		{
+			getRoot().findElement( By.cssSelector( css ) ).jsClick();
+		}
+		else
+		{
+			getRoot().findElement( By.cssSelector( css ) ).click();
+		}
 		Sleeper.pauseFor( 1500 );
 		if( SiteSessionManager.get().getCurrentLocale().equals( Locale.US )
 				|| SiteSessionManager.get().getCurrentLocale().equals( Locale.UK ) )
@@ -496,7 +517,11 @@ public class ShipCardObject extends AbstractWebObject implements ShipCard
 	@Override
 	public CruiseShipsDetailsPage clickShipImage()
 	{
-		return null;
+		logger.info( "Clicking on ship image" );
+		HtmlElement he = findShipImageImg();
+		CruiseShipsDetailsPage.forShip( ship );
+		he.click();
+		return new CruiseShipsDetailsPage();
 	}
 
 	@Override

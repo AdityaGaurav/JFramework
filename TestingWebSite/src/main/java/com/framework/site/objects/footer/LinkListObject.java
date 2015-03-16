@@ -2,14 +2,15 @@ package com.framework.site.objects.footer;
 
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
+import com.framework.driver.extensions.jquery.By;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.footer.interfaces.Footer;
+import com.framework.driver.objects.Link;
+import com.framework.site.data.Enumerators;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +33,16 @@ import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
  * Time   : 19:07
  */
 
-class LinkListObject extends AbstractWebObject implements SectionFooterObject.LinkList
+public class LinkListObject extends AbstractWebObject implements Enumerators
 {
 
 	//region LinkListObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( LinkListObject.class );
+
+	static final org.openqa.selenium.By ROOT_BY = By.className( "link-lists" );
+
+	static final String LOGICAL_NAME = "Link-List";
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -56,7 +61,7 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 
 	LinkListObject( final HtmlElement rootElement )
 	{
-		super( rootElement, Footer.LinkList.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -86,7 +91,7 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( Footer.LinkList.ROOT_BY );
+		return getBaseRootElement( LinkListObject.ROOT_BY );
 	}
 
 	//endregion
@@ -94,13 +99,11 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 
 	//region LinkListObject - Business Methods Section
 
-	@Override
 	public boolean isDisplayed()
 	{
 		return getRoot().isDisplayed();
 	}
 
-	@Override
 	public Table<String,String,String> getInfo()
 	{
 		Table<String,String,String> linkList = HashBasedTable.create();
@@ -120,6 +123,33 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 		return linkList;
 	}
 
+	public void clickLink( FooterSection section, String name )
+	{
+		Link link = null;
+		switch ( section )
+		{
+			case ABOUT_CARNIVAL:
+				link = new Link( findLink( "About Carnival", name ) );
+				break;
+			case ALREADY_BOOKED:
+				link = new Link( findLink( "Already Booked", name ) );
+				break;
+			case BOOK_A_CRUISE:
+				link = new Link( findLink( "Book A Cruise", name ) );
+				break;
+			case CUSTOMER_SERVICE:
+				link = new Link( findLink( "Customer Service", name ) );
+				break;
+			case GROUP_TRAVEL:
+				link = new Link( findLink( "Group Travel", name ) );
+				break;
+			case SPECIAL_OFFERS:
+				link = new Link( findLink( "Special Offers", name ) );
+		}
+
+		link.click();
+	}
+
 	//endregion
 
 
@@ -129,11 +159,16 @@ class LinkListObject extends AbstractWebObject implements SectionFooterObject.Li
 	{
 		if( linkListUl.size() == 0 )
 		{
-			final By findBy = By.tagName( "ul" );
-			linkListUl = getRoot().findElements( findBy );
+			linkListUl = getRoot().findElements( By.tagName( "ul" ) );
 		}
 
 		return linkListUl;
+	}
+
+	private HtmlElement findLink( String section, String name )
+	{
+		HtmlElement he = getDriver().findElement( By.jQuerySelector( "ul > li > h5:contains('" + section + "')" ) );
+		return he.findElement( By.linkText( name ) );
 	}
 
 	//endregion

@@ -23,7 +23,6 @@ import com.framework.utils.conversion.Converter;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.img.ImageCompare;
 import com.framework.utils.matchers.JMatchers;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
@@ -56,8 +55,6 @@ public class ShipCompareTest extends BaseTest
 	private CruiseShipsPage cruiseShipsPage = null;
 
 	private CompareCruiseShipsPage compareCruiseShipsPage = null;
-
-	private List<CompareSectionObject> sections = Lists.newArrayList();
 
 	private File blueX, blueO;
 
@@ -136,11 +133,7 @@ public class ShipCompareTest extends BaseTest
 		}
 		catch ( Throwable e )
 		{
-			if ( e instanceof WebDriverException )
-			{
-				throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
-			}
-			else if ( e instanceof AssertionError )
+			if ( e instanceof WebDriverException || e instanceof AssertionError  )
 			{
 				throw new ApplicationException( SiteSessionManager.get().getDriver(), e );
 			}

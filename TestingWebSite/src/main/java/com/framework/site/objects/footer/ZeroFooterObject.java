@@ -3,7 +3,6 @@ package com.framework.site.objects.footer;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.objects.AbstractWebObject;
-import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.Optional;
 import org.openqa.selenium.By;
@@ -29,12 +28,16 @@ import static com.framework.utils.datetime.TimeConstants.FIVE_SECONDS;
  * Time   : 16:56
  */
 
-class ZeroFooterObject extends AbstractWebObject implements Footer.ZeroFooter
+class ZeroFooterObject extends AbstractWebObject
 {
 
 	//region ZeroFooterObject - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( ZeroFooterObject.class );
+
+	static final By ROOT_BY = By.className( "zero-footer" );
+
+	static final String LOGICAL_NAME = "Zero-Footer";
 
 	//endregion
 
@@ -43,7 +46,7 @@ class ZeroFooterObject extends AbstractWebObject implements Footer.ZeroFooter
 
 	ZeroFooterObject( final HtmlElement rootElement )
 	{
-		super( rootElement, Footer.ZeroFooter.LOGICAL_NAME );
+		super( rootElement, LOGICAL_NAME );
 		initWebObject();
 	}
 
@@ -72,7 +75,7 @@ class ZeroFooterObject extends AbstractWebObject implements Footer.ZeroFooter
 
 	private HtmlElement getRoot()
 	{
-		return getBaseRootElement( Footer.ZeroFooter.ROOT_BY );
+		return getBaseRootElement( ROOT_BY );
 	}
 
 	//endregion
@@ -80,7 +83,6 @@ class ZeroFooterObject extends AbstractWebObject implements Footer.ZeroFooter
 
 	//region ZeroFooterObject - Business Methods Section
 
-	@Override
 	public boolean isDisplayed()
 	{
 		return getRoot().isDisplayed();
