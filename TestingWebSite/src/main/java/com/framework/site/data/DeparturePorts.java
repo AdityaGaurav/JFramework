@@ -144,6 +144,34 @@ public enum DeparturePorts
 		return null;
 	}
 
+	public static DeparturePorts convert( String port )
+	{
+		if( StringUtils.startsWithIgnoreCase( port, "Los Angeles" ) ) return DeparturePorts.LOS_ANGELES;
+		else if( StringUtils.startsWithIgnoreCase( port, "Baltimore" ) ) return DeparturePorts.BALTIMORE;
+		else if( StringUtils.startsWithIgnoreCase( port, "Barbados" ) ) return DeparturePorts.BARBADOS;
+		else if( StringUtils.startsWithIgnoreCase( port, "Charleston" ) ) return DeparturePorts.CHARLESTON;
+		else if( StringUtils.startsWithIgnoreCase( port, "Galveston" ) ) return DeparturePorts.GALVESTON;
+		else if( StringUtils.startsWithIgnoreCase( port, "Fort" ) ) return DeparturePorts.FORT_LAUDERDALE;
+		else if( StringUtils.startsWithIgnoreCase( port, "Honolulu" ) ) return DeparturePorts.HONOLULU;
+		else if( StringUtils.startsWithIgnoreCase( port, "Jacksonville" ) ) return DeparturePorts.JACKSONVILLE;
+		else if( StringUtils.startsWithIgnoreCase( port, "Miami" ) ) return DeparturePorts.MIAMI;
+		else if( StringUtils.startsWithIgnoreCase( port, "New Orleans" ) ) return DeparturePorts.NEW_ORLEANS;
+		else if( StringUtils.startsWithIgnoreCase( port, "New York" ) ) return DeparturePorts.NEW_YORK;
+		else if( StringUtils.startsWithIgnoreCase( port, "Norfolk" ) ) return DeparturePorts.NORFOLK;
+		else if( StringUtils.startsWithIgnoreCase( port, "Port Canaveral" ) ) return DeparturePorts.PORT_CANAVERAL;
+		else if( StringUtils.startsWithIgnoreCase( port, "San Juan" ) ) return DeparturePorts.SAN_JUAN;
+		else if( StringUtils.startsWithIgnoreCase( port, "Seattle" ) ) return DeparturePorts.SEATTLE;
+		else if( StringUtils.startsWithIgnoreCase( port, "Tampa" ) ) return DeparturePorts.TAMPA;
+		else if( StringUtils.startsWithIgnoreCase( port, "Norfolk" ) ) return DeparturePorts.NORFOLK;
+		else if( StringUtils.startsWithIgnoreCase( port, "Vancouver" ) ) return DeparturePorts.VANCOUVER;
+		else if( StringUtils.startsWithIgnoreCase( port, "Trieste" ) ) return DeparturePorts.TRIESTE;
+		else if( StringUtils.startsWithIgnoreCase( port, "Athens" ) ) return DeparturePorts.ATHENS;
+		else if( StringUtils.startsWithIgnoreCase( port, "Barcelona" ) ) return DeparturePorts.BARCELONA;
+		else if( StringUtils.startsWithIgnoreCase( port, "Sidney" ) ) return DeparturePorts.SIDNEY;
+		else if( StringUtils.startsWithIgnoreCase( port, "Singapore" ) ) return DeparturePorts.SINGAPORE;
+		else return null;
+	}
+
 	//endregion
 
 
