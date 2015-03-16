@@ -1,8 +1,10 @@
 package com.framework.site.pages.core;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.objects.body.common.NavStickEmbeddedObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,14 @@ public class UKCaribbeanPage extends BaseCarnivalPage
 	private static final Logger logger = LoggerFactory.getLogger( UKCaribbeanPage.class );
 
 	private static final String LOGICAL_NAME = "UK Caribbean Page";
+
+	public static final String SAIL_FROM = "sail-from";
+
+	public static final String EASTERN_CARIBBEAN = "eastern-caribbean";
+
+	public static final String WESTERN_CARIBBEAN  = "western-caribbean";
+
+	public static final String SOUTHERN_CARIBBEAN ="southern-caribbean";
 
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
@@ -53,7 +63,7 @@ public class UKCaribbeanPage extends BaseCarnivalPage
 	{
 		if ( null == this.navStickEmbedded )
 		{
-			this.navStickEmbedded = new NavStickEmbeddedObject( findBreadcrumbBarDiv() );
+			this.navStickEmbedded = new NavStickEmbeddedObject( findNavStickEmUl() );
 		}
 		return navStickEmbedded;
 	}
@@ -62,6 +72,12 @@ public class UKCaribbeanPage extends BaseCarnivalPage
 
 
 	//region UKCaribbeanPage - Business Methods Section
+
+	private HtmlElement findNavStickEmUl()
+	{
+		return getDriver().findElement( By.cssSelector( "ul.nav.stickem" ) );
+	}
+
 
 	//endregion
 
