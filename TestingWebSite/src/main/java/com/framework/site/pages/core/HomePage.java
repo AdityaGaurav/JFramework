@@ -1,12 +1,12 @@
 package com.framework.site.pages.core;
 
-import com.framework.asserts.JAssertion;
 import com.framework.driver.event.ExpectedConditions;
 import com.framework.driver.event.HtmlCondition;
 import com.framework.driver.event.HtmlElement;
+import com.framework.driver.extensions.jquery.By;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.LinkToutsContainerObject;
-import com.framework.site.objects.footer.interfaces.Footer;
+import com.framework.site.objects.footer.SectionFooterObject;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.utils.datetime.TimeConstants;
@@ -14,7 +14,6 @@ import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,18 +76,17 @@ public class HomePage extends BaseCarnivalPage
 		logger.info( "validating static elements for page < {} >, name < {} > ...", getQualifier(), getLogicalName() );
 
 		final String REASON = "assert that element \"%s\" exits";
-		JAssertion assertion = new JAssertion( getDriver() );
 		Optional<HtmlElement> e = getDriver().elementExists( By.id( "ccl_homepage" ) );
-		assertion.assertThat( String.format( REASON, "#ccl_homepage" ), e.isPresent(), is( true ) );
+		getDriver().assertThat( String.format( REASON, "#ccl_homepage" ), e.isPresent(), is( true ) );
 
 		e = getDriver().elementExists( By.id( "form2" ) );
-		assertion.assertThat( String.format( REASON, "#form2" ), e.isPresent(), is( true ) );
+		getDriver().assertThat( String.format( REASON, "#form2" ), e.isPresent(), is( true ) );
 
 		e = getDriver().elementExists( Header.ROOT_BY );
-		assertion.assertThat( String.format( REASON, Header.ROOT_BY.toString() ), e.isPresent(), is( true ) );
+		getDriver().assertThat( String.format( REASON, Header.ROOT_BY.toString() ), e.isPresent(), is( true ) );
 
-		e = getDriver().elementExists( Footer.ROOT_BY );
-		assertion.assertThat( String.format( REASON, Footer.ROOT_BY.toString() ), e.isPresent(), is( true ) );
+		e = getDriver().elementExists( SectionFooterObject.ROOT_BY );
+		getDriver().assertThat( String.format( REASON, SectionFooterObject.ROOT_BY.toString() ), e.isPresent(), is( true ) );
 	}
 
 	//endregion
@@ -96,10 +94,7 @@ public class HomePage extends BaseCarnivalPage
 
 	//region HomePage - Business Methods Section
 
-	public String getSecuredUrl()
-	{
-   		return findHiddenSecuredUrlInput().getAttribute( "value" );
-	}
+
 
 	//endregion
 
@@ -131,14 +126,7 @@ public class HomePage extends BaseCarnivalPage
 
 	private HtmlElement findForm2()
 	{
-		By findBy = By.id( "form2" );
-		return getDriver().findElement( findBy );
-	}
-
-	private HtmlElement findHiddenSecuredUrlInput()
-	{
-		By findBy = By.id( "hSecUrl" );
-		return getDriver().findElement( findBy );
+		return getDriver().findElement( By.id( "form2" ) );
 	}
 
 	private HtmlElement finLinkTouts()

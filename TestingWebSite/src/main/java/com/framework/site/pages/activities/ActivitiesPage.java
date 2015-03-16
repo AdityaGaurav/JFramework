@@ -1,9 +1,16 @@
 package com.framework.site.pages.activities;
 
+import com.framework.asserts.JAssertion;
+import com.framework.driver.event.HtmlElement;
+import com.framework.driver.extensions.jquery.By;
+import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.hamcrest.Matchers.is;
 
 
 @DefaultUrl( value = "/Activities", matcher = "endsWith()" )
@@ -19,6 +26,8 @@ public class ActivitiesPage extends BaseCarnivalPage
 	// ------------------------------------------------------------------------|
 	// --- WEB-OBJECTS DEFINITIONS --------------------------------------------|
 	// ------------------------------------------------------------------------|
+
+	private SectionBreadcrumbsBarObject breadcrumbsBar;
 
 	//endregion
 
@@ -39,6 +48,11 @@ public class ActivitiesPage extends BaseCarnivalPage
 	protected void validatePageInitialState()
 	{
 		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );
+
+		final String REASON = "assert that element \"%s\" exits";
+		JAssertion assertion = new JAssertion( getDriver() );
+		Optional<HtmlElement> e = getDriver().elementExists( By.jQuerySelector( "h1:contains('Shore Excursions')" ) );
+		assertion.assertThat( String.format( REASON, "h1:contains('Shore Excursions')" ), e.isPresent(), is( true ) );
 	}
 
 	//endregion
@@ -46,7 +60,14 @@ public class ActivitiesPage extends BaseCarnivalPage
 
 	//region ActivitiesPage - Service Methods Section
 
-
+	public SectionBreadcrumbsBarObject breadcrumbsBar()
+	{
+		if ( null == this.breadcrumbsBar )
+		{
+			this.breadcrumbsBar = new SectionBreadcrumbsBarObject( findBreadcrumbBarDiv() );
+		}
+		return breadcrumbsBar;
+	}
 
 	//endregion
 

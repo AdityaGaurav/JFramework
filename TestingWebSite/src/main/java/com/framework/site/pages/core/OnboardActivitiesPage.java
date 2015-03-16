@@ -35,7 +35,6 @@ public class OnboardActivitiesPage extends BaseCarnivalPage
 
 	//region CruiseToPage - Initialization and Validation Methods Section
 
-
 	protected void validatePageInitialState()
 	{
 		logger.debug( "validating static elements for: <{}>, name:<{}>...", getQualifier(), getLogicalName() );

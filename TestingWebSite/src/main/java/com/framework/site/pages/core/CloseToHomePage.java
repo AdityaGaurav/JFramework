@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+@Deprecated
 @DefaultUrl( value = "/core/closetohome.aspx", matcher = "endsWith()" )
 public class CloseToHomePage extends BaseCarnivalPage
 {

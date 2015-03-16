@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 
 @DefaultUrl ( matcher = "containsPattern()",
-		value = "/cruise-from/(athens|baltimore|barcelona|charleston|ft-lauderdale|galveston|jacksonville|los-angeles|miami" +
-				"|new-orleans|new-york|norfolk|port-canaveral|san-juan|seattle|tampa|trieste|vancouver).aspx" )
+		value = "/cruise-from(/athens|/baltimore|/barcelona|/charleston|/ft-lauderdale|/galveston|/jacksonville|/los-angeles|/miami" +
+				"|/new-orleans|/new-york|/norfolk|/port-canaveral|/san-juan|/seattle|/tampa|/trieste|/vancouver|).aspx" )
 public class CruiseFromPortPage extends BaseCarnivalPage
 {
 
@@ -66,8 +66,12 @@ public class CruiseFromPortPage extends BaseCarnivalPage
 		e = getDriver().elementExists( By.className( "hero-slide" ) );
 		assertion.assertThat( String.format( REASON, ".hero-slide" ), e.isPresent(), JMatchers.is( true ) );
 
-		String heroTitleText = heroTitle.getText();
-		assertion.assertThat( "Validate page H1 inner title", heroTitleText, JMatchers.containsStringIgnoreCase( departurePort.getDeparturePort() ) );
+		if( ! getCurrentUrl().endsWith( "/cruise-from.aspx" ) )
+		{
+			String heroTitleText = heroTitle.getText();
+			assertion.assertThat( "Validate page H1 inner title",
+					heroTitleText, JMatchers.containsStringIgnoreCase( departurePort.getDeparturePort() ) );
+		}
 	}
 
 	//endregion

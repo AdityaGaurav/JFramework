@@ -6,13 +6,13 @@ import com.framework.driver.objects.AbstractPageObject;
 import com.framework.site.config.SiteSessionManager;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.objects.footer.SectionFooterObject;
-import com.framework.site.objects.footer.interfaces.Footer;
 import com.framework.site.objects.header.SectionHeaderObject;
 import com.framework.site.objects.header.interfaces.Header;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.NoSuchElementException;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 
 	private Header header = null;
 
-	private Footer footer = null;
+	private SectionFooterObject footer = null;
 
 	//endregion
 
@@ -76,6 +76,7 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	protected BaseCarnivalPage( final String logicalName )
 	{
 		super( SiteSessionManager.get().getDriver(), logicalName );
+
 
 		this.hst = getHstValue();
 		SiteSessionManager.get().setHstValue( hst );
@@ -135,15 +136,11 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 		return header;
 	}
 
-	/**
-	 * @return the {@link com.framework.site.objects.footer.interfaces.Footer} instance
-	 * 			   implemented by {@link com.framework.site.objects.footer.SectionFooterObject}
-	 */
-	public Footer footer()
+	public SectionFooterObject footer()
 	{
 		if ( null == this.footer )
 		{
-			this.footer = new SectionFooterObject( getDriver().findElement( Footer.ROOT_BY ) );
+			this.footer = new SectionFooterObject( getDriver().findElement( SectionFooterObject.ROOT_BY ) );
 		}
 		return footer;
 	}
@@ -190,6 +187,12 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 		return getDriver().manage().getCookieNamed( USER_LAST_NAME_COOKIE ) != null;
 	}
 
+	public String getSecuredUrl()
+	{
+		return findHiddenSecuredUrlInput().getAttribute( "value" );
+	}
+
+
 	//endregion
 
 
@@ -204,7 +207,7 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 	{
 		try
 		{
-			HtmlElement he = getDriver().findElement( ExtendedBy.id( "hst" ) );
+			HtmlElement he = getDriver().findElement( By.id( "hst" ) );
 			return Optional.of( he );
 		}
 		catch ( NoSuchElementException e )
@@ -252,6 +255,12 @@ public abstract class BaseCarnivalPage extends AbstractPageObject
 		if( site_region.equals( "UK" ) ) return Locale.UK;
 		if( site_region.equals( "AU" ) ) return AU;
 		return null;
+	}
+
+	private HtmlElement findHiddenSecuredUrlInput()
+	{
+		By findBy = By.id( "hSecUrl" );
+		return getDriver().findElement( findBy );
 	}
 
 	//endregion

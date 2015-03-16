@@ -106,8 +106,6 @@ public class StateRoomsPage extends BaseCarnivalPage
 
 	//region StateRoomsPage - Service Methods Section
 
-
-
 	public SectionBreadcrumbsBarObject breadcrumbsBar()
 	{
 		if ( null == this.breadcrumbsBar )

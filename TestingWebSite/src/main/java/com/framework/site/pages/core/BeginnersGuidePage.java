@@ -1,9 +1,11 @@
 package com.framework.site.pages.core;
 
+import com.framework.driver.event.HtmlElement;
 import com.framework.site.objects.body.common.NavStickEmbeddedObject;
 import com.framework.site.objects.body.common.SectionBreadcrumbsBarObject;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +76,7 @@ public class BeginnersGuidePage extends BaseCarnivalPage
 	{
 		if ( null == this.navStickEmbedded )
 		{
-			this.navStickEmbedded = new NavStickEmbeddedObject( findBreadcrumbBarDiv() );
+			this.navStickEmbedded = new NavStickEmbeddedObject( findNavStickEmUl() );
 		}
 		return navStickEmbedded;
 	}
@@ -83,6 +85,11 @@ public class BeginnersGuidePage extends BaseCarnivalPage
 
 
 	//region BeginnersGuidePage - Business Methods Section
+
+	private HtmlElement findNavStickEmUl()
+	{
+	 	return getDriver().findElement( By.cssSelector( "ul.nav.stickem" ) );
+	}
 
 	//endregion
 
