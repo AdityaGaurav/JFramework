@@ -53,6 +53,8 @@ public class SiteSessionManager
 
 	private static volatile SiteSessionManager instance = null;
 
+	private String lastWindowHandle;
+
 	//private boolean highLightOnClick = true;
 
 	//todo: documentation
@@ -416,11 +418,35 @@ public class SiteSessionManager
 
 	public HtmlDriver getDriver()
 	{
-		 return this.webDriver;
+		if( null == webDriver ) return null;
+		if( webDriver.getWindowHandles().size() == 2 )
+		{
+			if( null == lastWindowHandle )
+			{
+				lastWindowHandle = webDriver.getWindowHandle();
+				webDriver.switchTo().window( getNewWindowHandle() );
+			}
+		}
+
+		return this.webDriver;
 	}
 
 	private void setWebDriver( final HtmlDriver webDriver )
 	{
 		this.webDriver = webDriver;
+	}
+
+	private String getNewWindowHandle()
+	{
+		lastWindowHandle = webDriver.getWindowHandle();
+		for( String handle : webDriver.getWindowHandles() )
+		{
+			if( ! handle.equals( lastWindowHandle ) )
+			{
+				return handle;
+			}
+		}
+
+		return lastWindowHandle;
 	}
 }
