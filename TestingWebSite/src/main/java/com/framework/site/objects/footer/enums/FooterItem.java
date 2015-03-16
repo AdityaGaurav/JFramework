@@ -1,8 +1,5 @@
 package com.framework.site.objects.footer.enums;
 
-import org.apache.commons.lang3.StringUtils;
-
-
 /**
  * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
  *
@@ -20,28 +17,23 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum FooterItem
 {
-   	ABOUT_CARNIVAL,
-	LEGAL_NOTICES,
-	PRIVACY_POLICY,
-	CAREERS,
-	TRAVEL_PARTNERS,
-	SITE_MAP,
-	FACEBOOK,
-	TWITTER,
-	FUNVILLE,
-	INSTAGRAM,
-	PINTEREST;
+   	ABOUT_CARNIVAL( "About Carnival" ),
+	LEGAL_NOTICES( "Legal Notices" ),
+	PRIVACY_POLICY( "Privacy Policy" ),
+	CAREERS( "Careers" ),
+	TRAVEL_PARTNERS( "Travel Partners" ),
+	SITE_MAP( "Site Map" ),
+	FACEBOOK( "Facebook" ),
+	TWITTER( "Twitter" ),
+	FUNVILLE( "Funville" ),
+	INSTAGRAM( "Instagram" ),
+	PINTEREST( "Pinterest" );
 
 	private String itemName;
 
 	private FooterItem( final String itemName )
 	{
 		this.itemName = itemName;
-	}
-
-	private FooterItem()
-	{
-		this.itemName = StringUtils.capitalize( name().replaceAll( "_", " " ) );
 	}
 
 	public String getPropertyName()
