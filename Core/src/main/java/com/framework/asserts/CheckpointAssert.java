@@ -15,23 +15,20 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Created with IntelliJ IDEA ( LivePerson : www.liveperson.com )
+ * the class gives the ability to create checkpoint during the the tests.
+ * the class is extending {@linkplain com.framework.asserts.JAssertion} class to validate
+ * and Assertion.
+ * the {@link com.framework.asserts.CheckPointCollector} accumulates all the assertion details during a single
+ * checkpoint execution and the information get published by the {@link CheckPointCollector#assertAll()} method.
  *
- * Package: com.framework.asserts
+ * try to provide a unique id to the checkpoint to be easier identify on logs.
  *
- * Name   : CheckpointAssert 
- *
- * User   : solmarkn / Dani Vainstein
- *
- * Date   : 2015-01-26 
- *
- * Time   : 14:23
- *
+ * do not instantiate this class directly. use the {@link com.framework.asserts.CheckPointFactory} implementation
+ * instance
  */
 
 public class CheckpointAssert extends JAssertion
 {
-
 	//region CheckpointAssert - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( CheckpointAssert.class );
@@ -46,6 +43,18 @@ public class CheckpointAssert extends JAssertion
 
 	//region CheckpointAssert - Constructor Methods Section
 
+	/**
+	 * initializes a new instance of CheckpointAssert.
+	 * if the checkpoint failed, the method {@link #onAfterAssert(JAssert)} will automatically take
+	 * a screenshot of the whole screen.
+	 *
+	 * @param driver    	the working <b>HtmlDriver</b>instance
+	 * @param id            a string specifying the checkpoint id.
+	 * @param collector     the checkpoint collector class
+	 *
+	 * @see com.framework.asserts.CheckPointFactory
+	 * @see com.framework.asserts.CheckPointCollector
+	 */
 	public CheckpointAssert( final HtmlDriver driver, final String id, CheckPointCollector collector )
 	{
 		super( driver );
@@ -54,6 +63,18 @@ public class CheckpointAssert extends JAssertion
 		this.collector = collector;
 	}
 
+	/**
+	 * initializes a new instance of CheckpointAssert.
+	 * if the checkpoint failed, the method {@link #onAfterAssert(JAssert)} will automatically take
+	 * a screenshot of the provided {@code element}.
+	 *
+	 * @param element     the element to be added to the screenshot in case of failure.
+	 * @param id          a string specifying the checkpoint id.
+	 * @param collector   the checkpoint collector class
+	 *
+	 * @see com.framework.asserts.CheckPointFactory
+	 * @see com.framework.asserts.CheckPointCollector
+	 */
 	public CheckpointAssert( final HtmlElement element, final String id, CheckPointCollector collector )
 	{
 		super( element );
@@ -69,7 +90,7 @@ public class CheckpointAssert extends JAssertion
 
 	/**
 	 * {@inheritDoc}
-	 * displays a message of the checkpoint id being executed.
+	 * displays a message of the checkpoint id about to be executed.
 	 */
 	@Override
 	protected void onBeforeAssert( final JAssert assertCommand )
@@ -138,6 +159,11 @@ public class CheckpointAssert extends JAssertion
 		logger.error( "Checkpoint Report: {}", stb.toString() );
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * adds a status message and info about the checkpoint to the collector.
+	 * in case that stepping is available, passed the checkpoint info to the event bus.
+	 */
 	@Override
 	protected void onAfterAssert( final JAssert assertCommand )
 	{
@@ -145,6 +171,11 @@ public class CheckpointAssert extends JAssertion
 		StepEventBus.getEventBus().afterCheckpoint( getId(), this );
 	}
 
+	/**
+	 * Manage the checkpoint lifecycle.
+	 *
+	 * @param assertCommand  assertCommand the assertion command, with the checkpoint details.
+	 */
 	@Override
 	protected void doAssert( JAssert assertCommand )
 	{
@@ -167,7 +198,9 @@ public class CheckpointAssert extends JAssertion
 		onAfterAssert( assertCommand );
 	}
 
-
+	/**
+	 * @return  the checkpoint id.
+	 */
 	public String getId()
 	{
 		return id;
