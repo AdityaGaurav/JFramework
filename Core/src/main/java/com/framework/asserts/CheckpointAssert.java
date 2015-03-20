@@ -173,6 +173,17 @@ public class CheckpointAssert extends JAssertion
 
 	/**
 	 * Manage the checkpoint lifecycle.
+	 * <ul>
+	 *     <li>calls to {@link #onBeforeAssert(JAssert)}</li>
+	 *     <li>calls to {@link #executeAssert(JAssert)}</li>
+	 *     <li>calls to {@link #onAssertSuccess(JAssert)} in case that no {@link AssertionError} was thrown.</li>
+	 *     <li>calls to {@link #onAssertFailure(JAssert, AssertionError)} in case that {@link AssertionError} was thrown.</li>
+	 *     <li>
+	 *         calls to {@link #onAssertFailure(JAssert, AssertionError)} in case that {@link TimeoutException} was thrown.
+	 *         this one specifies to all the asserts with timeout.
+	 *     </li>
+	 *     <li>calls to {@link #onAfterAssert(JAssert)}</li>
+	 * </ul>
 	 *
 	 * @param assertCommand  assertCommand the assertion command, with the checkpoint details.
 	 */

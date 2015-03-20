@@ -29,10 +29,16 @@ public class CheckPointCollector
 
 	//region CheckPointCollector - Variables Declaration and Initialization Section.
 
-	private static Logger logger = LoggerFactory.getLogger( CheckPointCollector.class );
+	private static Logger logger = LoggerFactory.getLogger( CheckpointAssert.class );
 
+	/**
+	 * keeps information about the PASSED checkpoints
+	 */
 	private List<String> failed = Lists.newArrayList();
 
+	/**
+	 * keeps information about the FAILED checkpoints
+	 */
 	private List<String> passed = Lists.newArrayList();
 
 	//endregion
@@ -53,19 +59,35 @@ public class CheckPointCollector
 		}
 	}
 
+	/**
+	 * resume all the checkpoints during a test-case instance.
+	 * <ul>
+	 *     <li>summarize the amount of {@linkplain #failed} checkpoints + {@linkplain #passed} checkpoints</li>
+	 *     <li>if no checkpoints then procedure is aborted</li>
+	 *     <li>reports/logs the summary of success checkpoints if {@linkplain #passed} size is gt zero.</li>
+	 *     <li>reports/logs the summary of failed checkpoints if {@linkplain #failed} size is gt zero.</li>
+	 *     <li>clears and reset the lists to be ready for next test-case</li>
+	 *     <li>throwing a new instance of CheckpointError for the filed messages, only if  {@linkplain #failed} GT 0 ( zero )</li>
+	 * </ul>
+	 *
+	 * @see com.framework.asserts.CheckPointCollector
+	 * @see com.framework.testing.steping.exceptions.CheckpointError
+	 */
 	public void assertAll()
 	{
+		// summarize checkpoints ids lists in case that total is zero, procedure is aborted
+
 		int total = passed.size() + failed.size();
 		int failedCount = failed.size();
 		int passedCount = passed.size();
-
+		logger.info( "Asserting all checkpoints.  total checkpoints to report: < {} >", total );
 		if( total == 0 ) return;
 
-		String header = String.format(
-				"\nThe Test Case executed <%d> checkpoints, where <%d> passed and <%d> were failed.\n",total, passedCount, failedCount );
+		final String FMT = "\nThe Test Case executed <%d> checkpoints, where <%d> passed and <%d> were failed.\n";
+		String header = String.format( FMT, total, passedCount, failedCount );
 
 		StringBuilder sb = new StringBuilder( header );
-		if( passedCount > 0 )
+		if /* will report message only if size gt zero */ ( passedCount > 0 )
 		{
 			sb.append( "  **** PASSED CHECKPOINTS ****  \n" );
 			for( String p : passed )
@@ -73,7 +95,7 @@ public class CheckPointCollector
 				sb.append( p );
 			}
 		}
-		if( failedCount > 0 )
+		if /* will report message only if size gt zero */ ( failedCount > 0 )
 		{
 			sb.append( "  **** FAILED CHECKPOINTS ****  \n" );
 			for( String p : failed )
@@ -82,8 +104,12 @@ public class CheckPointCollector
 			}
 		}
 
-		failed.clear(); passed.clear();
+		failed.clear(); passed.clear();  // resetting lists.
 
+		/**
+		 * throwing a new instance of CheckpointError for the filed messages, only if  {@linkplain #failed} GT 0 ( zero )
+		 * @see com.framework.testing.steping.exceptions.CheckpointError
+		 */
 		logger.info( sb.toString() );
 		if( failedCount > 0 )
 		{
@@ -102,20 +128,4 @@ public class CheckPointCollector
 	}
 
 	//endregion
-
-
-	//region CheckPointCollector - Protected Methods Section
-
-	//endregion
-
-
-	//region CheckPointCollector - Private Function Section
-
-	//endregion
-
-
-	//region CheckPointCollector - Inner Classes Implementation Section
-
-	//endregion
-
 }
