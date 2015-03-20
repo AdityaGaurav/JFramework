@@ -1,13 +1,13 @@
 package com.framework.site.config;
 
 import com.framework.asserts.CheckPointCollector;
+import com.framework.asserts.CheckPointFactory;
 import com.framework.asserts.CheckpointAssert;
 import com.framework.asserts.JAssertion;
 import com.framework.config.Configurations;
 import com.framework.config.FrameworkConfiguration;
 import com.framework.driver.event.HtmlDriver;
 import com.framework.driver.event.HtmlElement;
-import com.framework.site.data.TestEnvironment;
 import com.framework.site.pages.core.HomePage;
 import com.framework.utils.conversion.Converter;
 import com.framework.utils.error.PreConditions;
@@ -16,8 +16,6 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Keyboard;
-import org.openqa.selenium.interactions.Mouse;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -44,7 +42,7 @@ import java.util.Set;
  *
  */
 
-public class SiteSessionManager
+public class SiteSessionManager implements CheckPointFactory
 {
 
 	//region SiteSessionManager - Variables Declaration and Initialization Section.
@@ -178,6 +176,7 @@ public class SiteSessionManager
 		}
 	}
 
+	@Override
 	public void assertAllCheckpoints()
 	{
 		PreConditions.checkNotNull( collector, "The collector is empty or null" );
@@ -187,11 +186,13 @@ public class SiteSessionManager
 		}
 	}
 
+	@Override
 	public CheckpointAssert createCheckPoint( final String id )
 	{
 		return new CheckpointAssert( getDriver(), id, collector );
 	}
 
+	@Override
 	public CheckpointAssert createCheckPoint( HtmlElement element, final String id )
 	{
 		return new CheckpointAssert( element, id, collector );
@@ -217,39 +218,9 @@ public class SiteSessionManager
 		return getDriver().getWindowHandles();
 	}
 
-	public String getWindowHandle()
-	{
-		return getDriver().getWindowHandle();
-	}
-
-	public HtmlDriver.Navigation navigate()
-	{
-		return getDriver().navigate();
-	}
-
-	public void addCookie( final Cookie cookie )
-	{
-		getDriver().manage().addCookie( cookie );
-	}
-
-	public void deleteCookieNamed( final String name )
-	{
-		getDriver().manage().deleteCookieNamed( name );
-	}
-
-	public void deleteCookie( final Cookie cookie )
-	{
-		getDriver().manage().deleteCookie( cookie );
-	}
-
 	public void deleteAllCookies()
 	{
 		getDriver().manage().deleteAllCookies();
-	}
-
-	public Set<Cookie> getCookies()
-	{
-		return getDriver().manage().getCookies();
 	}
 
 	public Cookie getCookieNamed( final String name )
@@ -265,16 +236,6 @@ public class SiteSessionManager
 	public Capabilities getCapabilities()
 	{
 		return getDriver().getCapabilities();
-	}
-
-	public Keyboard getKeyboard()
-	{
-		return getDriver().getKeyboard();
-	}
-
-	public Mouse getMouse()
-	{
-		return getDriver().getMouse();
 	}
 
 	public SessionId getSessionId()
@@ -315,11 +276,6 @@ public class SiteSessionManager
 	public boolean isSessionRunning()
 	{
 		return null != getDriver();
-	}
-
-	public TestEnvironment getTestingEnvironment()
-	{
-		return TestEnvironment.valueOf( Configurations.getInstance().getTestEnvironment() );
 	}
 
 	public URL getBaseUrl()
@@ -363,11 +319,6 @@ public class SiteSessionManager
 		getDriver().manage().timeouts().implicitlyWait( millis );
 	}
 
-	private void restoreImplicitlyWaitValue( final long currentImplicitlyWait )
-	{
-		setCurrentImplicitlyWaitMillis( configuration.defaultImplicitlyWait() );
-	}
-
 	private long currentPageLoadTimeoutMillis()
 	{
 		return pageLoadTimeoutMillis;
@@ -381,11 +332,6 @@ public class SiteSessionManager
 		getDriver().manage().timeouts().pageLoadTimeout( millis );
 	}
 
-	private void restorePageLoadTimeoutValue( final long currentImplicitlyWait )
-	{
-		setCurrentPageLoadTimeoutMillis( configuration.defaultPageLoadTimeout() );
-	}
-
 	private long currentScriptExecutionTimeoutMillis()
 	{
 		return scriptExecutionTimeoutMillis;
@@ -397,11 +343,6 @@ public class SiteSessionManager
 		PreConditions.checkArgument( millis >= NumberUtils.LONG_ZERO, ERR_MSG, millis );
 		this.scriptExecutionTimeoutMillis = millis;
 		getDriver().manage().timeouts().setScriptTimeout( millis );
-	}
-
-	private void restoreScriptExecutionTimeoutValue( final long currentImplicitlyWait )
-	{
-		setCurrentScriptExecutionTimeoutMillis( configuration.defaultScriptTimeout() );
 	}
 
 	public boolean isLastTestCaseFailed()
@@ -419,6 +360,7 @@ public class SiteSessionManager
 	public HtmlDriver getDriver()
 	{
 		if( null == webDriver ) return null;
+		logger.debug( "returning an instance of HtmlDriver" );
 		if( webDriver.getWindowHandles().size() == 2 )
 		{
 			if( null == lastWindowHandle )
@@ -443,6 +385,7 @@ public class SiteSessionManager
 		{
 			if( ! handle.equals( lastWindowHandle ) )
 			{
+				logger.debug( "new window handle is < {} >", handle );
 				return handle;
 			}
 		}
