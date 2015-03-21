@@ -86,7 +86,7 @@ public class CycleSlideObject extends AbstractWebObject
 		title = h3.getAttribute( "textContent" );
 
 		HtmlElement he = content.findElement( By.cssSelector( ".pull-right > strong" ) );
-		String text = he.getAttribute( "textContent" ).replace( "$", "" );
+		String text = he.getAttribute( "textContent" ).replace( "$", "" ).replace( "£", "" );
 		price = new BigDecimal( text );
 	}
 
