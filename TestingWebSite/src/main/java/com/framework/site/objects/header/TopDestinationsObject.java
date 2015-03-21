@@ -156,11 +156,12 @@ class TopDestinationsObject extends HeaderBrandingObject implements Header.Heade
 
 	private HtmlElement findNavTooltipTriggerParent()
 	{
-		if( null == nav_tooltip_trigger_parent )
-		{
-			nav_tooltip_trigger_parent = findNavTooltipTriggerAnchor().parent();
-		}
-		return nav_tooltip_trigger_parent;
+//		if( null == nav_tooltip_trigger_parent )
+//		{
+//			nav_tooltip_trigger_parent = findNavTooltipTriggerAnchor().parent();
+//		}
+//		return nav_tooltip_trigger_parent;
+		return null;
 	}
 
 	private HtmlElement findNavTooltipDiv()
