@@ -9,12 +9,14 @@ import com.framework.driver.exceptions.ConfigurationRuntimeException;
 import com.framework.driver.factory.WebDriverFactory;
 import com.framework.testing.annotations.Steps;
 import com.framework.testing.steping.*;
+import com.framework.utils.log.TestLogHelper;
 import com.framework.utils.string.TextArt;
 import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.testng.*;
 import org.testng.internal.IResultListener2;
 
@@ -179,7 +181,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 		{
 			// registering test context to configuration this required for driver initialization
 			//logger.debug( "Registering ITestContext < '{}' > in Configurations...", testContext.getName() );
-			Configurations.getInstance().init( itr.getTestContext().getSuite() );
+			//Configurations.getInstance().init( itr.getTestContext().getSuite() );
 		}
 		if ( itr.getMethod().isBeforeTestConfiguration() )
 		{
@@ -246,6 +248,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 	@Override
 	public void onTestStart( final ITestResult itr )
 	{
+		TestLogHelper.startTestLogging( itr.getMethod().getMethodName() );
 		logger.info( TextArt.getTestCaseStart( String.format( "'%s'", itr.getName() ) ) );
 		TestCase tc = scenarioManager.pushTestCase( itr );
 		haveStepsAnnotation = true;
@@ -324,6 +327,7 @@ class ScenarioListenerAdapter implements IExecutionListener, ISuiteListener, IRe
 		{
 			StepEventBus.getEventBus().testCaseEnded( tr );
 		}
+		MDC.remove( "TEST_NAME" );
 	}
 
 	/**
