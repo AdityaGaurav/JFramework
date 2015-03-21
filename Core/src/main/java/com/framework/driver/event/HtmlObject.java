@@ -407,6 +407,7 @@ public class HtmlObject implements HtmlElement, EventTypes
 
 	//region HtmlObject - Javascript Methods Section
 
+
 	@Override
 	public void scrollIntoView()
 	{
@@ -652,21 +653,9 @@ public class HtmlObject implements HtmlElement, EventTypes
 	//region HtmlObject - Mouse and Keyboard Helper Methods Section
 
 	@Override
-	public void contextClick()
-	{
-
-	}
-
-	@Override
 	public Actions createAction()
 	{
 		return new Actions( getWrappedHtmlDriver().getWrappedDriver() );
-	}
-
-	@Override
-	public void doubleClick()
-	{
-
 	}
 
 	@Override
@@ -686,43 +675,4 @@ public class HtmlObject implements HtmlElement, EventTypes
 	}
 
 	//endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//endregion
-
-
-	//region HtmlObject - Private Function Section
-
-	//endregion
-
-
-	// ========================================================================================== /
-	// Ancestors
-	// ========================================================================================== /
-
-	public HtmlElement parent()
-	{
-		final String SCRIPT = "return jQuery( arguments[0] ).parent();";
-		return getWrappedHtmlDriver().javascript().getHtmlElement( SCRIPT, baseElement );
-	}
-
-
-	//region HtmlObject - Inner Classes Implementation Section
-
-
-
-
-	//endregion
-
 }
