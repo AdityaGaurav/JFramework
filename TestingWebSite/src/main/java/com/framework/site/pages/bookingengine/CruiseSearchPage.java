@@ -10,6 +10,7 @@ import com.framework.site.objects.body.RefineSearchObject;
 import com.framework.site.objects.body.interfaces.Itinerary;
 import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.testing.annotations.DefaultUrl;
+import com.framework.utils.datetime.TimeConstants;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.matchers.JMatchers;
 import com.google.common.collect.Lists;
@@ -75,6 +76,8 @@ public class CruiseSearchPage extends BaseCarnivalPage
 		HtmlElement he = getDriver().findElement( By.tagName( "h1" ) );
 		he.createAssertion().assertThat(
 				"Validate Page Title is Cruise Search", he.getAttribute( "textContent" ), JMatchers.is( "Cruise Search" ) );
+
+		getDriver().findElement( By.className( "lpg-loader" ) ).waitToBeDisplayed( false, TimeConstants.FIVE_SECONDS );
 	}
 
 	//endregion

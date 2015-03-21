@@ -207,8 +207,17 @@ public class CruiseShipsDetailsPage extends BaseCarnivalPage implements Enumerat
 
 	public Map<String,CycleSlideObject> getCycleSlides()
 	{
-		List<HtmlElement> slides = getDriver().findElements( By.cssSelector( "#itinerary .cycle-carousel-wrap > li" ) );
-		List<HtmlElement> images = getDriver().findElements( By.cssSelector( "#itinerary .cycle-carousel-wrap > li img" ) );
+		List<HtmlElement> slides, images;
+		slides = getDriver().findElements( By.cssSelector( "#itinerary .cycle-carousel-wrap > li" ) );
+		if( slides.size() == 0 )
+		{
+			slides = getDriver().findElements( By.cssSelector( "#itinerary .sailings-carousel > li" ) );
+			images = getDriver().findElements( By.cssSelector( "#itinerary .sailings-carousel > li img" ) );
+		}
+		else
+		{
+			images = getDriver().findElements( By.cssSelector( "#itinerary .cycle-carousel-wrap > li img" ) );
+		}
 		Map<String,CycleSlideObject> scoMap = Maps.newHashMap();
 		for( int i = 0; i < images.size(); i ++ )
 		{
