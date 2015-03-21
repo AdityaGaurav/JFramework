@@ -40,6 +40,7 @@ public enum FrameworkProperty
 	 * Determine the jquery version used
 	 */
 	JQUERY_VERSION,
+	JQUERY_VARIABLE_NAME,
 
 	/**
 	 * Determine the jquery version used
@@ -51,7 +52,7 @@ public enum FrameworkProperty
 	 * If set to true (the default), JQuery will be injected into any page that does not already have it.
 	 * You can turn this option off for performance reasons if you are not using JQuery selectors.
 	 */
-	JFRAMEWORK_JQUERY_INTEGRATION_ENABLED,
+	JQUERY_INTEGRATION_ENABLED,
 
 	BROWSER_FIREFOX_FIREBUG_VERSION,
 

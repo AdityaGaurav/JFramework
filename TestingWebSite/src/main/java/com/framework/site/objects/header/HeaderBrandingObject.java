@@ -3,6 +3,7 @@ package com.framework.site.objects.header;
 import com.framework.asserts.JAssertion;
 import com.framework.driver.event.HtmlElement;
 import com.framework.driver.event.HtmlObject;
+import com.framework.driver.extensions.jquery.By;
 import com.framework.driver.objects.AbstractWebObject;
 import com.framework.driver.objects.Link;
 import com.framework.site.objects.header.interfaces.Header;
@@ -10,7 +11,6 @@ import com.framework.site.pages.BaseCarnivalPage;
 import com.framework.site.pages.core.CruiseDealsPage;
 import com.framework.site.pages.core.HomePage;
 import com.google.common.base.Optional;
-import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,15 +182,13 @@ class HeaderBrandingObject extends AbstractWebObject implements Header.HeaderBra
 	@Override
 	public boolean hasTopDestinations()
 	{
-		By findBy = By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" );
-		return getDriver().elementExists( findBy ).isPresent() ;
+		return getDriver().elementExists( By.cssSelector( "a.nav-tooltip-trigger[data-id='top-destinations']" ) ).isPresent() ;
 	}
 
 	@Override
 	public boolean hasCurrencySelector()
 	{
-		By findBy = By.cssSelector( "a.ccl-blue.nav-tooltip-trigger[data-id='currency']" );
-		return getDriver().elementExists( findBy ).isPresent() ;
+		return getDriver().elementExists( By.cssSelector( "a.ccl-blue.nav-tooltip-trigger[data-id='currency']" ) ).isPresent() ;
 	}
 
 	@Override
@@ -232,90 +230,81 @@ class HeaderBrandingObject extends AbstractWebObject implements Header.HeaderBra
 
 	private HtmlElement findLogoPullLeftAnchor()
 	{
-		final By findBy = By.cssSelector( "a.logo.pull-left" );
 		if( null == logo_pull_left )
 		{
-			logo_pull_left = getRoot().findElement( findBy );
+			logo_pull_left = getRoot().findElement( By.cssSelector( "a.logo.pull-left" ) );
 		}
 		return logo_pull_left;
 	}
 
 	protected HtmlElement findZeroNavUl()
 	{
-		final By findBy = By.cssSelector( "ul.zero-nav" );
 		if( null == zero_nav )
 		{
-			zero_nav = getRoot().findElement( findBy );
+			zero_nav = getRoot().findElement( By.cssSelector( "ul.zero-nav" ) );
 		}
 		return zero_nav;
 	}
 
 	private HtmlElement findCclRedAnchor()
 	{
-		final By findBy = By.className( "ccl-red" );
 		if( null == ccl_red )
 		{
-			ccl_red = findZeroNavUl().findElement( findBy );
+			ccl_red = findZeroNavUl().findElement( By.className( "ccl-red" ) );
 		}
 		return ccl_red;
 	}
 
 	private HtmlElement findSubscribeLink()
 	{
-		final By findBy = By.id( "subscribeLink" );
 		if( null == subscribeLink_ccl_blue )
 		{
-			subscribeLink_ccl_blue = findZeroNavUl().findElement( findBy );
+			subscribeLink_ccl_blue = findZeroNavUl().findElement( By.id( "subscribeLink" ) );
 		}
 		return subscribeLink_ccl_blue;
 	}
 
 	private HtmlElement findCclHeaderLocaleAnchor()
 	{
-		final By findBy = By.id( "ccl_header_locale" );
 		if( null == ccl_header_locale )
 		{
-			ccl_header_locale = findZeroNavUl().findElement( findBy );
+			ccl_header_locale = findZeroNavUl().findElement( By.id( "ccl_header_locale" ) );
 		}
 		return ccl_header_locale;
 	}
 
 	private HtmlElement findCclHeaderLocaleImage()
 	{
-		final By findBy = By.tagName( "img" );
 		if( null == ccl_header_locale_img )
 		{
-			ccl_header_locale_img = findCclHeaderLocaleAnchor().findElement( findBy );
+			ccl_header_locale_img = findCclHeaderLocaleAnchor().findElement( By.tagName( "img" ) );
 		}
 		return ccl_header_locale_img;
 	}
 
 	private HtmlElement findCclHeaderLocaleOptionsDiv()
 	{
-		final By findBy = By.id( "ccl_header_locale_options" );
 		if( null == ccl_header_locale_options )
 		{
-			ccl_header_locale_options = findZeroNavUl().findElement( findBy );
+			ccl_header_locale_options = findZeroNavUl().findElement( By.id( "ccl_header_locale_options" ) );
 		}
 		return ccl_header_locale_options;
 	}
 
 	private HtmlElement findCclHeaderLocaleNumberSpan()
 	{
-		final By findBy = By.id( "ccl_header_locale_number" );
 		if( null == ccl_header_locale_number )
 		{
-			ccl_header_locale_number = findZeroNavUl().findElement( findBy );
+			ccl_header_locale_number = findZeroNavUl().findElement( By.id( "ccl_header_locale_number" ) );
 		}
 		return ccl_header_locale_number;
 	}
 
 	private List<HtmlElement> findLocaleOptionsAnchors()
 	{
-		final By findBy = By.tagName( "a" );
 		if( null == ccl_header_locale_optionsLinks )
 		{
-			ccl_header_locale_optionsLinks = findCclHeaderLocaleOptionsDiv().findElements( findBy );
+			ccl_header_locale_optionsLinks = findCclHeaderLocaleOptionsDiv().findElements( By.tagName( "a" ) );
 		}
 		return ccl_header_locale_optionsLinks;
 	}
@@ -324,7 +313,7 @@ class HeaderBrandingObject extends AbstractWebObject implements Header.HeaderBra
 	{
 		if( null == this.ccl_header_locale_parent )
 		{
-			this.ccl_header_locale_number = findCclHeaderLocaleAnchor().parent();
+			this.ccl_header_locale_number = getDriver().findElement( By.jQuerySelector( "#ccl_header_locale" ).parent() );
 		}
 		return ccl_header_locale_number;
 	}

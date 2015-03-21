@@ -269,7 +269,7 @@ public class ItineraryObject extends AbstractWebObject implements Itinerary
 		if( null != price ) return price;
 
 		HtmlElement he = getRoot().findElement( By.cssSelector( "div.right-side strong" ) );
-		String text = he.getText().replace( "$", "" );
+		String text = he.getText().replace( "$", "" ).replace( "£", "" );
 		logger.info( "Returning price < {} > for itinerary id < {} >", text, itineraryId );
 		return new BigDecimal( text );
 	}
