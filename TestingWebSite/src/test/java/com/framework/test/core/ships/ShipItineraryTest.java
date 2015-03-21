@@ -213,9 +213,6 @@ public class ShipItineraryTest extends BaseTest
 	{
 		List<Object[]> data = Lists.newArrayList();
 
-//		Ships[] ships = Ships.values();
-//		Set<Ships> selected = Sets.newHashSet();
-
 		data.add( new Object[] { Ships.BREEZE } );
 		data.add( new Object[] { Ships.CONQUEST } );
 		data.add( new Object[] { Ships.DREAM } );
