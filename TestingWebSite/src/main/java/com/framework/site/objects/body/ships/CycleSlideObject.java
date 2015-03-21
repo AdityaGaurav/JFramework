@@ -20,6 +20,10 @@ import static com.framework.utils.datetime.TimeConstants.THREE_SECONDS;
 import static org.hamcrest.Matchers.is;
 
 
+/**
+ *
+ */
+
 public class CycleSlideObject extends AbstractWebObject
 {
 
