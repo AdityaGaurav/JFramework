@@ -53,6 +53,10 @@ public interface Itinerary
 
 	Ships getShip();
 
+	/**
+	 *
+	 * @return
+	 */
 	BigDecimal getPrice();
 
 	void clickLearMore();
