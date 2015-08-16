@@ -88,7 +88,7 @@ public class TestContext
 		int x = testContextRunner.getSuite().getAllInvokedMethods().size();  //todo: validate diff n- - counts.beforesuite
 		int y =  testContextRunner.getSuite().getAllMethods().size();        //todo: validate diff
 
-		counters = Maps.newLinkedHashMap();
+		counters = Maps.newLinkedHashMap()  ;
 		counters.put( "configurationsCount", 0 );
 		counters.put( "successConfigurationsCount", 0 );
 		counters.put( "skippedConfigurationsCount", 0 );
