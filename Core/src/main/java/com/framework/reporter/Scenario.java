@@ -1,23 +1,16 @@
 package com.framework.reporter;
 
-import com.framework.utils.datetime.DateTimeUtils;
-import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
@@ -38,20 +31,18 @@ import java.util.Stack;
  *
  */
 
-public class Scenario
+public class Scenario extends BaseComponent
 {
 
 	//region Scenario - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( Scenario.class );
 
-	public static final String DATE_TIME_FORMATTER = "yyyy-MM-dd HH:mm:ss.SSS";
-
-	private static final String TIMESTAMP_PATTERN = "EEEE, MMMM dd, yyyy hh:mm:ss a";
-
 	private static final Comparator<ITestResult> TEST_CASE_COMPARATOR = new TestCaseNameComparator();
 
 	private static final Comparator<ITestResult> CONFIGURATION_TYPE_COMPARATOR = new ConfigurationTypeComparator();
+
+	private static final String TIMESTAMP_PATTERN = "EEEE, MMMM dd, yyyy hh:mm:ss a";
 
 
 	private enum ConfigurationType
@@ -60,14 +51,9 @@ public class Scenario
 		BEFORE_METHOD, BEFORE_GROUP, BEFORE_CLASS, BEFORE_TEST, BEFORE_SUITE
 	}
 
-	/** registers the starting date and time of the whole executed scenario */
-	private final DateTime startDate;
 
-	/**
-	 * registers the duration of the whole scenario. the {@code endTime} is calculated
-	 * form {@linkplain #startDate} + {@code duration}
-	 */
-	private Duration duration;
+
+
 
 	/** a timestamp for the instant of the reporter creation ( after information processed ) */
 	private Instant instant;
@@ -75,17 +61,6 @@ public class Scenario
 	//private static final Instant timestamp = new Instant( DateTime.now() );
 
 	private Stack<Suite> suitesStack = new Stack<>();
-
-	/** configurations invocation counters for the whole scenario */
-	private int configurationsCount = 0, successConfigurationsCount = 0,
-			    skippedConfigurationsCount = 0, failedConfigurationsCount = 0;
-
-	/** test-cases instances invocation counters for the whole scenario */
-	private int testCaseInstanceCount = 0, successTestCaseInstanceCount = 0, failedTestCaseInstanceCount = 0,
-			skippedTestCaseInstanceCount = 0, failedWithSuccessPercentageTestCaseInstanceCount = 0;
-
-	/** test-case counters. skippedTestCase is a test case that was never invoked. */
-	private int excludedTestCasesCount = 0, ignoredTestCasesCount = 0;
 
 	private Stack<ITestResult> configurationStack = new Stack<>();
 
@@ -98,74 +73,13 @@ public class Scenario
 
 	Scenario( DateTime dt )
 	{
-		PreConditions.checkNotNull( dt, "DateTime cannot be null." );
-		this.startDate = dt;
+		super( dt );
 	}
 
 	//endregion
 
 
 	//region Scenario - Counter Methods Section
-
-	public int getSuccessConfigurationsCount()
-	{
-		return successConfigurationsCount;
-	}
-
-	public int getSkippedConfigurationsCount()
-	{
-		return skippedConfigurationsCount;
-	}
-
-	public int getFailedConfigurationsCount()
-	{
-		return failedConfigurationsCount;
-	}
-
-	public int getConfigurationsCount()
-	{
-		return configurationsCount;
-	}
-
-	public int getSuccessTestCasesInstancesCount()
-	{
-		return successTestCaseInstanceCount;
-	}
-
-	public int getFailedTestCaseInstanceCount()
-	{
-		return failedTestCaseInstanceCount;
-	}
-
-	public int getFailedWithSuccessPercentageTestCaseInstanceCount()
-	{
-		return failedWithSuccessPercentageTestCaseInstanceCount;
-	}
-
-	public int getSkippedTestCaseInstanceCount()
-	{
-		return skippedTestCaseInstanceCount;
-	}
-
-	public int getIgnoredTestCaseCount()
-	{
-		return ignoredTestCasesCount;
-	}
-
-	public int getTestCaseInstanceCount()
-	{
-		return testCaseInstanceCount;
-	}
-
-	public int getTotalInvokedMethodsCount()
-	{
-		return configurationsCount + testCaseInstanceCount;
-	}
-
-	public int getExcludedTestCasesCount()
-	{
-		return excludedTestCasesCount;
-	}
 
 	public int getTotalTestCasesCount()
 	{
@@ -189,8 +103,8 @@ public class Scenario
 		int compare = CONFIGURATION_TYPE_COMPARATOR.compare( itr, configurationStack.peek() );
 		if( compare == 0 )
 		{
-			this.successConfigurationsCount ++;
-			this.configurationsCount ++;
+			increaseCounter( "successConfigurationsCount" );
+			increaseCounter( "configurationsCount" );
 		    configurationStack.pop();
 			return getCurrentSuite().increaseSuccessConfigurationInstanceCounters( itr );
 		}
@@ -206,8 +120,8 @@ public class Scenario
 		int compare = CONFIGURATION_TYPE_COMPARATOR.compare( itr, configurationStack.peek() );
 		if( compare == 0 )
 		{
-			this.failedConfigurationsCount ++;
-			this.configurationsCount ++;
+			increaseCounter( "failedConfigurationsCount" );
+			increaseCounter( "configurationsCount" );
 			configurationStack.pop();
 			return getCurrentSuite().increaseFailedConfigurationInstanceCounters( itr );
 		}
@@ -223,8 +137,8 @@ public class Scenario
 		int compare = CONFIGURATION_TYPE_COMPARATOR.compare( itr, configurationStack.peek() );
 		if( compare == 0 )
 		{
-			this.skippedConfigurationsCount ++;
-			this.configurationsCount ++;
+			increaseCounter( "skippedConfigurationsCount" );
+			increaseCounter( "configurationsCount" );
 			configurationStack.pop();
 			return getCurrentSuite().increaseSkippedConfigurationInstanceCounters( itr );
 		}
@@ -237,8 +151,8 @@ public class Scenario
 		int compare = TEST_CASE_COMPARATOR.compare( itr, testCaseStack.peek() );
 		if( compare == 0 )
 		{
-			this.successTestCaseInstanceCount ++;
-			this.testCaseInstanceCount ++;
+			increaseCounter( "successTestCaseInstanceCount" );
+			increaseCounter( "testCaseInstanceCount" );
 			testCaseStack.pop();
 			return getCurrentSuite().increaseSuccessTestCaseInstanceCounters( itr );
 		}
@@ -250,8 +164,8 @@ public class Scenario
 		int compare = TEST_CASE_COMPARATOR.compare( itr, testCaseStack.peek() );
 		if( compare == 0 )
 		{
-			this.failedTestCaseInstanceCount ++;
-			this.testCaseInstanceCount ++;
+			increaseCounter( "failedTestCaseInstanceCount" );
+			increaseCounter( "testCaseInstanceCount" );
 			testCaseStack.pop();
 			return getCurrentSuite().increaseFailedTestCaseInstanceCounters( itr );
 		}
@@ -263,8 +177,8 @@ public class Scenario
 		int compare = TEST_CASE_COMPARATOR.compare( itr, testCaseStack.peek() );
 		if( compare == 0 )
 		{
-			this.failedWithSuccessPercentageTestCaseInstanceCount ++;
-			this.testCaseInstanceCount ++;
+			increaseCounter( "failedWithSuccessPercentageTestCaseInstanceCount" );
+			increaseCounter( "testCaseInstanceCount" );
 			testCaseStack.pop();
 			return getCurrentSuite().increaseFailedWithSuccessPercentageTestCaseInstanceCounters( itr );
 		}
@@ -275,22 +189,17 @@ public class Scenario
 	{
 		if( ! testCaseStack.isEmpty() )  //todo: implement
 		{
-			this.skippedTestCaseInstanceCount ++;
-			this.testCaseInstanceCount ++;
+			increaseCounter( "skippedTestCaseInstanceCount" );
+			increaseCounter( "testCaseInstanceCount" );
 			getCurrentSuite().increaseSkippedTestCaseInstanceCounters( itr );
 			testCaseStack.pop();
 		}
 		else
 		{
-			this.ignoredTestCasesCount ++;
-			this.testCaseInstanceCount ++;
+			increaseCounter( "ignoredTestCasesCount" );
+			increaseCounter( "testCaseInstanceCount" );
 			getCurrentSuite().increaseIgnoredTestCaseCounters( itr );
 		}
-	}
-
-	public void setExcludedTestCases( Collection<ITestNGMethod> excludedMethods ) //todo: need method?
-	{
-		this.excludedTestCasesCount += excludedMethods.size();
 	}
 
 	void pushConfigurationInstance( ITestResult itr )
@@ -388,13 +297,13 @@ public class Scenario
 	public String toString()
 	{
 		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
-				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
+				.append( "start date", null != getFormattedStartDate() ? getFormattedStartDate() : "N/A" )
 				.append( "is failed", isFailed() )
 				.append( "success rate", getFormattedSuccessRate() )
 				.append( "suites", suitesStack.isEmpty() ? "N/A" : suitesStack.size() )
 			//	.append( "test-contexts", suitesStack.isEmpty() ? "N/A" : suitesStack.size() )
-				.append( "configurations count", configurationsCount )
-				.append( "test-case instances count", testCaseInstanceCount )
+			//	.append( "configurations count", configurationsCount )
+			//	.append( "test-case instances count", testCaseInstanceCount )
 				.toString();
 	}
 
@@ -402,17 +311,6 @@ public class Scenario
 
 
 	//region Scenario - State and Status Service Methods Section
-
-	Float getSuccessRate()
-	{
-		if( testCaseInstanceCount == 0 ) return NumberUtils.createFloat( "0" );
-		return ( successTestCaseInstanceCount * 100 ) / ( float ) testCaseInstanceCount;
-	}
-
-	public String getFormattedSuccessRate()
-	{
-		return new DecimalFormat( "#.##" ).format( getSuccessRate() );
-	}
 
 	public boolean isFailed()
 	{
@@ -432,40 +330,7 @@ public class Scenario
 
 	//region Scenario - Joda Time Service Methods Section
 
-	public String getFormattedStartDate()
-	{
-		return startDate.toString( Scenario.DATE_TIME_FORMATTER );
-	}
 
-	DateTime getStartDate()
-	{
-		return startDate;
-	}
-
-	public String getFormattedEndDate()
-	{
-		return getEndDate().toString( Scenario.DATE_TIME_FORMATTER );
-	}
-
-	DateTime getEndDate()
-	{
-		return startDate.plus( duration );
-	}
-
-	void recordEndDate()
-	{
-		this.duration = new Duration( startDate, DateTime.now() );
-	}
-
-	Duration getDuration()
-	{
-		return duration;
-	}
-
-	public String getFormattedDuration()
-	{
-		return DateTimeUtils.getFormattedDuration( startDate, getEndDate() );
-	}
 
 	public Instant getInstant()
 	{

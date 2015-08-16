@@ -441,7 +441,7 @@
                                                             <span class="spark_line small-dark random_number_5 spark_inline">
 	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
                                                             </span>Success Configurations</h3>
-                                                        <span>$scenario.getSuccessConfigurationsCount()</span>
+                                                        <span>$scenario.getCounterValue( "successConfigurationsCount" )</span>
                                                     </a>
                                                 </li>
                                                 <li class="stats-eq">
@@ -450,7 +450,7 @@
 	                                                        <span class="spark_line small random_number_5 spark_inline">
 	                                                            <canvas style="display: inline-block; width: 15px; height: 14px; vertical-align: top;" width="15" height="14"></canvas>
                                                             </span>Skipped Configurations</h3>
-                                                        <span>$scenario.getSkippedConfigurationsCount()</span>
+                                                        <span>$scenario.getCounterValue( "skippedConfigurationsCount" )</span>
                                                     </a>
                                                 </li>
                                                 <li class="stats-down">
@@ -512,7 +512,7 @@
                                                     <li class="stats-up">
                                                         <a href="javascript:void(0);">
                                                             <h3>Success Configurations</h3>
-                                                            <span>$scenario.getSuccessConfigurationsCount()</span>
+                                                            <span>$scenario.getCounterValue( "successConfigurationsCount" )</span>
                                                         </a>
                                                     </li>
                                                     <li class="stats-eq">

@@ -1,13 +1,11 @@
 package com.framework.reporter;
 
-import com.framework.utils.datetime.DateTimeUtils;
 import com.framework.utils.error.PreConditions;
 import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ISuite;
@@ -16,7 +14,6 @@ import org.testng.SuiteRunner;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -37,21 +34,12 @@ import java.util.Stack;
  *
  */
 
-public class Suite
+public class Suite extends BaseComponent
 {
 
 	//region Suite - Variables Declaration and Initialization Section.
 
 	private static final Logger logger = LoggerFactory.getLogger( Suite.class );
-
-	/** registers the starting date and time of this suite */
-	private final DateTime startDate;
-
-	/**
-	 * registers the executed duration of the whole suite. the {@code endTime} is calculated
-	 * form {@linkplain #startDate} + {@code duration}
-	 */
-	private Duration duration;
 
 	/** instance of the ISuite */
 	private SuiteRunner suite;
@@ -63,13 +51,6 @@ public class Suite
 	private ConfigurationMethod beforeSuite;
 	private ConfigurationMethod afterSuite;
 
-	/** configurations invocation counters for the whole scenario */
-	private int configurationsCount = 0, successConfigurationsCount = 0, skippedConfigurationsCount = 0, failedConfigurationsCount = 0;
-
-	/** test-cases instances invocation counters for the whole scenario */
-	private int testCaseInstanceCount = 0, successTestCaseInstanceCount = 0, failedTestCaseInstanceCount = 0,
-			skippedTestCaseCount = 0, ignoredTestCaseCount = 0, failedWithSuccessPercentageTestCaseInstanceCount = 0;
-
 	/** test-case counters. skippedTestCase is a test case that was never invoked. */
 	private int excludedTestCasesCount = 0;
 
@@ -80,7 +61,7 @@ public class Suite
 
 	Suite( DateTime dt, ISuite suite )
 	{
-		this.startDate = PreConditions.checkNotNull( dt, "DateTime argument cannot be null." );
+		super( dt );
 		this.suite = ( SuiteRunner ) PreConditions.checkNotNull( suite, "ISuite suite argument cannot be null." );
 	}
 
@@ -88,64 +69,6 @@ public class Suite
 
 
 	//region Suite - Counter Methods Section
-
-	/**
-	 * @return the total number of success invoked configurations during all scenario.
-	 */
-	public int getSuccessConfigurationsCount()
-	{
-		return successConfigurationsCount;
-	}
-
-	public int getSkippedConfigurationsCount()
-	{
-		return skippedConfigurationsCount;
-	}
-
-	public int getFailedConfigurationsCount()
-	{
-		return failedConfigurationsCount;
-	}
-
-	public int getConfigurationsCount()
-	{
-		return configurationsCount;
-	}
-
-	public int getSuccessTestCasesInstancesCount()
-	{
-		return successTestCaseInstanceCount;
-	}
-
-	public int getFailedTestCaseInstanceCount()
-	{
-		return failedTestCaseInstanceCount;
-	}
-
-	public int getFailedWithSuccessPercentageTestCaseInstanceCount()
-	{
-		return failedWithSuccessPercentageTestCaseInstanceCount;
-	}
-
-	public int getSkippedTestCasesCount()
-	{
-		return skippedTestCaseCount;
-	}
-
-	public int getIgnoredTestCaseCount()
-	{
-		return ignoredTestCaseCount;
-	}
-
-	public int getTestCaseInstanceCount()
-	{
-		return testCaseInstanceCount;
-	}
-
-	public int getTotalInvokedMethodsCount()
-	{
-		return configurationsCount + testCaseInstanceCount;
-	}
 
 	public int getExcludedTestCasesCount()
 	{
@@ -177,8 +100,8 @@ public class Suite
 
 	ConfigurationInstanceMethod increaseSuccessConfigurationInstanceCounters( ITestResult itr )
 	{
-		this.successConfigurationsCount ++;
-		this.configurationsCount ++;
+		super.increaseCounter( "successConfigurationsCount" );
+		super.increaseCounter( "configurationsCount" );
 		if( itr.getMethod().isBeforeSuiteConfiguration() )
 		{
 			recordEndDate( itr );
@@ -197,8 +120,8 @@ public class Suite
 
 	ConfigurationInstanceMethod increaseFailedConfigurationInstanceCounters( ITestResult itr )
 	{
-		this.failedConfigurationsCount ++;
-		this.configurationsCount ++;
+		increaseCounter( "failedConfigurationsCount" );
+		increaseCounter( "configurationsCount" );
 		if( itr.getMethod().isBeforeSuiteConfiguration() )
 		{
 			recordEndDate( itr );
@@ -220,8 +143,8 @@ public class Suite
 	 */
 	ConfigurationInstanceMethod increaseSkippedConfigurationInstanceCounters( ITestResult itr )
 	{
-		this.skippedConfigurationsCount ++;
-		this.configurationsCount ++;
+		increaseCounter( "skippedConfigurationsCount" );
+		increaseCounter( "configurationsCount" );
 		if( itr.getMethod().isBeforeSuiteConfiguration() )
 		{
 			recordEndDate( itr );
@@ -240,36 +163,36 @@ public class Suite
 
 	TestCaseInstance increaseSuccessTestCaseInstanceCounters( ITestResult result )
 	{
-		this.successTestCaseInstanceCount ++;
-		this.testCaseInstanceCount ++;
+		increaseCounter( "successTestCaseInstanceCount" );
+		increaseCounter( "testCaseInstanceCount" );
 		return getCurrentTestContext().increaseSuccessTestCaseInstanceCounters( result );
 	}
 
 	TestCaseInstance increaseFailedTestCaseInstanceCounters( ITestResult result )
 	{
-		this.failedTestCaseInstanceCount ++;
-		this.testCaseInstanceCount ++;
+		increaseCounter( "failedTestCaseInstanceCount" );
+		increaseCounter( "testCaseInstanceCount" );
 		return getCurrentTestContext().increaseFailedTestCaseInstanceCounters( result );
 	}
 
 	TestCaseInstance increaseFailedWithSuccessPercentageTestCaseInstanceCounters( ITestResult result )
 	{
-		this.failedWithSuccessPercentageTestCaseInstanceCount ++;
-		this.testCaseInstanceCount ++;
+		increaseCounter( "failedWithSuccessPercentageTestCaseInstanceCount" );
+		increaseCounter( "testCaseInstanceCount" );
 		return getCurrentTestContext().increaseFailedWithSuccessPercentageTestCaseInstanceCounters( result );
 	}
 
 	TestCaseInstance increaseSkippedTestCaseInstanceCounters( ITestResult result )
 	{
-		this.skippedTestCaseCount ++;
-		this.testCaseInstanceCount ++;
+		increaseCounter( "skippedTestCaseCount" );
+		increaseCounter( "testCaseInstanceCount" );
 		return getCurrentTestContext().increaseSkippedTestCaseInstanceCounters( result );
 	}
 
 	void increaseIgnoredTestCaseCounters( ITestResult result )
 	{
-		this.ignoredTestCaseCount ++;
-		this.testCaseInstanceCount ++;
+		increaseCounter( "ignoredTestCaseCount" );
+		increaseCounter( "testCaseInstanceCount" );
 		getCurrentTestContext().increaseIgnoredTestCaseCounters( result );
 	}
 
@@ -309,7 +232,7 @@ public class Suite
 		}
 
 		return new ToStringBuilder( this, ToLogStringStyle.LOG_MULTI_LINE_STYLE )
-				.append( "start date", null != startDate ? getFormattedStartDate() : "N/A" )
+				.append( "start date", null != getFormattedStartDate() ? getFormattedStartDate() : "N/A" )
 				.append( "is failed", null != suite ? suite.getSuiteState().isFailed() : "N/A" )
 				.append( "suite name", null != suite ? suite.getName() : "N/A" )
 				.append( "file name", null != file ? file.getName() : "N/A" )
@@ -332,21 +255,8 @@ public class Suite
 
 		final Suite suite1 = ( Suite ) o;
 
-		return suite.getName().equals( suite1.getName() ) && startDate.equals( suite1.startDate );
+		return suite.getName().equals( suite1.getName() ) && getStartDate().equals( suite1.getStartDate() );
 
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int result = startDate.hashCode();
-		result = 31 * result + ( suite != null ? suite.hashCode() : 0 );
-		result = 31 * result + configurationsCount;
-		if( null != suite )
-		{
-			result = 31 * result + suite.getName().hashCode();
-		}
-		return result;
 	}
 
 	//endregion
@@ -380,59 +290,9 @@ public class Suite
 
 	//region Suite - State and Status Service Methods Section
 
-	Float getSuccessRate()
-	{
-		return ( successTestCaseInstanceCount * 100 ) / ( float ) testCaseInstanceCount;
-	}
-
-	public String getFormattedSuccessRate()
-	{
-		return new DecimalFormat( "#.##" ).format( getSuccessRate() );
-	}
-
 	public boolean isFailed()
 	{
 		return suite.getSuiteState().isFailed();
-	}
-
-	//endregion
-
-
-	//region Suite - Joda Time Service Methods Section
-
-	public String getFormattedStartDate()
-	{
-		return startDate.toString( Scenario.DATE_TIME_FORMATTER );
-	}
-
-	DateTime getStartDate()
-	{
-		return startDate;
-	}
-
-	public String getFormattedEndDate()
-	{
-		return getEndDate().toString( Scenario.DATE_TIME_FORMATTER );
-	}
-
-	DateTime getEndDate()
-	{
-		return startDate.plus( duration );
-	}
-
-	void recordEndDate()
-	{
-		this.duration = new Duration( startDate, DateTime.now() );
-	}
-
-	Duration getDuration()
-	{
-		return duration;
-	}
-
-	public String getFormattedDuration()
-	{
-		return DateTimeUtils.getFormattedDuration( startDate, getEndDate() );
 	}
 
 	//endregion

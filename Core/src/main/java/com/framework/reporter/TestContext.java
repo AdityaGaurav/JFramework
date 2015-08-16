@@ -8,7 +8,9 @@ import com.framework.utils.matchers.JMatchers;
 import com.framework.utils.string.ToLogStringStyle;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.testng.xml.XmlTest;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 
@@ -65,16 +68,7 @@ public class TestContext
 
 	private final TestRunner testContextRunner;
 
-	/** test-cases instances invocation counters for the whole scenario */
-	private int testCaseInstanceCount = 0, successTestCaseInstanceCount = 0, failedTestCaseInstanceCount = 0,
-			skippedTestCaseInstanceCount = 0, failedWithSuccessPercentageTestCaseInstanceCount = 0;
-
-	/** configurations invocation counters for the whole scenario */
-	private int configurationsCount = 0, successConfigurationsCount = 0,
-			skippedConfigurationsCount = 0, failedConfigurationsCount = 0;
-
-	/** test-case counters. skippedTestCase is a test case that was never invoked. */
-	private int excludedTestCasesCount = 0, ignoredTestCasesCount = 0;
+	private Map<String,Integer> counters;
 
 	private Stack<TestCase> invokedTestCases = new Stack<>();
 
@@ -94,6 +88,17 @@ public class TestContext
 		int x = testContextRunner.getSuite().getAllInvokedMethods().size();  //todo: validate diff n- - counts.beforesuite
 		int y =  testContextRunner.getSuite().getAllMethods().size();        //todo: validate diff
 
+		counters = Maps.newLinkedHashMap();
+		counters.put( "configurationsCount", 0 );
+		counters.put( "successConfigurationsCount", 0 );
+		counters.put( "skippedConfigurationsCount", 0 );
+		counters.put( "failedConfigurationsCount", 0 );
+		counters.put( "testCaseInstanceCount", 0 );
+		counters.put( "successTestCaseInstanceCount", 0 );
+		counters.put( "failedTestCaseInstanceCount", 0 );
+		counters.put( "skippedTestCaseCount", 0 );
+		counters.put( "ignoredTestCaseCount", 0 );
+		counters.put( "failedWithSuccessPercentageTestCaseInstanceCount", 0 );
 
 		logger.info( "starting TestContext instance. name -> < {} >", context.getName() );
 	}
@@ -103,67 +108,19 @@ public class TestContext
 
 	//region Suite - Counter Methods Section
 
-	/**
-	 * @return the total number of success invoked configurations during all scenario.
-	 */
-	public int getSuccessConfigurationsCount()
+	public int getCounterValue( final String key )
 	{
-		return successConfigurationsCount;
-	}
+		if( counters.containsKey( key ) )
+		{
+			return counters.get( key );
+		}
 
-	public int getSkippedConfigurationsCount()
-	{
-		return skippedConfigurationsCount;
-	}
-
-	public int getFailedConfigurationsCount()
-	{
-		return failedConfigurationsCount;
-	}
-
-	public int getConfigurationsCount()
-	{
-		return configurationsCount;
-	}
-
-	public int getSuccessTestCasesInstancesCount()
-	{
-		return successTestCaseInstanceCount;
-	}
-
-	public int getFailedTestCaseInstanceCount()
-	{
-		return failedTestCaseInstanceCount;
-	}
-
-	public int getFailedWithSuccessPercentageTestCaseInstanceCount()
-	{
-		return failedWithSuccessPercentageTestCaseInstanceCount;
-	}
-
-	public int getIgnoredTestCaseCount()
-	{
-		return ignoredTestCasesCount;
-	}
-
-	public int getSkippedTestCaseInstanceCount()
-	{
-		return skippedTestCaseInstanceCount;
-	}
-
-	public int getTInvokedTestCasesCount()
-	{
-		return invokedTestCases.size();
-	}
-
-	public int getTestCaseInstanceCount()
-	{
-		return testCaseInstanceCount;
+		return NumberUtils.INTEGER_MINUS_ONE;
 	}
 
 	public int getTotalInvokedMethodsCount()
 	{
-		return configurationsCount + testCaseInstanceCount;
+		return counters.get( "configurationsCount" ) + counters.get( "testCaseInstanceCount" );
 	}
 
 	ConfigurationInstanceMethod increaseSuccessConfigurationInstanceCounters( ITestResult itr )
@@ -171,8 +128,8 @@ public class TestContext
 		ConfigurationMethod cf = getConfigurationMethod( itr );
 		ConfigurationInstanceMethod cif = cf.getCurrentConfigurationInstanceMethod();
 		cif.recordEndDate();
-		this.successConfigurationsCount ++;
-		this.configurationsCount ++;
+		counters.computeIfPresent( "successConfigurationsCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "configurationsCount", ( a, b ) -> b + 1 );
 		return cif;
 	}
 
@@ -181,8 +138,8 @@ public class TestContext
 		ConfigurationMethod cf = getConfigurationMethod( itr );
 		ConfigurationInstanceMethod cif = cf.getCurrentConfigurationInstanceMethod();
 		cif.recordEndDate();
-		this.failedConfigurationsCount ++;
-		this.configurationsCount ++;
+		counters.computeIfPresent( "failedConfigurationsCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "configurationsCount", ( a, b ) -> b + 1 );
 		return cif;
 	}
 
@@ -191,15 +148,18 @@ public class TestContext
 		ConfigurationMethod cf = getConfigurationMethod( itr );
 		ConfigurationInstanceMethod cif = cf.getCurrentConfigurationInstanceMethod();
 		cif.recordEndDate();
-		this.skippedConfigurationsCount ++;
-		this.configurationsCount ++;
+		counters.computeIfPresent( "skippedConfigurationsCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "configurationsCount", ( a, b ) -> b + 1 );
 		return cif;
 	}
 
 	TestCaseInstance increaseSuccessTestCaseInstanceCounters( ITestResult result )
 	{
-		successTestCaseInstanceCount ++;
-		testCaseInstanceCount ++;
+		counters.computeIfPresent( "successTestCaseInstanceCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "testCaseInstanceCount", ( a, b ) -> b + 1 );
+
+
+
 		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
 		tci.recordEndDate();
 		tci.addStatus( ResultStatus.SUCCESS );
@@ -208,8 +168,8 @@ public class TestContext
 
 	TestCaseInstance increaseFailedTestCaseInstanceCounters( ITestResult result )
 	{
-		failedTestCaseInstanceCount ++;
-		testCaseInstanceCount ++;
+		counters.computeIfPresent( "failedTestCaseInstanceCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "testCaseInstanceCount", ( a, b ) -> b + 1 );
 		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
 		tci.recordEndDate();
 		tci.addStatus( ResultStatus.FAILURE );
@@ -218,8 +178,8 @@ public class TestContext
 
 	TestCaseInstance increaseFailedWithSuccessPercentageTestCaseInstanceCounters( ITestResult result )
 	{
-		failedWithSuccessPercentageTestCaseInstanceCount ++;
-		testCaseInstanceCount ++;
+		counters.computeIfPresent( "failedWithSuccessPercentageTestCaseInstanceCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "testCaseInstanceCount", ( a, b ) -> b + 1 );
 		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
 		tci.recordEndDate();
 		tci.addStatus( ResultStatus.SUCCESS_PERCENTAGE_FAILURE );
@@ -228,8 +188,8 @@ public class TestContext
 
 	TestCaseInstance increaseSkippedTestCaseInstanceCounters( ITestResult result )
 	{
-		skippedTestCaseInstanceCount ++;
-		testCaseInstanceCount ++;
+		counters.computeIfPresent( "skippedTestCaseInstanceCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "testCaseInstanceCount", ( a, b ) -> b + 1 );
 		TestCaseInstance tci = invokedTestCases.peek().getCurrentTestCaseInstance();
 		tci.recordEndDate();
 		tci.addStatus( ResultStatus.SKIPPED );
@@ -238,8 +198,8 @@ public class TestContext
 
 	TestCaseInstance increaseIgnoredTestCaseCounters( ITestResult result )
 	{
-		ignoredTestCasesCount ++;
-		testCaseInstanceCount ++;
+		counters.computeIfPresent( "ignoredTestCasesCount", ( a, b ) -> b + 1 );
+		counters.computeIfPresent( "testCaseInstanceCount", ( a, b ) -> b + 1 );
 		//TestCaseInstance tci = invokedTestCases.peek().createTestCaseInstance( result );
 		//tci.addStatus( ResultStatus.IGNORED );
 		//return tci;
@@ -360,7 +320,9 @@ public class TestContext
 
 	public Float getSuccessRate()
 	{
-		return ( successTestCaseInstanceCount * 100 ) / ( float ) testCaseInstanceCount;
+		int successTestCaseInstanceCount = counters.get( "successTestCaseInstanceCount" ) * 100;
+		float testCaseInstanceCount = Float.valueOf( counters.get( "testCaseInstanceCount" ) );
+		return successTestCaseInstanceCount / testCaseInstanceCount;
 	}
 
 	public String getFormattedSuccessRate()
